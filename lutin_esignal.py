@@ -33,13 +33,15 @@ def create(target, module_name):
 	my_module.add_src_file([
 		'esignal/debug.cpp',
 		'esignal/Interface.cpp',
-		'esignal/Base.cpp'
+		'esignal/Base.cpp',
+		'esignal/details/Signal.cpp',
 		])
 	my_module.add_header_file([
 		'esignal/debug.h',
 		'esignal/Interface.h',
 		'esignal/Base.h',
-		'esignal/Signal.h'
+		'esignal/Signal.h',
+		'esignal/details/Signal.hxx',
 		])
 	my_module.add_module_depend(['etk'])
 	my_module.add_path(tools.get_current_path(__file__))
