@@ -27,15 +27,20 @@ namespace esignal {
 			class Executor {
 				protected:
 					Observer m_observer;
+					bool m_removed;
+					size_t m_uid;
 				public:
-					Executor(Observer&& _observer) {
+					Executor(Observer&& _observer):
+					  m_removed(true),
+					  m_uid(0) {
 						m_observer = std::move(_observer);
 					}
+					
 					virtual ~Executor() = default;
 				public:
 					virtual bool emit(Args... _values) {
-						try{
-							m_observer( _values... );
+						try {
+							m_observer(_values...);
 						} catch(...) {
 							std::cout << "LOL"<< std::endl;
 						}
@@ -45,7 +50,7 @@ namespace esignal {
 			
 			class ExecutorShared : public Executor {
 				protected:
-					std::week_ptr<void> m_object;
+					std::weak_ptr<void> m_object;
 				public:
 					ExecutorShared(std::weak_ptr<void> _object, Observer&& _observer) :
 					  Executor(std::move(_observer)),
@@ -54,8 +59,12 @@ namespace esignal {
 					}
 				public:
 					virtual bool emit(Args... _values) {
-						try{
-							m_observer( _values... );
+						std::shared_ptr<void> destObject = m_object.lock();
+						if (destObject == nullptr) {
+							return true;
+						}
+						try {
+							Executor::m_observer(_values...);
 						} catch(...) {
 							std::cout << "LOL"<< std::endl;
 						}
@@ -63,37 +72,34 @@ namespace esignal {
 					}
 			};
 		public:
-			
 			template< class ObserverType >
-			void connect( ObserverType&& observer ) {
-				m_observers.push_back( std::forward<ObserverType>(observer) );
-				m_executors.push_back(Executor(std::forward<ObserverType>(observer)));
+			void connect(ObserverType&& observer ) {
+				std::unique_ptr<Executor> executer(new Executor(std::forward<ObserverType>(observer)));
+				m_executors.push_back(std::move(executer));
 			}
+			template<class pointer, class Func, class... Arg>
+			void connect(pointer* _class, Func _f, Arg... _arg) {
+				std::unique_ptr<Executor> executer(new Executor([=]( auto&&... cargs ){
+					(*_class.*_f)(cargs..., _arg... );
+				}));
+				m_executors.push_back(std::move(executer));
+			}
+			template<class pointer, class Func, class... Arg>
+			void connect(const std::shared_ptr<pointer>& _class, Func _f, Arg... _arg) {
+				std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( auto&&... cargs ){
+					(*_class.*_f)(cargs..., _arg... );
+				}));
+				m_executors.push_back(std::move(executer));
+			}
+		public:
 			template< class... CallArgs>
 			void emit( CallArgs&&... args ) {
 				for(auto& executor: m_executors) {
-					executor.emit(args... );
+					executor->emit(args... );
 				}
 			}
-			template<class pointer, class Func, class... Arg>
-			void connect2(pointer* _class, Func _f, Arg... _arg) {
-				m_observers.push_back( [=]( auto&&... cargs ){
-					(*_class.*_f)(cargs..., _arg... );
-				});
-				m_executors.push_back(Executor([=]( auto&&... cargs ){
-					(*_class.*_f)(cargs..., _arg... );
-				}));
-			}
-			template<class pointer, class Func, class... Arg>
-			void connect2(std::shared_ptr<pointer> _class, Func _f, Arg... _arg) {
-				m_executors.push_back(Executor([=]( auto&&... cargs ){
-					(*_class.*_f)(cargs..., _arg... );
-				}));
-			}
-
 		private:
-			std::vector<Observer> m_observers;
-			std::vector<Executor> m_executors;
+			std::vector<std::unique_ptr<Executor>> m_executors;
 	};
 	
 	
@@ -161,8 +167,8 @@ namespace esignal {
 					m_callerListInCallback.push_back(std::make_pair(std::weak_ptr<void>(_obj), _function));
 				}
 			}
-						//! @previous
-						void connect(std::function<void(const T&...)> _function );{
+			//! @previous
+			void connect(std::function<void(const T&...)> _function );{
 				if (m_callInProgress == 0) {
 					m_callerListDirect.push_back(_function);
 				} else {
