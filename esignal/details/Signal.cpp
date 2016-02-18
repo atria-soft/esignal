@@ -11,6 +11,8 @@
 #include <etk/math/Vector3D.h>
 #include <etk/Color.h>
 
+size_t esignal::s_uid = 0;
+
 #undef __class__
 #define __class__ "Signal<void>"
 #if 0

@@ -16,35 +16,86 @@
 #include <utility>
 
 namespace esignal {
+	extern size_t s_uid;
 	#undef __class__
 	#define __class__ "Signal<T>"
+	class SignalInderection;
+	class SignalBase {
+		public:
+			SignalBase() {
+				
+			}
+			virtual ~SignalBase() {
+				
+			}
+			virtual void disconnect(std::size_t _uid) = 0;
+	};
+	
+	class Handle {
+		public:
+			Handle(SignalBase* _sig, std::size_t _id):
+			  m_signal(_sig), m_uid(_id) {
+				
+			}
+			Handle(const Handle&) = delete; // not copyable
+			Handle* operator=(const Handle&) = delete; // no copy operator
+			Handle(Handle&&) = default; // movable
+			Handle& operator=(Handle&&) = default; // movable op
+			
+			~Handle() {
+				if (m_signal == nullptr) {
+					return;
+				}
+				m_signal->disconnect(m_uid);
+				m_signal = nullptr;
+				m_uid = 0;
+			}
+			void disconnect() {
+				if (m_signal == nullptr) {
+					return;
+				}
+				m_signal->disconnect(m_uid);
+				m_signal = nullptr;
+				m_uid = 0;
+			}
+		private:
+			SignalBase* m_signal;
+			std::size_t m_uid;
+	};
+	
 	template<class... Args>
-	class Signal {
+	class Signal : public SignalBase {
 		public:
 			using Observer = std::function<void(const Args&...)>;
+		public:
+			
 		private:
 			
 			class Executor {
-				protected:
+				public:
 					Observer m_observer;
 					bool m_removed;
 					size_t m_uid;
 				public:
 					Executor(Observer&& _observer):
-					  m_removed(true),
+					  m_removed(false),
 					  m_uid(0) {
+						m_uid = s_uid++;
 						m_observer = std::move(_observer);
 					}
 					
 					virtual ~Executor() = default;
 				public:
-					virtual bool emit(Args... _values) {
+					virtual void emit(Args... _values) {
+						if (m_removed == true) {
+							return;
+						}
 						try {
 							m_observer(_values...);
 						} catch(...) {
+							m_removed = true;
 							std::cout << "LOL"<< std::endl;
 						}
-						return false;
 					}
 			};
 			
@@ -58,31 +109,39 @@ namespace esignal {
 						
 					}
 				public:
-					virtual bool emit(Args... _values) {
+					virtual void emit(Args... _values) {
 						std::shared_ptr<void> destObject = m_object.lock();
 						if (destObject == nullptr) {
-							return true;
+							Executor::m_removed = true;
+							return;
+						}
+						if (Executor::m_removed == true) {
+							return;
 						}
 						try {
 							Executor::m_observer(_values...);
 						} catch(...) {
+							Executor::m_removed = true;
 							std::cout << "LOL"<< std::endl;
 						}
-						return false;
 					}
 			};
 		public:
 			template< class ObserverType >
-			void connect(ObserverType&& observer ) {
+			Handle connect(ObserverType&& observer ) {
 				std::unique_ptr<Executor> executer(new Executor(std::forward<ObserverType>(observer)));
+				std::size_t uid = executer->m_uid;
 				m_executors.push_back(std::move(executer));
+				return Handle(this, uid);
 			}
 			template<class pointer, class Func, class... Arg>
-			void connect(pointer* _class, Func _f, Arg... _arg) {
+			Handle connect(pointer* _class, Func _f, Arg... _arg) {
 				std::unique_ptr<Executor> executer(new Executor([=]( auto&&... cargs ){
 					(*_class.*_f)(cargs..., _arg... );
 				}));
+				std::size_t uid = executer->m_uid;
 				m_executors.push_back(std::move(executer));
+				return Handle(this, uid);
 			}
 			template<class pointer, class Func, class... Arg>
 			void connect(const std::shared_ptr<pointer>& _class, Func _f, Arg... _arg) {
@@ -93,16 +152,58 @@ namespace esignal {
 			}
 		public:
 			template< class... CallArgs>
-			void emit( CallArgs&&... args ) {
-				for(auto& executor: m_executors) {
-					executor->emit(args... );
+			void emit( CallArgs&&... args) {
+				m_callInProgress++;
+				for(auto& it: m_executors) {
+					it->emit(args...);
 				}
+				if (m_callInProgress == 1) {
+					auto it = m_executors.begin();
+					while (it != m_executors.end()) {
+						if (    *it == nullptr
+						     || (*it)->m_removed == true) {
+							it = m_executors.erase(it);
+							continue;
+						}
+						++it;
+					}
+				}
+				m_callInProgress--;
+			}
+			void disconnect(std::size_t _uid) {
+				for (auto &it : m_executors) {
+					if (it->m_uid == _uid) {
+						it->m_removed = true;
+						return;
+					}
+				}
+			}
+		public:
+			Signal() :
+			  m_callInProgress(0) {
+				
+			}
+			size_t size() const {
+				return m_executors.size();
+			}
+			
+			bool empty() const {
+				return m_executors.empty();
+			}
+			
+			void clear() {
+				m_executors.clear();
 			}
 		private:
 			std::vector<std::unique_ptr<Executor>> m_executors;
+			int32_t m_callInProgress;
 	};
-	
-	
+	/*
+	class SignalInderection : public std::enable_shared_ptr<SignalInderection> {
+		public:
+			
+	}
+	*/
 	
 	#if 0
 	template<typename... T> class Signal {
