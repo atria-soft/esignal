@@ -8,23 +8,23 @@
 #pragma once
 
 #include <esignal/Signal.h>
+#include <functional>
+#include <memory>
 
 #undef __class__
 #define __class__ "Signal<T>"
-
-template<typename T> esignal::Signal<T>::Signal(esignal::Interface& _signalInterfaceLink,
-                                                const std::string& _name,
-                                                const std::string& _description,
-                                                bool _periodic) :
-  esignal::Base(_signalInterfaceLink, _name, _description, _periodic) {
+#if 0
+template<typename... T> esignal::Signal<T...>::Signal() :
+  m_callInProgress(0),
+  m_someOneRemoveInCall(false) {
 	
 }
 
-template<typename T> esignal::Signal<T>::~Signal() {
+template<typename... T> esignal::Signal<T...>::~Signal() {
 	
 }
 
-template<typename T> void esignal::Signal<T>::connect(std::shared_ptr<void> _obj, std::function<void(const T&)> _function ) {
+template<typename... T> void esignal::Signal<T...>::connect(std::shared_ptr<void> _obj, std::function<void(const T&...)> _function ) {
 	if (m_callInProgress == 0) {
 		m_callerList.push_back(std::make_pair(std::weak_ptr<void>(_obj), _function));
 	} else {
@@ -32,7 +32,7 @@ template<typename T> void esignal::Signal<T>::connect(std::shared_ptr<void> _obj
 	}
 }
 
-template<typename T> void esignal::Signal<T>::connect(std::function<void(const T&)> _function ) {
+template<typename... T> void esignal::Signal<T...>::connect(std::function<void(const T&...)> _function ) {
 	if (m_callInProgress == 0) {
 		m_callerListDirect.push_back(_function);
 	} else {
@@ -40,7 +40,7 @@ template<typename T> void esignal::Signal<T>::connect(std::function<void(const T
 	}
 }
 
-template<typename T> bool esignal::Signal<T>::isRegistered(std::shared_ptr<void> _obj) {
+template<typename... T> bool esignal::Signal<T...>::isRegistered(std::shared_ptr<void> _obj) {
 	if (_obj == nullptr) {
 		return false;
 	}
@@ -59,7 +59,7 @@ template<typename T> bool esignal::Signal<T>::isRegistered(std::shared_ptr<void>
 	return false;
 }
 
-template<typename T> void esignal::Signal<T>::release(std::shared_ptr<void> _obj) {
+template<typename... T> void esignal::Signal<T...>::release(std::shared_ptr<void> _obj) {
 	if (m_callInProgress == 0) {
 		// Remove from the list :
 		auto it(m_callerList.begin());
@@ -93,16 +93,16 @@ template<typename T> void esignal::Signal<T>::release(std::shared_ptr<void> _obj
 	}
 }
 
-template<typename T> void esignal::Signal<T>::emit(const T& _data) {
+template<typename... T> void esignal::Signal<T...>::emit(const T&... _data) {
 	#ifdef DEBUG
 		m_signalCallLevel++;
 		int32_t tmpID = m_uidSignal++;
 	#endif
 	m_callInProgress++;
 	if (m_periodic == true) {
-		ESIGNAL_VERBOSE(esignal::logIndent(m_signalCallLevel-1) << "emit signal{" << tmpID << "} : signal='" << m_name << "' data='" << etk::to_string(_data) << "' to: " << m_callerList.size() << " element(s)");
+		ESIGNAL_VERBOSE(esignal::logIndent(m_signalCallLevel-1) << "emit signal{" << tmpID << "} : signal='" << m_name << "' data='" << /*etk::to_string(_data) <<*/ "' to: " << m_callerList.size() << " element(s)");
 	} else {
-		ESIGNAL_DEBUG(esignal::logIndent(m_signalCallLevel-1) << "emit signal{" << tmpID << "} : signal='" << m_name << "' data='" << etk::to_string(_data) << "' to: " << m_callerList.size() << " element(s)");
+		ESIGNAL_DEBUG(esignal::logIndent(m_signalCallLevel-1) << "emit signal{" << tmpID << "} : signal='" << m_name << "' data='" << /*etk::to_string(_data) <<*/ "' to: " << m_callerList.size() << " element(s)");
 	}
 	{
 		auto it(m_callerList.begin());
@@ -118,7 +118,7 @@ template<typename T> void esignal::Signal<T>::emit(const T& _data) {
 			} else {
 				ESIGNAL_DEBUG(esignal::logIndent(m_signalCallLevel-1) << "     signal{" << tmpID << "} :");// [" << destObject->getId() << "]" << destObject->getObjectType());
 			}
-			it->second(_data);
+			it->second(_data...);
 			++it;
 		}
 	}
@@ -130,7 +130,7 @@ template<typename T> void esignal::Signal<T>::emit(const T& _data) {
 			} else {
 				ESIGNAL_DEBUG(esignal::logIndent(m_signalCallLevel-1) << "X     signal{" << tmpID << "} :");// [" << destObject->getId() << "]" << destObject->getObjectType());
 			}
-			(*it)(_data);
+			(*it)(_data...);
 			++it;
 		}
 	}
@@ -166,9 +166,10 @@ template<typename T> void esignal::Signal<T>::emit(const T& _data) {
 	}
 }
 
-template<typename T> size_t esignal::Signal<T>::getNumberConnected() {
+template<typename... T> size_t esignal::Signal<T...>::getNumberConnected() {
 	return m_callerList.size() + m_callerListDirect.size();
 }
+#endif
 
 
 
