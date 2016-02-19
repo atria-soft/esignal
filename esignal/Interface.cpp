@@ -47,6 +47,15 @@ void esignal::Interface::signalUnBindAll(const std::shared_ptr<void>& _object) {
 		if (it == nullptr) {
 			continue;
 		}
-		it->release(_object);
+		it->disconnect(_object);
+	}
+}
+
+void esignal::Interface::signalUnConnect(size_t _uid) {
+	for(auto &it : m_list) {
+		if (it == nullptr) {
+			continue;
+		}
+		it->disconnect(_uid);
 	}
 }

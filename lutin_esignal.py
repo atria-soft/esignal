@@ -41,6 +41,10 @@ def create(target, module_name):
 		'esignal/Interface.h',
 		'esignal/Base.h',
 		'esignal/Signal.h',
+		'esignal/ISignal.h',
+		'esignal/LockSharedPtrRef.h',
+		'esignal/RefCount.h',
+		'esignal/Connection.h',
 		'esignal/details/Signal.hxx',
 		])
 	my_module.compile_version("c++", 2014)

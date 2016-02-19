@@ -61,9 +61,15 @@ class TestConnect {
 		void display_values_5( int a, float b, char c, std::string _plopppp) {
 			std::cout << " 5555 " << a << " " << b << " " << c << " " << _plopppp << std::endl;
 		}
+		void non_const(std::string _plopppp) {
+			std::cout << " 987654 " << _plopppp << std::endl;
+		}
+		void is_const(const std::string& _plopppp) {
+			std::cout << " 987654 " << _plopppp << std::endl;
+		}
 };
 
-class TestConnectShared : public std::enable_shared_from_this<TestConnectShared>{
+class TestConnectShared : public std::enable_shared_from_this<TestConnectShared> {
 	public:
 		TestConnectShared() {
 			
@@ -73,6 +79,12 @@ class TestConnectShared : public std::enable_shared_from_this<TestConnectShared>
 		}
 		void display_values_7( int a, float b, char c, std::string _plopppp) {
 			std::cout << " 7777 " << a << " " << b << " " << c << " " << _plopppp << std::endl;
+		}
+		void non_const(std::string _plopppp) {
+			std::cout << " 987654 " << _plopppp << std::endl;
+		}
+		void is_const(const std::string& _plopppp) {
+			std::cout << " 987654 " << _plopppp << std::endl;
 		}
 };
 
@@ -98,36 +110,50 @@ TEST(test_signal_arg, checkType) {
 	baseClass.emit();
 	EXPECT_EQ(connectedClass->m_valueInt32, 22);
 	*/
+	
+	
+	esignal::Signal<std::string> signal;
+	/*
+	TestConnect connectedClass;
+	esignal::Connection h6564 = signal.connect(connectedClass, TestConnect::non_const);
+	esignal::Connection h6565 = signal.connect(connectedClass, TestConnect::is_const);
+	*/
+	
+	std::shared_ptr<TestConnectShared> connectedClassShared = std::make_shared<TestConnectShared>();
+	signal.connect(connectedClassShared, &TestConnectShared::non_const);
+	signal.connect(connectedClassShared, &TestConnectShared::is_const);
+	
+	
 	#if 0
 	esignal::Signal<int, float, char> signal;
 	// ----------------------------------------------------
 	auto display_values_1 = []( int a, float b, char c){
 		std::cout << " 1111 " << a << " " << b << " " << c << " " << std::endl;
 	};
-	esignal::Connection h1 = signal.connect(display_values_1);
+	esignal::Connection h1 = signal.bind(display_values_1);
 	
 	// ----------------------------------------------------
 	auto display_values_2 = []( int a, float b, char c, int w ){
 		std::cout << " 2222 " << a << " " << b << " " << c << " " << w << std::endl;
 	};
-	esignal::Connection h2 = signal.connect( complete_args( display_values_2, 72 ) );
+	esignal::Connection h2 = signal.bind( complete_args( display_values_2, 72 ) );
 	
 	// ----------------------------------------------------
 	TestConnect connectedClass;
-	esignal::Connection h3 = signal.connect([&](int a, float b, char c) {
+	esignal::Connection h3 = signal.bind([&](int a, float b, char c) {
 	                                        	connectedClass.display_values_4(a,b,c);
 	                                        });
 	/*
-	signal.connect( [&](auto && ... _cargs) {
+	signal.bind( [&](auto && ... _cargs) {
 	                	connectedClass.display_values_3(_cargs);}
 	                );
 	*/
-	esignal::Connection h4 = signal.connect(&connectedClass, &TestConnect::display_values_4);
-	esignal::Connection h5 = signal.connect(&connectedClass, &TestConnect::display_values_5, "coucou");
+	esignal::Connection h4 = signal.bind(&connectedClass, &TestConnect::display_values_4);
+	esignal::Connection h5 = signal.bind(&connectedClass, &TestConnect::display_values_5, "coucou");
 	
 	std::shared_ptr<TestConnectShared> connectedClassShared = std::make_shared<TestConnectShared>();
-	signal.connect(connectedClassShared, &TestConnectShared::display_values_6);
-	signal.connect(connectedClassShared, &TestConnectShared::display_values_7, "coucou");
+	signal.bind(connectedClassShared, &TestConnectShared::display_values_6);
+	signal.bind(connectedClassShared, &TestConnectShared::display_values_7, "coucou");
 	
 	
 	signal.emit( 5, 2.99, 'k');
@@ -138,8 +164,8 @@ TEST(test_signal_arg, checkType) {
 	h4.disconnect();
 	h5.disconnect();
 	
-	//signal.connect( complete_class(&connectedClass, &TestConnect::display_values_3) );
-	//signal.connect( TestConnect::display_values_3(&connectedClass) );
+	//signal.bind( complete_class(&connectedClass, &TestConnect::display_values_3) );
+	//signal.bind( TestConnect::display_values_3(&connectedClass) );
 	
 	auto display_values_recursive = [&]( int a, float b, char c, int w ){
 		std::cout << " 99999 " << a << " " << b << " " << c << " " << w << std::endl;
@@ -149,11 +175,15 @@ TEST(test_signal_arg, checkType) {
 		}
 		signal.emit(a-1, 2.66, 'l');
 	};
-	esignal::Connection h6 = signal.connect( complete_args( display_values_recursive, 72 ) );
+	esignal::Connection h6 = signal.bind( complete_args( display_values_recursive, 72 ) );
 	// ----------------------------------------------------
 	
 	signal.emit( 5, 2.99, 'k');
 	#endif
+	
+	
+	
+	#if 0
 	std::cout << "========> Nes Signal " << std::endl;
 	std::shared_ptr<esignal::Signal<std::string>> signalShared = std::make_shared<esignal::Signal<std::string>>();
 	
@@ -162,7 +192,7 @@ TEST(test_signal_arg, checkType) {
 		std::cout << " 1010 " << a<< std::endl;
 		std::cout << " ----------------------------------" << std::endl;
 	};
-	esignal::Connection h7 = signalShared->connect(display_val);
+	esignal::Connection h7 = signalShared->bind(display_val);
 	
 	std::cout << "========> Emit" << std::endl;
 	signalShared->emit("coucou");
@@ -172,6 +202,9 @@ TEST(test_signal_arg, checkType) {
 	
 	std::cout << "========> disconnect " << std::endl;
 	h7.disconnect();
+	#endif
+	
+	
 	
 	std::cout << "========================================= " << std::endl;
 }

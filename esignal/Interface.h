@@ -31,6 +31,7 @@ namespace esignal {
 			 * @param[in] pointerOnParameter Pointer on the parameter that might be added.
 			 */
 			void signalAdd(esignal::Base* _pointerOnParameter);
+			void signalRemove(esignal::Base* _pointerOnParameter);
 			/**
 			 * @brief Get All the signal list:
 			 * @return vector on all the signals names
@@ -41,6 +42,7 @@ namespace esignal {
 			 * @param[in] _sharedPtr sharedPtr to unlink (no type needed ...).
 			 */
 			void signalUnBindAll(const std::shared_ptr<void>& _sharedPtr);
+			void signalUnConnect(size_t _uid);
 	};
 }
 

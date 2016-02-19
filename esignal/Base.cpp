@@ -11,30 +11,36 @@
 #include <esignal/Interface.h>
 #include <esignal/Base.h>
 
-#ifdef DEBUG
-	int32_t esignal::Base::m_uidSignal = 0;
-	int32_t esignal::Base::m_signalCallLevel = 0;
-#endif
+size_t esignal::Base::s_uid = 0;
 
-esignal::Base::Base(esignal::Interface& _signalInterfaceLink,
-                    const std::string& _name,
-                    const std::string& _description,
-                    bool _periodic) :
-  m_signalInterfaceLink(_signalInterfaceLink),
-  m_name(_name),
-  m_description(_description),
-  m_callInProgress(0),
-  m_someOneRemoveInCall(false),
-  m_periodic(_periodic) {
-	// add a reference on the current signal ...
-	m_signalInterfaceLink.signalAdd(this);
+esignal::Base::Base() :
+  m_shared(this) {
+	
 }
+esignal::Base::~Base() {
+	m_shared.removeData();
+}
+
+
+const std::string& esignal::Base::getName() const {
+	static std::string noValue;
+	return noValue;
+}
+
+const std::string& esignal::Base::getDescription() const {
+	static std::string noValue;
+	return noValue;
+}
+
 
 std::ostream& esignal::operator <<(std::ostream& _os, const esignal::Base& _obj) {
 	_os << _obj.getName();
 	return _os;
 }
 
+void esignal::Base::disconnect(const std::shared_ptr<void>& _obj) {
+	
+}
 
 const char* esignal::logIndent(int32_t _iii) {
 	static const char g_val[] = "                    ";
