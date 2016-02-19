@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 
 #undef __class__
-#define __class__	"etktest"
+#define __class__	"etk-test"
 
 int main(int _argc, const char *_argv[]) {
 	::testing::InitGoogleTest(&_argc, const_cast<char **>(_argv));
@@ -22,12 +22,11 @@ int main(int _argc, const char *_argv[]) {
 		std::string data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
-			TEST_PRINT("esvg-test - help : ");
+			TEST_PRINT("esignal-test - help : ");
 			TEST_PRINT("    " << _argv[0] << " [options]");
 			TEST_PRINT("        No optiions ...");
 			return -1;
 		}
 	}
-	//etk::initDefaultFolder("esvg-test");
 	return RUN_ALL_TESTS();
 }

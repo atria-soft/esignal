@@ -14,15 +14,13 @@
 
 namespace esignal {
 	#undef __class__
-	#define __class__ "Signal<T>"
-	template<typename T> class Signal : public esignal::Base {
-		private:
-			std::vector<std::pair<std::weak_ptr<void>,
-			                      std::function<void(const T&)>>> m_callerList; // current list of binded element
-			std::vector<std::pair<std::weak_ptr<void>,
-			                      std::function<void(const T&)>>> m_callerListInCallback; // temporaty list (when add one in call process)
-			std::vector<std::function<void(const T&)>> m_callerListDirect; // current list of binded element
-			std::vector<std::function<void(const T&)>> m_callerListDirectInCallback; // temporaty list (when add one in call process)
+	#define __class__ "ISignal<T>"
+	template<class... Args>
+	class ISignal : public Signal<Args...> {
+		protected:
+			esignal::Interface& m_signalInterfaceLink;
+			std::string m_name;
+			std::string m_description;
 		public:
 			/**
 			 * @brief Create a signal with a specific type.
@@ -31,10 +29,10 @@ namespace esignal {
 			 * @param[in] _description Description of the signal.
 			 * @param[in] _periodic Customisation of the log display tag at true to down debug lebel at verbose.
 			 */
-			Signal(esignal::Interface& _signalInterfaceLink,
-			       const std::string& _name,
-			       const std::string& _description = "",
-			       bool _periodic = false);
+			ISignal(esignal::Interface& _signalInterfaceLink,
+			        const std::string& _name,
+			        const std::string& _description = "",
+			        bool _periodic = false);
 			/**
 			 * @brief Destructor.
 			 */
