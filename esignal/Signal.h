@@ -102,8 +102,8 @@ namespace esignal {
 			};
 		public:
 			template< class ObserverType >
-			Connection connect(ObserverType&& observer ) {
-				std::unique_ptr<Executor> executer(new Executor(std::forward<ObserverType>(observer)));
+			Connection connect(ObserverType&& _observer ) {
+				std::unique_ptr<Executor> executer(new Executor(std::forward<ObserverType>(_observer)));
 				std::size_t uid = executer->m_uid;
 				m_executors.push_back(std::move(executer));
 				return Connection(Base::m_shared, uid);

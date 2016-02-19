@@ -111,18 +111,18 @@ TEST(test_signal_arg, checkType) {
 	EXPECT_EQ(connectedClass->m_valueInt32, 22);
 	*/
 	
-	
+	#if 0
 	esignal::Signal<std::string> signal;
 	/*
 	TestConnect connectedClass;
-	esignal::Connection h6564 = signal.connect(connectedClass, TestConnect::non_const);
-	esignal::Connection h6565 = signal.connect(connectedClass, TestConnect::is_const);
+	esignal::Connection h6564 = signal.connect(&connectedClass, TestConnect::non_const);
+	esignal::Connection h6565 = signal.connect(&connectedClass, TestConnect::is_const);
 	*/
 	
 	std::shared_ptr<TestConnectShared> connectedClassShared = std::make_shared<TestConnectShared>();
 	signal.connect(connectedClassShared, &TestConnectShared::non_const);
 	signal.connect(connectedClassShared, &TestConnectShared::is_const);
-	
+	#endif
 	
 	#if 0
 	esignal::Signal<int, float, char> signal;
@@ -205,6 +205,13 @@ TEST(test_signal_arg, checkType) {
 	#endif
 	
 	
+	esignal::Signal<std::string> signal;
+	
+	TestConnect connectedClass;
+	esignal::Connection h6564 = signal.connect(&connectedClass, &TestConnect::non_const);
+	h6564.disconnect();
+	h6564 = signal.connect(&connectedClass, &TestConnect::is_const);
+	signal.emit("kljlkjlkjlkj");
 	
 	std::cout << "========================================= " << std::endl;
 }

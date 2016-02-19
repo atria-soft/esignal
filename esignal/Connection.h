@@ -24,12 +24,23 @@ namespace esignal {
 			  m_signalRefUnique(), m_uid(0) {
 				
 			}
-			Connection(LockSharedPtrRef<Base> _ref, std::size_t _id):
-			  m_signalRefUnique(_ref), m_uid(_id) {
+			Connection(const LockSharedPtrRef<Base>& _ref, std::size_t _id):
+			  m_signalRefUnique(_ref),
+			  m_uid(_id) {
 				
 			}
-			Connection(Connection&&) = default; // movable
-			Connection& operator=(Connection&&) = default; // movable op
+			Connection(Connection&& _obj):
+			  m_signalRefUnique(_obj.m_signalRefUnique),
+			  m_uid(_obj.m_uid) {
+				_obj.m_uid = 0;
+			}
+			Connection& operator=(Connection&& _obj) {
+				disconnect();
+				m_signalRefUnique = _obj.m_signalRefUnique;
+				m_uid = _obj.m_uid;
+				_obj.m_uid = 0;
+				return *this;
+			}
 			Connection(const Connection&) = delete; // not copyable
 			Connection& operator=(const Connection&) = delete; // no copy operator
 			/*

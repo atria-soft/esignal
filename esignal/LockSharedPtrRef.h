@@ -33,7 +33,7 @@ namespace esignal {
 				}
 			}
 			// copy constructor:
-			LockSharedPtrRef(const LockSharedPtrRef& _obj) :
+			LockSharedPtrRef(const LockSharedPtrRef<TYPE>& _obj) :
 			  m_counter(_obj.m_counter) {
 				if (m_counter == nullptr) {
 					return;
@@ -41,8 +41,8 @@ namespace esignal {
 				m_counter->inc();
 			}
 			// copy operator:
-			LockSharedPtrRef& operator=(LockSharedPtrRef) = delete;
-			LockSharedPtrRef& operator=(const LockSharedPtrRef& _obj) {
+			//LockSharedPtrRef& operator=(LockSharedPtrRef<TYPE>) = delete;
+			LockSharedPtrRef& operator=(const LockSharedPtrRef<TYPE>& _obj) {
 				if (&_obj == this) {
 					return *this;
 				}
@@ -52,20 +52,24 @@ namespace esignal {
 				}
 				m_counter = _obj.m_counter;
 				if (m_counter == nullptr) {
-					return;
+					return *this;
 				}
 				m_counter->inc();
 				return *this;
 			}
 			// Move constructor
-			LockSharedPtrRef(LockSharedPtrRef&& _obj) :
+			LockSharedPtrRef(LockSharedPtrRef<TYPE>&& _obj) :
 			  m_counter(std::move(_obj.m_counter)) {
 				
 			}
 			// Move operator
-			LockSharedPtrRef& operator=(LockSharedPtrRef&& _obj) {
-				m_counter = std::move(_obj.m_counter);
-			}
+			#if 1
+				LockSharedPtrRef& operator=(LockSharedPtrRef<TYPE>&& _obj) = delete;
+			#else
+				LockSharedPtrRef& operator=(LockSharedPtrRef<TYPE>&& _obj) {
+					m_counter = std::move(_obj.m_counter);
+				}
+			#endif
 			~LockSharedPtrRef() {
 				int64_t count = m_counter->dec();
 				if (count > 0) {
