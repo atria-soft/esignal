@@ -31,18 +31,18 @@ namespace esignal {
 			virtual void disconnect(std::size_t _uid) = 0;
 	};
 	
-	class Handle {
+	class Connection {
 		public:
-			Handle(SignalBase* _sig, std::size_t _id):
+			Connection(SignalBase* _sig, std::size_t _id):
 			  m_signal(_sig), m_uid(_id) {
 				
 			}
-			Handle(const Handle&) = delete; // not copyable
-			Handle* operator=(const Handle&) = delete; // no copy operator
-			Handle(Handle&&) = default; // movable
-			Handle& operator=(Handle&&) = default; // movable op
+			Connection(const Connection&) = delete; // not copyable
+			Connection* operator=(const Connection&) = delete; // no copy operator
+			Connection(Connection&&) = default; // movable
+			Connection& operator=(Connection&&) = default; // movable op
 			
-			~Handle() {
+			~Connection() {
 				if (m_signal == nullptr) {
 					return;
 				}
@@ -128,20 +128,20 @@ namespace esignal {
 			};
 		public:
 			template< class ObserverType >
-			Handle connect(ObserverType&& observer ) {
+			Connection connect(ObserverType&& observer ) {
 				std::unique_ptr<Executor> executer(new Executor(std::forward<ObserverType>(observer)));
 				std::size_t uid = executer->m_uid;
 				m_executors.push_back(std::move(executer));
-				return Handle(this, uid);
+				return Connection(this, uid);
 			}
 			template<class pointer, class Func, class... Arg>
-			Handle connect(pointer* _class, Func _f, Arg... _arg) {
+			Connection connect(pointer* _class, Func _f, Arg... _arg) {
 				std::unique_ptr<Executor> executer(new Executor([=]( auto&&... cargs ){
 					(*_class.*_f)(cargs..., _arg... );
 				}));
 				std::size_t uid = executer->m_uid;
 				m_executors.push_back(std::move(executer));
-				return Handle(this, uid);
+				return Connection(this, uid);
 			}
 			template<class pointer, class Func, class... Arg>
 			void connect(const std::shared_ptr<pointer>& _class, Func _f, Arg... _arg) {
@@ -154,8 +154,8 @@ namespace esignal {
 			template< class... CallArgs>
 			void emit( CallArgs&&... args) {
 				m_callInProgress++;
-				for(auto& it: m_executors) {
-					it->emit(args...);
+				for (size_t iii=0; iii < m_executors.size(); ++iii) {
+					m_executors[iii]->emit(args...);
 				}
 				if (m_callInProgress == 1) {
 					auto it = m_executors.begin();
@@ -171,9 +171,9 @@ namespace esignal {
 				m_callInProgress--;
 			}
 			void disconnect(std::size_t _uid) {
-				for (auto &it : m_executors) {
-					if (it->m_uid == _uid) {
-						it->m_removed = true;
+				for (size_t iii=0; iii < m_executors.size(); ++iii) {
+					if (m_executors[iii]->m_uid == _uid) {
+						m_executors[iii]->m_removed = true;
 						return;
 					}
 				}

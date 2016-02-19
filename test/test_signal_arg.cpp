@@ -103,26 +103,26 @@ TEST(test_signal_arg, checkType) {
 	auto display_values_1 = []( int a, float b, char c){
 		std::cout << " 1111 " << a << " " << b << " " << c << " " << std::endl;
 	};
-	signal.connect(display_values_1);
+	esignal::Connection h1 = signal.connect(display_values_1);
 	
 	// ----------------------------------------------------
 	auto display_values_2 = []( int a, float b, char c, int w ){
 		std::cout << " 2222 " << a << " " << b << " " << c << " " << w << std::endl;
 	};
-	signal.connect( complete_args( display_values_2, 72 ) );
+	esignal::Connection h2 = signal.connect( complete_args( display_values_2, 72 ) );
 	
 	// ----------------------------------------------------
 	TestConnect connectedClass;
-	signal.connect( [&](int a, float b, char c) {
-	                	connectedClass.display_values_4(a,b,c);}
-	                );
+	esignal::Connection h3 = signal.connect([&](int a, float b, char c) {
+	                                        	connectedClass.display_values_4(a,b,c);
+	                                        });
 	/*
 	signal.connect( [&](auto && ... _cargs) {
 	                	connectedClass.display_values_3(_cargs);}
 	                );
 	*/
-	signal.connect(&connectedClass, &TestConnect::display_values_4);
-	signal.connect(&connectedClass, &TestConnect::display_values_5, "coucou");
+	esignal::Connection h4 = signal.connect(&connectedClass, &TestConnect::display_values_4);
+	esignal::Connection h5 = signal.connect(&connectedClass, &TestConnect::display_values_5, "coucou");
 	
 	std::shared_ptr<TestConnectShared> connectedClassShared = std::make_shared<TestConnectShared>();
 	signal.connect(connectedClassShared, &TestConnectShared::display_values_6);
@@ -132,9 +132,17 @@ TEST(test_signal_arg, checkType) {
 	//signal.connect( complete_class(&connectedClass, &TestConnect::display_values_3) );
 	//signal.connect( TestConnect::display_values_3(&connectedClass) );
 	
-	
+	auto display_values_recursive = [&]( int a, float b, char c, int w ){
+		std::cout << " 99999 " << a << " " << b << " " << c << " " << w << std::endl;
+		std::cout << " ----------------------------------" << std::endl;
+		if (a == 0) {
+			return;
+		}
+		signal.emit(a-1, 2.66, 'l');
+	};
+	esignal::Connection h6 = signal.connect( complete_args( display_values_recursive, 72 ) );
 	// ----------------------------------------------------
 	
-	signal.emit( 42, 2.99, 'k');
+	signal.emit( 5, 2.99, 'k');
 	
 }
