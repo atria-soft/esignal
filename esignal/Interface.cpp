@@ -28,6 +28,18 @@ void esignal::Interface::signalAdd(esignal::Base* _pointerOnSignal) {
 	m_list.push_back(_pointerOnSignal);
 }
 
+void esignal::Interface::signalRemove(esignal::Base* _pointerOnSignal) {
+	auto it = m_list.begin();
+	while (it != m_list.end()) {
+		if (    *it == nullptr
+		     || *it == _pointerOnSignal) {
+			it = m_list.erase(it);
+		} else {
+			++it;
+		}
+	}
+}
+
 std::vector<std::string> esignal::Interface::signalGetAll() const {
 	std::vector<std::string> out;
 	for (auto &it : m_list) {

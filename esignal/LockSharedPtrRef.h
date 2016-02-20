@@ -71,6 +71,9 @@ namespace esignal {
 				}
 			#endif
 			~LockSharedPtrRef() {
+				if (m_counter == nullptr) {
+					return;
+				}
 				int64_t count = m_counter->dec();
 				if (count > 0) {
 					return;

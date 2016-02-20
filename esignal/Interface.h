@@ -28,10 +28,10 @@ namespace esignal {
 			/**
 			 * @brief Register a parameter class pointer in the List of parameters
 			 * @note This class does not destroy the parameter pointer!!!
-			 * @param[in] pointerOnParameter Pointer on the parameter that might be added.
+			 * @param[in] _pointerOnSignal Pointer on the signal that might be added.
 			 */
-			void signalAdd(esignal::Base* _pointerOnParameter);
-			void signalRemove(esignal::Base* _pointerOnParameter);
+			void signalAdd(esignal::Base* _pointerOnSignal);
+			void signalRemove(esignal::Base* _pointerOnSignal);
 			/**
 			 * @brief Get All the signal list:
 			 * @return vector on all the signals names
