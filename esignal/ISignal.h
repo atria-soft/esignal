@@ -15,14 +15,15 @@
 #include <esignal/Interface.h>
 
 namespace esignal {
-	#undef __class__
-	#define __class__ "ISignal<T>"
+	/**
+	 * @brief Sigla same as @ref esignal::Signal withe a name and a description to manage a list of signals.
+	 */
 	template<class... Args>
 	class ISignal : public Signal<Args...> {
 		protected:
-			esignal::Interface& m_signalInterfaceLink;
-			std::string m_name;
-			std::string m_description;
+			esignal::Interface& m_signalInterfaceLink; //!< interface of the signal manager.
+			std::string m_name; //!< name of the signal.
+			std::string m_description; //!< description of the signal.
 		public:
 			/**
 			 * @brief Create a signal with a specific type.
@@ -45,14 +46,12 @@ namespace esignal {
 			virtual ~ISignal() {
 				m_signalInterfaceLink.signalRemove(this);
 			}
-			const std::string& getName() const {
+			virtual const std::string& getName() const {
 				return m_name;
 			}
-			const std::string& getDescription() const {
+			virtual const std::string& getDescription() const {
 				return m_description;
 			}
 	};
-	#undef __class__
-	#define __class__ nullptr
 }
 

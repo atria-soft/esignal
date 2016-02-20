@@ -18,29 +18,33 @@
 #include <esignal/LockSharedPtrRef.h>
 
 namespace esignal {
-	#undef __class__
-	#define __class__ "Signal<T>"
 	class Base {
 		protected:
-			LockSharedPtrRef<Base> m_shared;
-			static size_t s_uid;
+			LockSharedPtrRef<Base> m_shared; //!< Reference counter on itself.
+			static size_t s_uid; //!< blobal id of the signal (STATIC)
 		public:
+			//! @brief Basic constructor:
 			Base();
-			// copy constructor:
+			//! @brief Copy constructor:
 			Base(const Base&) = delete;
-			// copy operator:
-			//Base& operator=(Base) = delete;
-			//Base& operator=(const Base& _obj) = delete;
-			// Move constructor
+			//! @brief Move constructor
 			Base(Base&& _obj) = delete;
-			// Move operator
-			//Base& operator=(Base&& _obj) = delete;
 			
 			virtual ~Base();
+			/**
+			 * @brief get name of the signal
+			 */
 			virtual void disconnect(const std::shared_ptr<void>& _obj);
 			virtual void disconnect(std::size_t _uid) = 0;
-			
+			/**
+			 * @brief Get name of the signal.
+			 * @return requested name.
+			 */
 			virtual const std::string& getName() const;
+			/**
+			 * @brief Get decription of the signal.
+			 * @return requested decription.
+			 */
 			virtual const std::string& getDescription() const;
 	};
 	std::ostream& operator <<(std::ostream& _os, const esignal::Base& _obj);

@@ -15,44 +15,52 @@
 #include <mutex>
 
 namespace esignal {
-	
+	/**
+	 * @brief Ref counting tool.
+	 */
 	template<class TYPE>
 	class RefCount {
+		private:
+			std::mutex m_lock; //!< mutex on the refcounting element
+			int64_t m_count; //!< number of element connected
+			TYPE* m_data; //!< Pointer on the refconting data
 		public:
-			std::mutex m_lock;
-			int64_t m_count;
-			TYPE* m_data;
-		public:
+			//!< generic constructor
 			RefCount(TYPE* _data) :
 			  m_count(0),
 			  m_data(_data) {
 				// nothing to do.
 			}
-			// copy constructor:
+			//! @brief Copy constructor (REMOVED)
 			RefCount(const RefCount&) = delete;
-			// copy operator:
+			//! @brief Copy operator (REMOVED)
 			RefCount& operator=(RefCount) = delete;
+			//! @previous
 			RefCount& operator=(const RefCount& _obj) = delete;
-			// Move constructor
+			//! @brief Move constructor (REMOVED)
 			RefCount(RefCount&& _obj) = delete;
-			// Move operator
+			//! @brief Move operator (REMOVED)
 			RefCount& operator=(RefCount&& _obj) = delete;
-		public:
+			//! @brief Destructor
 			~RefCount() {
 				m_data = nullptr;
 			}
 		public:
+			//!< @brief Lock the interface
 			void lock() {
 				m_lock.lock();
 			}
+			//!< @brief Unlock the interface
 			void unlock() {
 				m_lock.unlock();
 			}
+			//!< @brief Increment the ref-counting
 			void inc() {
 				lock();
 				m_count++;
 				unlock();
 			}
+			//!< @brief Decrement the ref-counting
 			int64_t dec() {
 				int64_t val;
 				lock();
@@ -61,14 +69,17 @@ namespace esignal {
 				unlock();
 				return val;
 			}
+			//!< @brief Get number of connected
 			int64_t getCount() const {
 				return m_count;
 			}
+			//!< @brief Remove the data
 			void remove() {
 				lock();
 				m_data = nullptr;
 				unlock();
 			}
+			//!< @brief Get the recoreded data
 			TYPE* get() {
 				return m_data;
 			}
