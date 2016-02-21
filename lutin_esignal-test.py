@@ -29,9 +29,14 @@ def create(target, module_name):
 	my_module = module.Module(__file__, module_name, get_type())
 	my_module.add_src_file([
 		'test/main.cpp',
-		'test/test_signal_void.cpp',
-		'test/test_signal_arg.cpp',
-		'test/test_signal_args.cpp',
+		'test/test_signal_class_func.cpp',
+		'test/test_signal_recursive.cpp',
+		'test/test_signal_shared_ptr_func.cpp',
+		'test/test_signal_static_func.cpp',
+		'test/test_isignal_class_func.cpp',
+		'test/test_isignal_recursive.cpp',
+		'test/test_isignal_shared_ptr_func.cpp',
+		'test/test_isignal_static_func.cpp',
 		])
 	my_module.add_module_depend(['esignal', 'gtest', 'test-debug'])
 	return my_module
