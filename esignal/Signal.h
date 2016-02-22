@@ -163,8 +163,8 @@ namespace esignal {
 			 */
 			template<class classType, class Func, class... Arg>
 			Connection connect(classType* _class, Func _func, Arg... _arg) {
-				std::unique_ptr<Executor> executer(new Executor([=]( auto&&... cargs ){
-					(*_class.*_func)(cargs..., _arg... );
+				std::unique_ptr<Executor> executer(new Executor([=](const Args& ... _argBase){
+					(*_class.*_func)(_argBase..., _arg... );
 				}));
 				std::size_t uid = executer->m_uid;
 				m_executors.push_back(std::move(executer));
@@ -184,9 +184,9 @@ namespace esignal {
 					return;
 				}
 				TYPE* directPointer = obj2.get();
-				std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( auto&&... cargs ){
+				std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const Args& ... _argBase){
 					// TODO : Check if compilator does not use the shared ptr ...
-					(*directPointer.*_func)(cargs..., _args... );
+					(*directPointer.*_func)(_argBase..., _args... );
 				}));
 				m_executors.push_back(std::move(executer));
 			}

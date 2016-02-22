@@ -47,7 +47,7 @@ def create(target, module_name):
 		'esignal/Connection.h',
 		'esignal/details/Signal.hxx',
 		])
-	my_module.compile_version("c++", 2014)
+	my_module.compile_version("c++", 2011)
 	my_module.add_module_depend(['etk'])
 	my_module.add_path(tools.get_current_path(__file__))
 	my_module.compile_flags('c++', [

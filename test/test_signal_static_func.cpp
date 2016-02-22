@@ -166,25 +166,35 @@ TEST(test_signal_static_func, localFunctionMixedIntString) {
 	EXPECT_EQ(tmpRetString, "plTGY");
 }
 
-template<class Func, class... Arg>
-auto complete_args(Func _f, Arg... _arg) {
-	return [=]( auto&&... cargs ){
-	    return _f( cargs..., _arg... );
-	};
-}
-
-TEST(test_signal_static_func, localFunctionConstIntStringPolyArg) {
-	clear();
-	esignal::Signal<int32_t, std::string> signal;
-	EXPECT_EQ(signal.size(), 0);
-	EXPECT_EQ(signal.empty(), true);
-	esignal::Connection connection1 = signal.connect(complete_args(&callbackPolyargs, 'c', 12365));
-	EXPECT_EQ(signal.size(), 1);
-	EXPECT_EQ(signal.empty(), false);
-	signal.emit(246, "plop567");
-	EXPECT_EQ(tmpRetInt32, 246 + 12365);
-	EXPECT_EQ(tmpRetString, "plop567c");
-}
+#if __CPP_VERSION__ >= 2014
+	template<class Func, class... Arg>
+	auto complete_args(Func _f, Arg... _arg) {
+		return [=]( auto&&... cargs ){
+		    return _f( cargs..., _arg... );
+		};
+	}
+	TEST(test_signal_static_func, localFunctionConstIntStringPolyArg) {
+		clear();
+		esignal::Signal<int32_t, std::string> signal;
+		EXPECT_EQ(signal.size(), 0);
+		EXPECT_EQ(signal.empty(), true);
+		esignal::Connection connection1 = signal.connect(complete_args(&callbackPolyargs, 'c', 12365));
+		EXPECT_EQ(signal.size(), 1);
+		EXPECT_EQ(signal.empty(), false);
+		signal.emit(246, "plop567");
+		EXPECT_EQ(tmpRetInt32, 246 + 12365);
+		EXPECT_EQ(tmpRetString, "plop567c");
+	}
+#else
+	/*
+	template<class Func, class... ARGS_BASE, class... ARGS_CURR>
+	std::function<void(const ARGS_BASE&...)> complete_args(Func _f, ARGS_BASE... _arg) {
+		return [=](const ARGS_BASE&..., ARGS_CURR...){
+		    return _f( cargs..., _arg... );
+		};
+	}
+	*/
+#endif
 
 #if 0
 TEST(test_signal_static_func, localFunctionConstIntStringPolyArgWithJAJA) {
@@ -275,20 +285,21 @@ TEST(test_signal_static_func, connect_disconnect_multiple) {
 	EXPECT_EQ(signal.empty(), false);
 }
 
-
-static void callbackDisconnect(esignal::Connection* _connection) {
-	_connection->disconnect();
-}
-TEST(test_signal_static_func, disconnect_inCallback) {
-	esignal::Signal<> signal;
-	EXPECT_EQ(signal.size(), 0);
-	EXPECT_EQ(signal.empty(), true);
-	esignal::Connection connection1;
-	connection1 = signal.connect(complete_args(&callbackDisconnect, &connection1));
-	EXPECT_EQ(signal.size(), 1);
-	EXPECT_EQ(signal.empty(), false);
-	signal.emit();
-	EXPECT_EQ(signal.size(), 0);
-	EXPECT_EQ(signal.empty(), true);
-}
+#if __CPP_VERSION__ >= 2014
+	static void callbackDisconnect(esignal::Connection* _connection) {
+		_connection->disconnect();
+	}
+	TEST(test_signal_static_func, disconnect_inCallback) {
+		esignal::Signal<> signal;
+		EXPECT_EQ(signal.size(), 0);
+		EXPECT_EQ(signal.empty(), true);
+		esignal::Connection connection1;
+		connection1 = signal.connect(complete_args(&callbackDisconnect, &connection1));
+		EXPECT_EQ(signal.size(), 1);
+		EXPECT_EQ(signal.empty(), false);
+		signal.emit();
+		EXPECT_EQ(signal.size(), 0);
+		EXPECT_EQ(signal.empty(), true);
+	}
+#endif
 
