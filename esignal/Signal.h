@@ -72,7 +72,7 @@ namespace esignal {
 					 * @brief Emit the data on the observer.
 					 * @param[in] _values... Multiple value needed to send on observers
 					 */
-					virtual void emit(Args... _values) {
+					virtual void emit(const Args&... _values) {
 						if (m_removed == true) {
 							return;
 						}
@@ -82,6 +82,10 @@ namespace esignal {
 							m_removed = true;
 							std::cout << "LOL"<< std::endl;
 						}
+					}
+				public:
+					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj) {
+						return false;
 					}
 			};
 		protected:
@@ -110,7 +114,7 @@ namespace esignal {
 					 * @brief Emit the data on the observer.
 					 * @param[in] _values... Multiple value needed to send on observers
 					 */
-					virtual void emit(Args... _values) {
+					virtual void emit(const Args&... _values) {
 						// TODO: maybe an error if the object is not manage by the same thread.
 						std::shared_ptr<void> destObject = m_object.lock();
 						if (destObject == nullptr) {
@@ -126,6 +130,17 @@ namespace esignal {
 							Executor::m_removed = true;
 							std::cout << "LOL"<< std::endl;
 						}
+					}
+				public:
+					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj) {
+						std::shared_ptr<void> destObject = m_object.lock();
+						if (destObject == nullptr) {
+							return true;
+						}
+						if (destObject == _obj) {
+							return true;
+						}
+						return false;
 					}
 			};
 		public:
@@ -200,6 +215,19 @@ namespace esignal {
 				}
 				m_callInProgress--;
 			}
+		protected:
+			void removeIfPossible() {
+				auto it = m_executors.begin();
+				while (it != m_executors.end()) {
+					if (    *it == nullptr
+					     || (*it)->m_removed == true) {
+						it = m_executors.erase(it);
+						continue;
+					}
+					++it;
+				}
+			}
+		public:
 			/**
 			 * @brief Disconnect an observer of the signal.
 			 * @param[in] _uid Unique id of the signal.
@@ -208,11 +236,19 @@ namespace esignal {
 				for (size_t iii=0; iii < m_executors.size(); ++iii) {
 					if (m_executors[iii]->m_uid == _uid) {
 						m_executors[iii]->m_removed = true;
-						return;
+						break;
 					}
 				}
+				removeIfPossible();
 			}
-		public:
+			void disconnectShared(const std::shared_ptr<void>& _obj) {
+				for (size_t iii=0; iii < m_executors.size(); ++iii) {
+					if (m_executors[iii]->isSharedPtr(_obj) == true) {
+						m_executors[iii]->m_removed = true;
+					}
+				}
+				removeIfPossible();
+			}
 			/**
 			 * @brief Get the number of observers connected on the signal.
 			 * @return The count of observer.

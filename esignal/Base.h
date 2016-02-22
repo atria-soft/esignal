@@ -34,7 +34,7 @@ namespace esignal {
 			/**
 			 * @brief get name of the signal
 			 */
-			virtual void disconnect(const std::shared_ptr<void>& _obj);
+			virtual void disconnectShared(const std::shared_ptr<void>& _obj);
 			virtual void disconnect(std::size_t _uid) = 0;
 			/**
 			 * @brief Get name of the signal.

@@ -41,8 +41,8 @@ namespace esignal {
 			 * @brief Remove binding on all event class.
 			 * @param[in] _sharedPtr sharedPtr to unlink (no type needed ...).
 			 */
-			void signalUnBindAll(const std::shared_ptr<void>& _sharedPtr);
-			void signalUnConnect(size_t _uid);
+			void signalDisconnect(const std::shared_ptr<void>& _sharedPtr);
+			void signalDisconnect(size_t _uid);
 	};
 }
 

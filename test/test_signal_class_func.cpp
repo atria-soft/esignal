@@ -1,0 +1,250 @@
+/**
+ * @author Edouard DUPIN
+ * 
+ * @copyright 2016, Edouard DUPIN, all right reserved
+ * 
+ * @license APACHE v2.0 (see license file)
+ */
+
+#define NAME "SingleArg"
+#include <gtest/gtest.h>
+#include <esignal/Signal.h>
+#include <esignal/Interface.h>
+#include <memory>
+#include <test-debug/debug.h>
+
+
+#undef __class__
+#define __class__ "test_signal_class_func"
+class testCallback {
+	public:
+		int32_t m_int32;
+		std::string m_string;
+		bool m_void;
+		testCallback() {
+			m_void = false;
+			m_int32 = 0;
+			m_string = "";
+		}
+		void callbackVoid(){
+			m_void = true;
+		}
+		void callbackInt(int32_t _a){
+			m_int32 = _a;
+		}
+		void callbackConstInt(const int32_t& _a){
+			m_int32 = _a;
+		}
+		void callbackString(std::string _b){
+			m_string = _b;
+		}
+		void callbackConstString(const std::string& _b){
+			m_string = _b;
+		}
+		void callbackIntString(int32_t _a, std::string _b){
+			m_int32 = _a;
+			m_string = _b;
+		}
+		void callbackConstIntString(const int32_t& _a, const std::string& _b){
+			m_int32 = _a;
+			m_string = _b;
+		}
+		void callbackMixedIntString(int32_t _a, const std::string& _b){
+			m_int32 = _a;
+			m_string = _b;
+		}
+		void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+			m_int32 = _a + _int;
+			m_string = _b + _char;
+		}
+		void callbackDisconnect(esignal::Connection* _connection) {
+			_connection->disconnect();
+		}
+};
+
+TEST(test_signal_class_func, localFunctionVoid) {
+	testCallback localClass;
+	esignal::Signal<> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackVoid);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit();
+	EXPECT_EQ(localClass.m_void, true);
+}
+
+TEST(test_signal_class_func, localFunctionInt32) {
+	testCallback localClass;
+	esignal::Signal<int32_t> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(12345);
+	EXPECT_EQ(localClass.m_int32, 12345);
+}
+
+TEST(test_signal_class_func, localFunctionConstInt32) {
+	testCallback localClass;
+	esignal::Signal<int32_t> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackConstInt);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(34567);
+	EXPECT_EQ(localClass.m_int32, 34567);
+}
+
+TEST(test_signal_class_func, localFunctionString) {
+	testCallback localClass;
+	esignal::Signal<std::string> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackString);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit("plop");
+	EXPECT_EQ(localClass.m_string, "plop");
+}
+
+TEST(test_signal_class_func, localFunctionConstString) {
+	testCallback localClass;
+	esignal::Signal<std::string> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackConstString);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit("plop1234");
+	EXPECT_EQ(localClass.m_string, "plop1234");
+}
+
+TEST(test_signal_class_func, localFunctionIntString) {
+	testCallback localClass;
+	esignal::Signal<int32_t, std::string> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackIntString);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(23456, "plop2");
+	EXPECT_EQ(localClass.m_int32, 23456);
+	EXPECT_EQ(localClass.m_string, "plop2");
+}
+
+TEST(test_signal_class_func, localFunctionConstIntString) {
+	testCallback localClass;
+	esignal::Signal<int32_t, std::string> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackConstIntString);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(246, "plop567");
+	EXPECT_EQ(localClass.m_int32, 246);
+	EXPECT_EQ(localClass.m_string, "plop567");
+}
+
+TEST(test_signal_class_func, localFunctionMixedIntString) {
+	testCallback localClass;
+	esignal::Signal<int32_t, std::string> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackMixedIntString);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(765, "plTGY");
+	EXPECT_EQ(localClass.m_int32, 765);
+	EXPECT_EQ(localClass.m_string, "plTGY");
+}
+
+TEST(test_signal_class_func, localFunctionConstIntStringPolyArg) {
+	testCallback localClass;
+	esignal::Signal<int32_t, std::string> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackPolyargs, 'c', 12365);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(246, "plop567");
+	EXPECT_EQ(localClass.m_int32, 246 + 12365);
+	EXPECT_EQ(localClass.m_string, "plop567c");
+}
+
+
+TEST(test_signal_class_func, disconnect) {
+	testCallback localClass;
+	esignal::Signal<int32_t> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit(12345);
+	EXPECT_EQ(localClass.m_int32, 12345);
+	connection1.disconnect();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+}
+
+
+TEST(test_signal_class_func, connect_disconnect_multiple) {
+	testCallback localClass;
+	esignal::Signal<int32_t> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	esignal::Connection connection2 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 2);
+	EXPECT_EQ(signal.empty(), false);
+	esignal::Connection connection3 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 3);
+	EXPECT_EQ(signal.empty(), false);
+	esignal::Connection connection4 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 4);
+	EXPECT_EQ(signal.empty(), false);
+	connection1.disconnect();
+	EXPECT_EQ(signal.size(), 3);
+	EXPECT_EQ(signal.empty(), false);
+	connection2.disconnect();
+	EXPECT_EQ(signal.size(), 2);
+	EXPECT_EQ(signal.empty(), false);
+	connection3.disconnect();
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	connection4.disconnect();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	connection1.disconnect();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection5;
+	connection5.disconnect();
+	connection5 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	connection5 = signal.connect(&localClass, &testCallback::callbackInt);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+}
+
+
+TEST(test_signal_class_func, disconnect_inCallback) {
+	testCallback localClass;
+	esignal::Signal<> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1;
+	connection1 = signal.connect(&localClass, &testCallback::callbackDisconnect, &connection1);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+}
+

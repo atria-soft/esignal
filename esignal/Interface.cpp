@@ -50,7 +50,7 @@ std::vector<std::string> esignal::Interface::signalGetAll() const {
 	return out;
 }
 
-void esignal::Interface::signalUnBindAll(const std::shared_ptr<void>& _object) {
+void esignal::Interface::signalDisconnect(const std::shared_ptr<void>& _object) {
 	if (_object == nullptr) {
 		ESIGNAL_ERROR("Input ERROR nullptr pointer Object ...");
 		return;
@@ -59,11 +59,11 @@ void esignal::Interface::signalUnBindAll(const std::shared_ptr<void>& _object) {
 		if (it == nullptr) {
 			continue;
 		}
-		it->disconnect(_object);
+		it->disconnectShared(_object);
 	}
 }
 
-void esignal::Interface::signalUnConnect(size_t _uid) {
+void esignal::Interface::signalDisconnect(size_t _uid) {
 	for(auto &it : m_list) {
 		if (it == nullptr) {
 			continue;

@@ -38,7 +38,7 @@ std::ostream& esignal::operator <<(std::ostream& _os, const esignal::Base& _obj)
 	return _os;
 }
 
-void esignal::Base::disconnect(const std::shared_ptr<void>& _obj) {
+void esignal::Base::disconnectShared(const std::shared_ptr<void>& _obj) {
 	
 }
 

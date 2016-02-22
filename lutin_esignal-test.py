@@ -33,10 +33,7 @@ def create(target, module_name):
 		'test/test_signal_recursive.cpp',
 		'test/test_signal_shared_ptr_func.cpp',
 		'test/test_signal_static_func.cpp',
-		'test/test_isignal_class_func.cpp',
-		'test/test_isignal_recursive.cpp',
-		'test/test_isignal_shared_ptr_func.cpp',
-		'test/test_isignal_static_func.cpp',
+		'test/test_isignal.cpp'
 		])
 	my_module.add_module_depend(['esignal', 'gtest', 'test-debug'])
 	return my_module

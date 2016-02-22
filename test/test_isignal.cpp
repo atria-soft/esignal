@@ -15,6 +15,6 @@
 
 
 #undef __class__
-#define __class__ "test_isignal_static_func"
+#define __class__ "test_isignal"
 
 
