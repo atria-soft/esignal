@@ -24,18 +24,15 @@ namespace esignal {
 	 * @brief Basic signal base
 	 * @param[in] Args... Argument of the signal
 	 */
-	template<class... Args>
+	template<class... T_ARGS>
 	class Signal : public esignal::Base {
 		public:
-			using Observer = std::function<void(const Args&...)>; //!< Define an Observer: function pointer
+			using Observer = std::function<void(const T_ARGS&...)>; //!< Define an Observer: function pointer
 		protected:
 			int32_t m_callInProgress; //!< know if we are in a recursive loop
 		public:
 			//! @brief Basic constructor
-			Signal():
-			  m_callInProgress(0) {
-				
-			}
+			Signal();
 			//! @brief Copy constructor (REMOVED)
 			Signal(const Signal&) = delete;
 			//! @brief Copy operator (REMOVED)
@@ -59,12 +56,7 @@ namespace esignal {
 					 * @brief Basic constructor.
 					 * @param[in] _observer Observer to call.
 					 */
-					Executor(Observer&& _observer):
-					  m_removed(false),
-					  m_uid(0) {
-						m_uid = s_uid++;
-						m_observer = std::move(_observer);
-					}
+					Executor(Observer&& _observer);
 					//! @brief virtual destructor.
 					virtual ~Executor() = default;
 				public:
@@ -72,28 +64,16 @@ namespace esignal {
 					 * @brief Emit the data on the observer.
 					 * @param[in] _values... Multiple value needed to send on observers
 					 */
-					virtual void emit(const Args&... _values) {
-						if (m_removed == true) {
-							return;
-						}
-						try {
-							m_observer(_values...);
-						} catch(...) {
-							m_removed = true;
-							std::cout << "LOL"<< std::endl;
-						}
-					}
+					virtual void emit(const T_ARGS&... _values);
 				public:
-					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj) {
-						return false;
-					}
+					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj);
 			};
 		protected:
 			std::vector<std::unique_ptr<Executor>> m_executors; //!< List of all executors.
 		private:
 			/**
 			 * @brief Executor specific to the Shared_ptr caller that does not want to worry about the removing of the signal.
-			 * @param[in] Args... Argument of the signal
+			 * @param[in] T_ARGS... Argument of the signal
 			 */
 			class ExecutorShared : public Executor {
 				protected:
@@ -104,44 +84,15 @@ namespace esignal {
 					 * @param[in] _object A weak reference of the object.
 					 * @param[in] _observer Observer to call.
 					 */
-					ExecutorShared(std::weak_ptr<void> _object, Observer&& _observer) :
-					  Executor(std::move(_observer)),
-					  m_object(_object) {
-						
-					}
+					ExecutorShared(std::weak_ptr<void> _object, Observer&& _observer);
 				public:
 					/**
 					 * @brief Emit the data on the observer.
 					 * @param[in] _values... Multiple value needed to send on observers
 					 */
-					virtual void emit(const Args&... _values) {
-						// TODO: maybe an error if the object is not manage by the same thread.
-						std::shared_ptr<void> destObject = m_object.lock();
-						if (destObject == nullptr) {
-							Executor::m_removed = true;
-							return;
-						}
-						if (Executor::m_removed == true) {
-							return;
-						}
-						try {
-							Executor::m_observer(_values...);
-						} catch(...) {
-							Executor::m_removed = true;
-							std::cout << "LOL"<< std::endl;
-						}
-					}
+					virtual void emit(const T_ARGS&... _values);
 				public:
-					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj) {
-						std::shared_ptr<void> destObject = m_object.lock();
-						if (destObject == nullptr) {
-							return true;
-						}
-						if (destObject == _obj) {
-							return true;
-						}
-						return false;
-					}
+					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj);
 			};
 		public:
 			/**
@@ -163,7 +114,7 @@ namespace esignal {
 			 */
 			template<class classType, class Func, class... Arg>
 			Connection connect(classType* _class, Func _func, Arg... _arg) {
-				std::unique_ptr<Executor> executer(new Executor([=](const Args& ... _argBase){
+				std::unique_ptr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
 					(*_class.*_func)(_argBase..., _arg... );
 				}));
 				std::size_t uid = executer->m_uid;
@@ -177,14 +128,14 @@ namespace esignal {
 			 * @param[in] _arg Argument optinnal the user want to add.
 			 */
 			template<class classType, class TYPE, typename... Arg>
-			void connect(const std::shared_ptr<classType>& _class, void (TYPE::*_func)(const Args&..., Arg...), Arg... _args) {
+			void connect(const std::shared_ptr<classType>& _class, void (TYPE::*_func)(const T_ARGS&..., Arg...), Arg... _args) {
 				std::shared_ptr<TYPE> obj2 = std::dynamic_pointer_cast<TYPE>(_class);
 				if (obj2 == nullptr) {
 					ESIGNAL_ERROR("Can not bind signal ...");
 					return;
 				}
 				TYPE* directPointer = obj2.get();
-				std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const Args& ... _argBase){
+				std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const T_ARGS& ... _argBase){
 					// TODO : Check if compilator does not use the shared ptr ...
 					(*directPointer.*_func)(_argBase..., _args... );
 				}));
@@ -195,81 +146,31 @@ namespace esignal {
 			 * @brief Emit data on the signal.
 			 * @param[in] _args Argument data to emit.
 			 */
-			template< class... CallArgs>
-			void emit(CallArgs&&... _args) {
-				// TODO : Add protection ... but how ...
-				m_callInProgress++;
-				for (size_t iii=0; iii < m_executors.size(); ++iii) {
-					m_executors[iii]->emit(_args...);
-				}
-				if (m_callInProgress == 1) {
-					auto it = m_executors.begin();
-					while (it != m_executors.end()) {
-						if (    *it == nullptr
-						     || (*it)->m_removed == true) {
-							it = m_executors.erase(it);
-							continue;
-						}
-						++it;
-					}
-				}
-				m_callInProgress--;
-			}
+			void emit(const T_ARGS&... _args);
 		protected:
-			void removeIfPossible() {
-				auto it = m_executors.begin();
-				while (it != m_executors.end()) {
-					if (    *it == nullptr
-					     || (*it)->m_removed == true) {
-						it = m_executors.erase(it);
-						continue;
-					}
-					++it;
-				}
-			}
+			void removeIfPossible();
 		public:
 			/**
 			 * @brief Disconnect an observer of the signal.
 			 * @param[in] _uid Unique id of the signal.
 			 */
-			void disconnect(std::size_t _uid) {
-				for (size_t iii=0; iii < m_executors.size(); ++iii) {
-					if (m_executors[iii]->m_uid == _uid) {
-						m_executors[iii]->m_removed = true;
-						break;
-					}
-				}
-				removeIfPossible();
-			}
-			void disconnectShared(const std::shared_ptr<void>& _obj) {
-				for (size_t iii=0; iii < m_executors.size(); ++iii) {
-					if (m_executors[iii]->isSharedPtr(_obj) == true) {
-						m_executors[iii]->m_removed = true;
-					}
-				}
-				removeIfPossible();
-			}
+			void disconnect(std::size_t _uid);
+			void disconnectShared(const std::shared_ptr<void>& _obj);
 			/**
 			 * @brief Get the number of observers connected on the signal.
 			 * @return The count of observer.
 			 */
-			size_t size() const {
-				return m_executors.size();
-			}
+			size_t size() const;
 			/**
 			 * @brief Check if we have a connected observers.
 			 * @return true More than one observers.
 			 * @return false No observers.
 			 */
-			bool empty() const {
-				return m_executors.empty();
-			}
+			bool empty() const;
 			/**
 			 * @brief Clear all connectd observers.
 			 */
-			void clear() {
-				m_executors.clear();
-			}
+			void clear();
 	};
 }
 

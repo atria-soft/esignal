@@ -15,9 +15,8 @@ size_t esignal::s_uid = 0;
 
 #undef __class__
 #define __class__ "Signal<void>"
-#if 0
 // void generic signal
-//template class esignal::Signal<void>;
+template class esignal::Signal<>;
 // std generic signal
 template class esignal::Signal<bool>;
 template class esignal::Signal<std::string>;
@@ -52,5 +51,3 @@ template class esignal::Signal<etk::Color<unsigned char,4>>;
 template class esignal::Signal<etk::Color<unsigned char,3>>;
 template class esignal::Signal<etk::Color<float,4>>;
 template class esignal::Signal<etk::Color<float,3>>;
-
-#endif
