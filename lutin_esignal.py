@@ -53,5 +53,6 @@ def create(target, module_name):
 	my_module.compile_flags('c++', [
 		"-DESIGNAL_VERSION=\"\\\"" + tools.version_to_string(get_version()) + "\\\"\""
 		])
+	my_module.add_tools(['esignal-test'])
 	return my_module
 
