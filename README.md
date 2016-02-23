@@ -1,5 +1,5 @@
-esvg
-=====
+e-signal
+========
 
 `esignal` is c++ svg image parser and renderer.
 

@@ -21,7 +21,7 @@ addons:
 matrix:
   include:
     - os: linux
-      env: CONF=release BUILDER=gcc TARGET=Linux TAG=Linux COMPILATOR_OPTION="--compilator-version=4.9" GCOV=--gcov
+      env: CONF=debug BUILDER=gcc TARGET=Linux TAG=Linux COMPILATOR_OPTION="--compilator-version=4.9" GCOV=--gcov
       compiler: gcc
     - os: linux
       env: CONF=debug BUILDER=clang TARGET=Linux
