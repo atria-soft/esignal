@@ -8,12 +8,9 @@
 #pragma once
 
 #include <esignal/Signal.h>
-#include <functional>
-#include <memory>
 
 #undef __class__
 #define __class__ "Signal<T_ARGS>"
-
 
 template<typename... T_ARGS>
 esignal::Signal<T_ARGS...>::Signal():

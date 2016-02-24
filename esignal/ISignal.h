@@ -33,25 +33,13 @@ namespace esignal {
 			 */
 			ISignal(esignal::Interface& _signalInterfaceLink,
 			        const std::string& _name,
-			        const std::string& _description = ""):
-			  m_signalInterfaceLink(_signalInterfaceLink),
-			  m_name(_name),
-			  m_description(_description) {
-				// add a reference on the current signal ...
-				m_signalInterfaceLink.signalAdd(this);
-			}
+			        const std::string& _description = "");
 			/**
 			 * @brief Destructor.
 			 */
-			virtual ~ISignal() {
-				m_signalInterfaceLink.signalRemove(this);
-			}
-			virtual const std::string& getName() const {
-				return m_name;
-			}
-			virtual const std::string& getDescription() const {
-				return m_description;
-			}
+			virtual ~ISignal();
+			virtual const std::string& getName() const;
+			virtual const std::string& getDescription() const;
 	};
 }
 

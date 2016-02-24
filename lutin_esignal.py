@@ -32,9 +32,13 @@ def create(target, module_name):
 	my_module.add_extra_compile_flags()
 	my_module.add_src_file([
 		'esignal/debug.cpp',
+		'esignal/Connection.cpp',
 		'esignal/Interface.cpp',
 		'esignal/Base.cpp',
+		'esignal/details/LockSharedPtrRef.cpp',
+		'esignal/details/RefCount.cpp',
 		'esignal/details/Signal.cpp',
+		'esignal/details/ISignal.cpp',
 		])
 	my_module.add_header_file([
 		'esignal/debug.h',
@@ -46,6 +50,9 @@ def create(target, module_name):
 		'esignal/RefCount.h',
 		'esignal/Connection.h',
 		'esignal/details/Signal.hxx',
+		'esignal/details/ISignal.hxx',
+		'esignal/details/LockSharedPtrRef.hxx',
+		'esignal/details/RefCount.hxx',
 		])
 	my_module.compile_version("c++", 2011)
 	my_module.add_module_depend(['etk'])

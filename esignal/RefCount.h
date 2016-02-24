@@ -7,10 +7,6 @@
  */
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <esignal/debug.h>
-#include <esignal/Base.h>
 #include <utility>
 #include <mutex>
 
@@ -26,11 +22,7 @@ namespace esignal {
 			TYPE* m_data; //!< Pointer on the refconting data
 		public:
 			//!< generic constructor
-			RefCount(TYPE* _data) :
-			  m_count(0),
-			  m_data(_data) {
-				// nothing to do.
-			}
+			RefCount(TYPE* _data);
 			//! @brief Copy constructor (REMOVED)
 			RefCount(const RefCount&) = delete;
 			//! @brief Copy operator (REMOVED)
@@ -42,46 +34,21 @@ namespace esignal {
 			//! @brief Move operator (REMOVED)
 			RefCount& operator=(RefCount&& _obj) = delete;
 			//! @brief Destructor
-			~RefCount() {
-				m_data = nullptr;
-			}
+			~RefCount();
 		public:
 			//!< @brief Lock the interface
-			void lock() {
-				m_lock.lock();
-			}
+			void lock();
 			//!< @brief Unlock the interface
-			void unlock() {
-				m_lock.unlock();
-			}
+			void unlock();
 			//!< @brief Increment the ref-counting
-			void inc() {
-				lock();
-				m_count++;
-				unlock();
-			}
+			void inc();
 			//!< @brief Decrement the ref-counting
-			int64_t dec() {
-				int64_t val;
-				lock();
-				m_count--;
-				val = m_count;
-				unlock();
-				return val;
-			}
+			int64_t dec();
 			//!< @brief Get number of connected
-			int64_t getCount() const {
-				return m_count;
-			}
+			int64_t getCount() const;
 			//!< @brief Remove the data
-			void remove() {
-				lock();
-				m_data = nullptr;
-				unlock();
-			}
+			void remove();
 			//!< @brief Get the recoreded data
-			TYPE* get() {
-				return m_data;
-			}
+			TYPE* get();
 	};
 }

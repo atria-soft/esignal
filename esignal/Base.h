@@ -20,7 +20,7 @@
 namespace esignal {
 	class Base {
 		protected:
-			LockSharedPtrRef<Base> m_shared; //!< Reference counter on itself.
+			esignal::LockSharedPtrRef<esignal::Base> m_shared; //!< Reference counter on itself.
 			static size_t s_uid; //!< blobal id of the signal (STATIC)
 		public:
 			//! @brief Basic constructor:

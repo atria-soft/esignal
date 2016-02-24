@@ -66,6 +66,12 @@ namespace esignal {
 					 */
 					virtual void emit(const T_ARGS&... _values);
 				public:
+					/**
+					 * @brief check if the Executor is a managed by this shared_ptr
+					 * @param[in] _obj Object to check
+					 * @return true The Executor depend on this shared_ptr
+					 * @return false The Executor does not depend on this shared_ptr
+					 */
 					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj);
 			};
 		protected:
@@ -99,48 +105,28 @@ namespace esignal {
 			 * @brief Connect an observer on the signal.
 			 * @param[in] _observer Observer to call.
 			 */
-			template< class ObserverType >
-			Connection connect(ObserverType&& _observer ) {
-				std::unique_ptr<Executor> executer(new Executor(std::forward<ObserverType>(_observer)));
-				std::size_t uid = executer->m_uid;
-				m_executors.push_back(std::move(executer));
-				return Connection(Base::m_shared, uid);
-			}
+			template< class OBSERVER_TYPE >
+			esignal::Connection connect(OBSERVER_TYPE&& _observer);
 			/**
 			 * @brief Connect an function member on the signal.
 			 * @param[in] _class Object on whe we need to call.
 			 * @param[in] _func Function to call.
 			 * @param[in] _arg Argument optinnal the user want to add.
 			 */
-			template<class classType, class Func, class... Arg>
-			Connection connect(classType* _class, Func _func, Arg... _arg) {
-				std::unique_ptr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
-					(*_class.*_func)(_argBase..., _arg... );
-				}));
-				std::size_t uid = executer->m_uid;
-				m_executors.push_back(std::move(executer));
-				return Connection(Base::m_shared, uid);
-			}
+			template<class CLASS_TYPE, class FUNC_TYPE, class... FUNC_ARGS_TYPE>
+			esignal::Connection connect(CLASS_TYPE* _class,
+			                            FUNC_TYPE _func,
+			                            FUNC_ARGS_TYPE... _arg);
 			/**
 			 * @brief Connect an function member on the signal with the shared_ptr object.
 			 * @param[in] _class shared_ptr Object on whe we need to call ==> the object is get in keeped in weak_ptr.
 			 * @param[in] _func Function to call.
 			 * @param[in] _arg Argument optinnal the user want to add.
 			 */
-			template<class classType, class TYPE, typename... Arg>
-			void connect(const std::shared_ptr<classType>& _class, void (TYPE::*_func)(const T_ARGS&..., Arg...), Arg... _args) {
-				std::shared_ptr<TYPE> obj2 = std::dynamic_pointer_cast<TYPE>(_class);
-				if (obj2 == nullptr) {
-					ESIGNAL_ERROR("Can not bind signal ...");
-					return;
-				}
-				TYPE* directPointer = obj2.get();
-				std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const T_ARGS& ... _argBase){
-					// TODO : Check if compilator does not use the shared ptr ...
-					(*directPointer.*_func)(_argBase..., _args... );
-				}));
-				m_executors.push_back(std::move(executer));
-			}
+			template<class PARENT_CLASS_TYPE, class CLASS_TYPE, typename... FUNC_ARGS_TYPE>
+			void connect(const std::shared_ptr<PARENT_CLASS_TYPE>& _class,
+			             void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
+			             FUNC_ARGS_TYPE... _args);
 		public:
 			/**
 			 * @brief Emit data on the signal.
@@ -175,3 +161,42 @@ namespace esignal {
 }
 
 
+template<class... T_ARGS>
+template< class OBSERVER_TYPE >
+esignal::Connection esignal::Signal<T_ARGS...>::connect(OBSERVER_TYPE&& _observer ) {
+	std::unique_ptr<Executor> executer(new Executor(std::forward<OBSERVER_TYPE>(_observer)));
+	std::size_t uid = executer->m_uid;
+	m_executors.push_back(std::move(executer));
+	return Connection(Base::m_shared, uid);
+}
+
+template<class... T_ARGS>
+template<class CLASS_TYPE, class FUNC_TYPE, class... FUNC_ARGS_TYPE>
+esignal::Connection esignal::Signal<T_ARGS...>::connect(CLASS_TYPE* _class,
+                                                        FUNC_TYPE _func,
+                                                        FUNC_ARGS_TYPE... _arg) {
+	std::unique_ptr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
+		(*_class.*_func)(_argBase..., _arg... );
+	}));
+	std::size_t uid = executer->m_uid;
+	m_executors.push_back(std::move(executer));
+	return Connection(Base::m_shared, uid);
+}
+
+template<class... T_ARGS>
+template<class PARENT_CLASS_TYPE, class CLASS_TYPE, typename... FUNC_ARGS_TYPE>
+void esignal::Signal<T_ARGS...>::connect(const std::shared_ptr<PARENT_CLASS_TYPE>& _class,
+                                         void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
+                                         FUNC_ARGS_TYPE... _args) {
+	std::shared_ptr<CLASS_TYPE> obj2 = std::dynamic_pointer_cast<CLASS_TYPE>(_class);
+	if (obj2 == nullptr) {
+		ESIGNAL_ERROR("Can not bind signal ...");
+		return;
+	}
+	CLASS_TYPE* directPointer = obj2.get();
+	std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const T_ARGS& ... _argBase){
+		// TODO : Check if compilator does not use the shared ptr ...
+		(*directPointer.*_func)(_argBase..., _args... );
+	}));
+	m_executors.push_back(std::move(executer));
+}
