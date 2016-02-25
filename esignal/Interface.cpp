@@ -62,12 +62,3 @@ void esignal::Interface::signalDisconnect(const std::shared_ptr<void>& _object) 
 		it->disconnectShared(_object);
 	}
 }
-
-void esignal::Interface::signalDisconnect(size_t _uid) {
-	for(auto &it : m_list) {
-		if (it == nullptr) {
-			continue;
-		}
-		it->disconnect(_uid);
-	}
-}

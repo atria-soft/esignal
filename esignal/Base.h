@@ -19,12 +19,16 @@
 
 namespace esignal {
 	class Base {
+		public:
+			using ObserverConnection = std::function<void(size_t)>; //!< Define an Observer of the number of observer
 		protected:
 			esignal::LockSharedPtrRef<esignal::Base> m_shared; //!< Reference counter on itself.
-			static size_t s_uid; //!< blobal id of the signal (STATIC)
+			static size_t s_uid; //!< global id of the signal (STATIC)
+			static int64_t s_uidSignalEmit; //!< global id to emit counting
+			ObserverConnection m_connectionObserver;
 		public:
 			//! @brief Basic constructor:
-			Base();
+			Base(ObserverConnection _countObs = nullptr);
 			//! @brief Copy constructor:
 			Base(const Base&) = delete;
 			//! @brief Move constructor
@@ -34,7 +38,7 @@ namespace esignal {
 			/**
 			 * @brief get name of the signal
 			 */
-			virtual void disconnectShared(const std::shared_ptr<void>& _obj);
+			virtual void disconnectShared(const std::shared_ptr<void>& _obj) = 0;
 			virtual void disconnect(std::size_t _uid) = 0;
 			/**
 			 * @brief Get name of the signal.
@@ -48,5 +52,7 @@ namespace esignal {
 			virtual const std::string& getDescription() const;
 	};
 	std::ostream& operator <<(std::ostream& _os, const esignal::Base& _obj);
-	const char* logIndent(int32_t _iii);
+	#ifdef DEBUG
+		const char* logIndent(int32_t _iii);
+	#endif
 }

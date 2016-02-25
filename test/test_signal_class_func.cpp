@@ -22,45 +22,116 @@ class testCallback {
 		std::string m_string;
 		bool m_void;
 		testCallback() {
+			m_emptyFunctor = nullptr;
 			m_void = false;
 			m_int32 = 0;
 			m_string = "";
 		}
+		using stupidFunctor = std::function<void()>;
+		
+		stupidFunctor m_emptyFunctor;
+		
 		void callbackVoid(){
+			TEST_VERBOSE("event void");
 			m_void = true;
 		}
 		void callbackInt(int32_t _a){
+			TEST_VERBOSE("event a=" << _a);
 			m_int32 = _a;
 		}
 		void callbackConstInt(const int32_t& _a){
+			TEST_VERBOSE("event a=" << _a);
 			m_int32 = _a;
 		}
 		void callbackString(std::string _b){
+			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
 		void callbackConstString(const std::string& _b){
+			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
 		void callbackIntString(int32_t _a, std::string _b){
+			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
 		void callbackConstIntString(const int32_t& _a, const std::string& _b){
+			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
 		void callbackMixedIntString(int32_t _a, const std::string& _b){
+			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
 		void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+			TEST_VERBOSE("event a=" << _a << " b=" << _b << " _char=" << _char << " _int=" << _int);
 			m_int32 = _a + _int;
 			m_string = _b + _char;
 		}
 		void callbackDisconnect(esignal::Connection* _connection) {
+			TEST_VERBOSE("Disconnect ...");
 			_connection->disconnect();
 		}
 };
+
+TEST(test_signal_class_func, localLog) {
+	esignal::Signal<> signal;
+	TEST_INFO("dtrem log : " << signal);
+}
+
+TEST(test_signal_class_func, force_clear_all_connection) {
+	testCallback localClass;
+	esignal::Signal<> signal;
+	signal.clear();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackVoid);
+	EXPECT_EQ(signal.size(), 1);
+	EXPECT_EQ(signal.empty(), false);
+	signal.clear();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	connection1.disconnect();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.emit();
+	EXPECT_EQ(localClass.m_void, false);
+}
+
+TEST(test_signal_class_func, localbasicNameDesc) {
+	esignal::Signal<> signal;
+	EXPECT_EQ(signal.getName(), "");
+	EXPECT_EQ(signal.getDescription(), "");
+}
+
+TEST(test_signal_class_func, localNullClass) {
+	testCallback* localClass = nullptr;
+	esignal::Signal<> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(localClass, &testCallback::callbackVoid);
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.emit();
+}
+
+/*
+BAD case ...
+TEST(test_signal_class_func, localNullFunc) {
+	testCallback localClass;
+	esignal::Signal<> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::m_emptyFunctor);
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.emit();
+	EXPECT_EQ(localClass.m_void, false);
+}
+*/
 
 TEST(test_signal_class_func, localFunctionVoid) {
 	testCallback localClass;

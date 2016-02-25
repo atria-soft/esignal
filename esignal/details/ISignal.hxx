@@ -10,8 +10,8 @@
 #include <esignal/ISignal.h>
 #include <esignal/details/Signal.hxx>
 
-template<class... Args>
-esignal::ISignal<Args...>::ISignal(esignal::Interface& _signalInterfaceLink,
+template<class... T_ARGS>
+esignal::ISignal<T_ARGS...>::ISignal(esignal::Interface& _signalInterfaceLink,
         const std::string& _name,
         const std::string& _description):
   m_signalInterfaceLink(_signalInterfaceLink),
@@ -21,18 +21,18 @@ esignal::ISignal<Args...>::ISignal(esignal::Interface& _signalInterfaceLink,
 	m_signalInterfaceLink.signalAdd(this);
 }
 
-template<class... Args>
-esignal::ISignal<Args...>::~ISignal() {
+template<class... T_ARGS>
+esignal::ISignal<T_ARGS...>::~ISignal() {
 	m_signalInterfaceLink.signalRemove(this);
 }
 
-template<class... Args>
-const std::string& esignal::ISignal<Args...>::getName() const {
+template<class... T_ARGS>
+const std::string& esignal::ISignal<T_ARGS...>::getName() const {
 	return m_name;
 }
 
-template<class... Args>
-const std::string& esignal::ISignal<Args...>::getDescription() const {
+template<class... T_ARGS>
+const std::string& esignal::ISignal<T_ARGS...>::getDescription() const {
 	return m_description;
 }
 

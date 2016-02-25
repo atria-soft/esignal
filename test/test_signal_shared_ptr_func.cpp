@@ -22,6 +22,7 @@ class testCallbackShared : public std::enable_shared_from_this<testCallbackShare
 		std::string m_string;
 		bool m_void;
 		testCallbackShared() {
+			m_emptyFunctor = nullptr;
 			m_void = false;
 			m_int32 = 0;
 			m_string = "";
@@ -29,34 +30,49 @@ class testCallbackShared : public std::enable_shared_from_this<testCallbackShare
 		virtual ~testCallbackShared() {
 			
 		}
+		//using stupidFunctor = std::function<void()>;
+		
+		using stupidFunctor = void();
+		
+		stupidFunctor* m_emptyFunctor;
+		
 		void callbackVoid() {
+			TEST_VERBOSE("event void");
 			m_void = true;
 		}
 		void callbackInt(int32_t _a) {
+			TEST_VERBOSE("event a=" << _a);
 			m_int32 = _a;
 		}
 		void callbackConstInt(const int32_t& _a) {
+			TEST_VERBOSE("event a=" << _a);
 			m_int32 = _a;
 		}
 		void callbackString(std::string _b) {
+			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
 		void callbackConstString(const std::string& _b) {
+			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
 		void callbackIntString(int32_t _a, std::string _b) {
+			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
 		void callbackConstIntString(const int32_t& _a, const std::string& _b) {
+			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
 		void callbackMixedIntString(int32_t _a, const std::string& _b) {
+			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
 		void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+			TEST_VERBOSE("event a=" << _a << " b=" << _b << " _char=" << _char << " _int=" << _int);
 			m_int32 = _a + _int;
 			m_string = _b + _char;
 		}
@@ -66,6 +82,34 @@ class testCallbackShared : public std::enable_shared_from_this<testCallbackShare
 };
 
 
+void removeObserver(size_t _count) {
+	TEST_VERBOSE("new count connected=" << _count);
+}
+
+TEST(test_signal_shared_ptr_func, localNullClass) {
+	std::shared_ptr<testCallbackShared> localClass;
+	esignal::Signal<> signal(&removeObserver);
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.connect(localClass, &testCallbackShared::callbackVoid);
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.emit();
+}
+/*
+Impossible case ...
+TEST(test_signal_shared_ptr_func, localNullFunction) {
+	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	esignal::Signal<> signal;
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.connect(localClass, localClass->m_emptyFunctor);
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.emit();
+	EXPECT_EQ(localClass->m_void, false);
+}
+*/
 TEST(test_signal_shared_ptr_func, localFunctionVoid) {
 	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
 	esignal::Signal<> signal;
@@ -273,3 +317,46 @@ TEST(test_signal_shared_ptr_func, disconnect_inCallback) {
 	EXPECT_EQ(signal.empty(), true);
 }
 
+static void callbackVoid() {
+	TEST_VERBOSE("call void");
+}
+
+TEST(test_signal_shared_ptr_func, localFunctionWeakTest) {
+	std::shared_ptr<testCallbackShared> localClassA = std::make_shared<testCallbackShared>();
+	std::shared_ptr<testCallbackShared> localClassB = std::make_shared<testCallbackShared>();
+	esignal::Signal<> signal(&removeObserver);
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	signal.connect(localClassA, &testCallbackShared::callbackVoid);
+	signal.connect(localClassB, &testCallbackShared::callbackVoid);
+	esignal::Connection ccc1 = signal.connect(&callbackVoid);
+	esignal::Connection ccc2 = signal.connect(&callbackVoid);
+	EXPECT_EQ(signal.size(), 4);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit();
+	EXPECT_EQ(signal.size(), 4);
+	EXPECT_EQ(signal.empty(), false);
+	localClassB.reset();
+	EXPECT_EQ(signal.size(), 4);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit();
+	EXPECT_EQ(signal.size(), 3);
+	EXPECT_EQ(signal.empty(), false);
+	localClassB = std::make_shared<testCallbackShared>();
+	signal.connect(localClassB, &testCallbackShared::callbackVoid);
+	EXPECT_EQ(signal.size(), 4);
+	EXPECT_EQ(signal.empty(), false);
+	signal.emit();
+	EXPECT_EQ(signal.size(), 4);
+	EXPECT_EQ(signal.empty(), false);
+	localClassA.reset();
+	signal.disconnectShared(localClassB);
+	signal.disconnectShared(localClassA);
+	EXPECT_EQ(signal.size(), 2);
+	EXPECT_EQ(signal.empty(), false);
+	ccc1.disconnect();
+	ccc2.disconnect();
+	EXPECT_EQ(signal.size(), 0);
+	EXPECT_EQ(signal.empty(), true);
+	
+}

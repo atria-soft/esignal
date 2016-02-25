@@ -22,7 +22,9 @@ static int32_t tmpRetInt32 = 0;
 
 static auto callbackInt = [](int32_t _a){
 	tmpRetInt32 = _a;
+	TEST_VERBOSE("event a=" << _a);
 	if (tmpRetInt32 != 0) {
+		TEST_VERBOSE("emit a=" << _a-1);
 		signalll->emit(_a - 1);
 	}
 };

@@ -28,41 +28,50 @@ static void clear() {
 }
 
 static void callbackVoid(){
+	TEST_VERBOSE("event void");
 	tmpRetVoid = true;
 };
 
 static void callbackInt(int32_t _a){
+	TEST_VERBOSE("event a=" << _a);
 	tmpRetInt32 = _a;
 };
 
 static void callbackConstInt(const int32_t& _a){
+	TEST_VERBOSE("event a=" << _a);
 	tmpRetInt32 = _a;
 };
 
 static void callbackString(std::string _b){
+	TEST_VERBOSE("event b=" << _b);
 	tmpRetString = _b;
 };
 
 static void callbackConstString(const std::string& _b){
+	TEST_VERBOSE("event b=" << _b);
 	tmpRetString = _b;
 };
 
 static void callbackIntString(int32_t _a, std::string _b){
+	TEST_VERBOSE("event a=" << _a << " b=" << _b);
 	tmpRetInt32 = _a;
 	tmpRetString = _b;
 };
 
 static void callbackConstIntString(const int32_t& _a, const std::string& _b){
+	TEST_VERBOSE("event a=" << _a << " b=" << _b);
 	tmpRetInt32 = _a;
 	tmpRetString = _b;
 };
 
 static void callbackMixedIntString(int32_t _a, const std::string& _b){
+	TEST_VERBOSE("event a=" << _a << " b=" << _b);
 	tmpRetInt32 = _a;
 	tmpRetString = _b;
 };
 
 static void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+	TEST_VERBOSE("event a=" << _a << " b=" << _b << " _char=" << _char << " _int=" << _int);
 	tmpRetInt32 = _a + _int;
 	tmpRetString = _b + _char;
 }

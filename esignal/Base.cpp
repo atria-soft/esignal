@@ -11,10 +11,12 @@
 #include <esignal/Interface.h>
 #include <esignal/Base.h>
 
-size_t esignal::Base::s_uid = 0;
+size_t esignal::Base::s_uid = 1;
+int64_t esignal::Base::s_uidSignalEmit = 1;
 
-esignal::Base::Base() :
-  m_shared(this) {
+esignal::Base::Base(ObserverConnection _countObs) :
+  m_shared(this),
+  m_connectionObserver(_countObs) {
 	
 }
 esignal::Base::~Base() {
@@ -38,14 +40,12 @@ std::ostream& esignal::operator <<(std::ostream& _os, const esignal::Base& _obj)
 	return _os;
 }
 
-void esignal::Base::disconnectShared(const std::shared_ptr<void>& _obj) {
-	
-}
-
-const char* esignal::logIndent(int32_t _iii) {
-	static const char g_val[] = "                    ";
-	if (_iii > 5) {
-		return g_val;
+#ifdef DEBUG
+	const char* esignal::logIndent(int32_t _iii) {
+		static const char g_val[] = "                                                            ";
+		if (_iii > 15) {
+			return g_val;
+		}
+		return g_val + (15-_iii)*4;
 	}
-	return g_val + (5-_iii)*4;
-}
+#endif

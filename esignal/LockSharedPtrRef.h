@@ -18,6 +18,9 @@ namespace esignal {
 	template<class TYPE>
 	class LockSharedPtrRef {
 		public:
+			// TODO : Remove data from refcounter ...==>
+			// esignal::RefCount* m_counter; //!< Access on the reference counter
+			// TYPE* m_data; //!< Pointer on the data
 			esignal::RefCount<TYPE>* m_counter; //!< Access on the reference counter
 		public:
 			/**
@@ -64,6 +67,11 @@ namespace esignal {
 			 * @return false The data has been removed
 			 */
 			bool isAlive();
+		private:
+			/**
+			 * @remove reference on the refcounter...
+			 */
+			void rmShared();
 	};
 }
 

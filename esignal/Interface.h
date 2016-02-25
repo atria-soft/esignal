@@ -42,7 +42,6 @@ namespace esignal {
 			 * @param[in] _sharedPtr sharedPtr to unlink (no type needed ...).
 			 */
 			void signalDisconnect(const std::shared_ptr<void>& _sharedPtr);
-			void signalDisconnect(size_t _uid);
 	};
 }
 
