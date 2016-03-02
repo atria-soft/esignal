@@ -26,8 +26,8 @@ class testISignal : public esignal::Interface {
 		size_t m_count;
 		testISignal():
 		  m_signalInt(this, &testISignal::changeCount, "int", "desc int"),
-		  m_signalString(*this, "string", "desc string"),
-		  m_signalFloat(*this, "float", "desc float") {
+		  m_signalString(this, "string", "desc string"),
+		  m_signalFloat(this, "float", "desc float") {
 			m_count = 0;
 		}
 		void changeCount(size_t _a) {

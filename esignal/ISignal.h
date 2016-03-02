@@ -21,7 +21,7 @@ namespace esignal {
 	template<class... T_ARGS>
 	class ISignal : public Signal<T_ARGS...> {
 		protected:
-			esignal::Interface& m_signalInterfaceLink; //!< interface of the signal manager.
+			esignal::Interface* m_signalInterfaceLink; //!< interface of the signal manager.
 			std::string m_name; //!< name of the signal.
 			std::string m_description; //!< description of the signal.
 		public:
@@ -36,10 +36,10 @@ namespace esignal {
 			ISignal(CLASS_TYPE* _signalInterfaceLink,
 			        FUNC_TYPE _func,
 			        const std::string& _name,
-			        const std::string& _description = "");
-			ISignal(esignal::Interface& _signalInterfaceLink,
+			        const std::string& _description);
+			ISignal(esignal::Interface* _signalInterfaceLink,
 			        const std::string& _name,
-			        const std::string& _description = "");
+			        const std::string& _description);
 			/**
 			 * @brief Destructor.
 			 */
@@ -56,10 +56,12 @@ esignal::ISignal<T_ARGS...>::ISignal(CLASS_TYPE* _class,
                                      const std::string& _name,
                                      const std::string& _description) :
   esignal::Signal<T_ARGS...>(_class, _func),
-  m_signalInterfaceLink(*_class),
+  m_signalInterfaceLink(_class),
   m_name(_name),
   m_description(_description) {
 	// add a reference on the current signal ...
-	m_signalInterfaceLink.signalAdd(this);
+	if (m_signalInterfaceLink != nullptr) {
+		m_signalInterfaceLink->signalAdd(this);
+	}
 }
 
