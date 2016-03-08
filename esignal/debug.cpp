@@ -9,6 +9,6 @@
 #include <esignal/debug.h>
 
 int32_t esignal::getLogId() {
-	static int32_t g_val = etk::log::registerInstance("esignal");
+	static int32_t g_val = elog::registerInstance("esignal");
 	return g_val;
 }

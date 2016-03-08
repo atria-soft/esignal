@@ -133,7 +133,6 @@ void esignal::Signal<T_ARGS...>::Executor::emit(const T_ARGS&... _values) {
 		m_observer(_values...);
 	} catch(...) {
 		m_removed = true;
-		std::cout << "LOL"<< std::endl;
 	}
 }
 
@@ -167,7 +166,6 @@ void esignal::Signal<T_ARGS...>::ExecutorShared::emit(const T_ARGS&... _values) 
 		Executor::m_observer(_values...);
 	} catch(...) {
 		Executor::m_removed = true;
-		std::cout << "LOL"<< std::endl;
 	}
 }
 

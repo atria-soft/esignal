@@ -7,12 +7,12 @@
  */
 #pragma once
 
-#include <etk/log.h>
+#include <elog/log.h>
 
 namespace esignal {
 	int32_t getLogId();
 };
-#define ESIGNAL_BASE(info,data) TK_LOG_BASE(esignal::getLogId(),info,data)
+#define ESIGNAL_BASE(info,data) ELOG_BASE(esignal::getLogId(),info,data)
 
 #define ESIGNAL_PRINT(data)         ESIGNAL_BASE(-1, data)
 #define ESIGNAL_CRITICAL(data)      ESIGNAL_BASE(1, data)
