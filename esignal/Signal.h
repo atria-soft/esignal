@@ -19,6 +19,9 @@
 #include <utility>
 #include <mutex>
 
+#undef __class__
+#define __class__ "Signal<T_ARGS>"
+
 namespace esignal {
 	/**
 	 * @brief Basic signal base
@@ -169,12 +172,14 @@ namespace esignal {
 template<class... T_ARGS>
 template< class OBSERVER_TYPE >
 esignal::Connection esignal::Signal<T_ARGS...>::connect(OBSERVER_TYPE&& _observer ) {
+	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (observer)");
 	std::unique_ptr<Executor> executer(new Executor(std::forward<OBSERVER_TYPE>(_observer)));
 	std::size_t uid = executer->m_uid;
 	m_executors.push_back(std::move(executer));
 	if (m_connectionObserver!=nullptr) {
 		m_connectionObserver(m_executors.size());
 	}
+	ESIGNAL_DEBUG("     '" << getName() << "' new count: " << m_executors.size());
 	return esignal::Connection(Base::m_shared, uid);
 }
 
@@ -183,8 +188,9 @@ template<class CLASS_TYPE, class FUNC_TYPE, class... FUNC_ARGS_TYPE>
 esignal::Connection esignal::Signal<T_ARGS...>::connect(CLASS_TYPE* _class,
                                                         FUNC_TYPE _func,
                                                         FUNC_ARGS_TYPE... _arg) {
+	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (reference)");
 	if (_class == nullptr) {
-		// ERROR
+		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
 		return esignal::Connection();
 	}
 	std::unique_ptr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
@@ -192,9 +198,10 @@ esignal::Connection esignal::Signal<T_ARGS...>::connect(CLASS_TYPE* _class,
 	}));
 	std::size_t uid = executer->m_uid;
 	m_executors.push_back(std::move(executer));
-	if (m_connectionObserver!=nullptr) {
+	if (m_connectionObserver != nullptr) {
 		m_connectionObserver(m_executors.size());
 	}
+	ESIGNAL_DEBUG("     '" << getName() << "' new count: " << m_executors.size());
 	return Connection(Base::m_shared, uid);
 }
 
@@ -203,13 +210,14 @@ template<class PARENT_CLASS_TYPE, class CLASS_TYPE, typename... FUNC_ARGS_TYPE>
 void esignal::Signal<T_ARGS...>::connect(const std::shared_ptr<PARENT_CLASS_TYPE>& _class,
                                          void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
                                          FUNC_ARGS_TYPE... _args) {
+	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (weak pointer)");
 	if (_class == nullptr) {
-		// ERROR
+		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
 		return;
 	}
 	std::shared_ptr<CLASS_TYPE> obj2 = std::dynamic_pointer_cast<CLASS_TYPE>(_class);
 	if (obj2 == nullptr) {
-		ESIGNAL_ERROR("Can not bind signal ...");
+		ESIGNAL_ERROR("Can not connect signal ...");
 		return;
 	}
 	CLASS_TYPE* directPointer = obj2.get();
@@ -221,6 +229,7 @@ void esignal::Signal<T_ARGS...>::connect(const std::shared_ptr<PARENT_CLASS_TYPE
 	if (m_connectionObserver!=nullptr) {
 		m_connectionObserver(m_executors.size());
 	}
+	ESIGNAL_DEBUG("     '" << getName() << "' new count: " << m_executors.size());
 }
 
 template<class... T_ARGS>
@@ -232,3 +241,5 @@ esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
 	// nothing to do
 }
 
+#undef __class__
+#define __class__ nullptr

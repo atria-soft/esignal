@@ -14,6 +14,9 @@
 #include <esignal/Signal.h>
 #include <esignal/Interface.h>
 
+#undef __class__
+#define __class__ "ISignal<T_ARGS>"
+
 namespace esignal {
 	/**
 	 * @brief Sigla same as @ref esignal::Signal withe a name and a description to manage a list of signals.
@@ -65,3 +68,6 @@ esignal::ISignal<T_ARGS...>::ISignal(CLASS_TYPE* _class,
 	}
 }
 
+
+#undef __class__
+#define __class__ nullptr
