@@ -24,7 +24,7 @@ namespace esignal {
 			/**
 			 * @brief Destructor.
 			 */
-			~Interface();
+			virtual ~Interface();
 			/**
 			 * @brief Register a parameter class pointer in the List of parameters
 			 * @note This class does not destroy the parameter pointer!!!
