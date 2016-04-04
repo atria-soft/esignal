@@ -12,36 +12,51 @@
 
 namespace esignal {
 	class Base;
-	class Interface {
-		friend class esignal::Base; // to register parameter in the list.
+	/**
+	 * @brief Interface data to collect the Signal list (for abstarction connection)
+	 */
+	class InterfaceData {
 		private:
 			std::vector<esignal::Base*> m_list;  //!< list of availlable Parameters
 		public:
 			/**
 			 * @brief Constructor.
 			 */
-			Interface();
+			InterfaceData();
 			/**
 			 * @brief Destructor.
 			 */
-			virtual ~Interface();
+			virtual ~InterfaceData();
 			/**
-			 * @brief Register a parameter class pointer in the List of parameters
+			 * @brief Register a signal class pointer in the List of signal list
 			 * @note This class does not destroy the parameter pointer!!!
 			 * @param[in] _pointerOnSignal Pointer on the signal that might be added.
 			 */
-			void signalAdd(esignal::Base* _pointerOnSignal);
-			void signalRemove(esignal::Base* _pointerOnSignal);
+			void add(esignal::Base* _pointerOnSignal);
+			/**
+			 * @brief Remove a signal class pointer in the List of signal list
+			 * @note This class does not destroy the parameter pointer!!!
+			 * @param[in] _pointerOnSignal Pointer on the signal that might be removed.
+			 */
+			void remove(esignal::Base* _pointerOnSignal);
 			/**
 			 * @brief Get All the signal list:
 			 * @return vector on all the signals names
 			 */
-			std::vector<std::string> signalGetAll() const;
+			std::vector<std::string> getAll() const;
 			/**
 			 * @brief Remove binding on all event class.
 			 * @param[in] _sharedPtr sharedPtr to unlink (no type needed ...).
 			 */
-			void signalDisconnect(const std::shared_ptr<void>& _sharedPtr);
+			void disconnect(const std::shared_ptr<void>& _sharedPtr);
+	};
+	/**
+	 * @brief Interface to collect the Signal list (for abstarction connection)
+	 * It create a simple "signal" member that permit to access at the signalproperties.
+	 */
+	class Interface {
+		public:
+			esignal::InterfaceData signal; //!< Interface to access at all signal properties...
 	};
 }
 

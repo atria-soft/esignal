@@ -18,6 +18,9 @@
 #include <esignal/LockSharedPtrRef.h>
 
 namespace esignal {
+	/**
+	 * @brief Base signal interface for esignal::Signal (permit to create abstract list of signals...)
+	 */
 	class Base {
 		public:
 			using ObserverConnection = std::function<void(size_t)>; //!< Define an Observer of the number of observer
@@ -25,7 +28,7 @@ namespace esignal {
 			esignal::LockSharedPtrRef<esignal::Base> m_shared; //!< Reference counter on itself.
 			static size_t s_uid; //!< global id of the signal (STATIC)
 			static int64_t s_uidSignalEmit; //!< global id to emit counting
-			ObserverConnection m_connectionObserver;
+			ObserverConnection m_connectionObserver; //!< propriétéry of the connection handle basic
 		public:
 			//! @brief Basic constructor:
 			Base(ObserverConnection _countObs = nullptr);
@@ -36,10 +39,15 @@ namespace esignal {
 			
 			virtual ~Base();
 			/**
-			 * @brief get name of the signal
+			 * @brief Disconnect the shared_ptr form the Signal
+			 * @param[in] _obj Link with the object to check
 			 */
 			virtual void disconnectShared(const std::shared_ptr<void>& _obj) = 0;
-			virtual void disconnect(std::size_t _uid) = 0;
+			/**
+			 * @brief Disconnect an observer of the signal.
+			 * @param[in] _uid Unique id of the signal connection.
+			 */
+			virtual void disconnect(size_t _uid) = 0;
 			/**
 			 * @brief Get name of the signal.
 			 * @return requested name.
@@ -51,6 +59,7 @@ namespace esignal {
 			 */
 			virtual const std::string& getDescription() const;
 	};
+	//! @not_in_doc
 	std::ostream& operator <<(std::ostream& _os, const esignal::Base& _obj);
 	#ifdef DEBUG
 		const char* logIndent(int32_t _iii);

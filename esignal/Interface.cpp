@@ -11,16 +11,16 @@
 #include <esignal/Interface.h>
 #include <esignal/Base.h>
 
-esignal::Interface::Interface() {
+esignal::InterfaceData::InterfaceData() {
 	
 }
 
-esignal::Interface::~Interface() {
+esignal::InterfaceData::~InterfaceData() {
 	m_list.clear();
 }
 
 // note this pointer is not allocated and not free at the end of the class
-void esignal::Interface::signalAdd(esignal::Base* _pointerOnSignal) {
+void esignal::InterfaceData::add(esignal::Base* _pointerOnSignal) {
 	if (_pointerOnSignal == nullptr) {
 		ESIGNAL_ERROR("Try to link a nullptr parameters");
 		return;
@@ -28,7 +28,7 @@ void esignal::Interface::signalAdd(esignal::Base* _pointerOnSignal) {
 	m_list.push_back(_pointerOnSignal);
 }
 
-void esignal::Interface::signalRemove(esignal::Base* _pointerOnSignal) {
+void esignal::InterfaceData::remove(esignal::Base* _pointerOnSignal) {
 	auto it = m_list.begin();
 	while (it != m_list.end()) {
 		if (    *it == nullptr
@@ -40,7 +40,7 @@ void esignal::Interface::signalRemove(esignal::Base* _pointerOnSignal) {
 	}
 }
 
-std::vector<std::string> esignal::Interface::signalGetAll() const {
+std::vector<std::string> esignal::InterfaceData::getAll() const {
 	std::vector<std::string> out;
 	for (auto &it : m_list) {
 		if(it != nullptr) {
@@ -50,7 +50,7 @@ std::vector<std::string> esignal::Interface::signalGetAll() const {
 	return out;
 }
 
-void esignal::Interface::signalDisconnect(const std::shared_ptr<void>& _object) {
+void esignal::InterfaceData::disconnect(const std::shared_ptr<void>& _object) {
 	if (_object == nullptr) {
 		ESIGNAL_ERROR("Input ERROR nullptr pointer Object ...");
 		return;
@@ -62,3 +62,5 @@ void esignal::Interface::signalDisconnect(const std::shared_ptr<void>& _object) 
 		it->disconnectShared(_object);
 	}
 }
+
+

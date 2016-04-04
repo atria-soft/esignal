@@ -91,7 +91,7 @@ void esignal::LockSharedPtrRef<TYPE>::removeData() {
 }
 
 template<class TYPE>
-void esignal::LockSharedPtrRef<TYPE>::disconnect(std::size_t _uid) {
+void esignal::LockSharedPtrRef<TYPE>::disconnect(size_t _uid) {
 	ESIGNAL_VERBOSE("LockSharedPtrRef disconnect [START] " << _uid);
 	if (m_counter == nullptr) {
 		ESIGNAL_VERBOSE("LockSharedPtrRef disconnect [STOP] No counter");

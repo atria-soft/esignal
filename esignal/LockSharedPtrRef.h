@@ -13,7 +13,7 @@ namespace esignal {
 	/**
 	 * @brief shared ptr that permeit to lock access of the internal data (it does not manage the allication and remove of the data).
 	 * @todo Change this with atomic_shared_ptr<> when availlable.
-	 * @input[in] TYPE Type of the internal data
+	 * @param TYPE Type of the internal data
 	 */
 	template<class TYPE>
 	class LockSharedPtrRef {
@@ -60,7 +60,7 @@ namespace esignal {
 			 * @brief Call disconnect on the parameter class with lock prevention
 			 * @param[in] _uid ID to dicsonnect on the sub element
 			 */
-			void disconnect(std::size_t _uid);
+			void disconnect(size_t _uid);
 			/**
 			 * @brief Check if the value is availlable
 			 * @return true The data is availlable

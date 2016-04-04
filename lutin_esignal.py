@@ -55,7 +55,10 @@ def create(target, module_name):
 		'esignal/details/RefCount.hxx',
 		])
 	my_module.compile_version("c++", 2011)
-	my_module.add_module_depend(['etk'])
+	my_module.add_module_depend([
+	    'etk',
+	    'ememory'
+	    ])
 	my_module.add_path(tools.get_current_path(__file__))
 	my_module.compile_flags('c++', [
 		"-DESIGNAL_VERSION=\"\\\"" + tools.version_to_string(get_version()) + "\\\"\""

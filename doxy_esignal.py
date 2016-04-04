@@ -10,9 +10,13 @@ def create(target, module_name):
 	my_module.set_title("esignal: Ewol signal interface")
 	my_module.set_website("http://atria-soft.github.io/" + module_name)
 	my_module.set_website_sources("http://github.com/atria-soft/" + module_name)
-	my_module.set_path(os.path.join(tools.get_current_path(__file__), module_name))
+	my_module.add_path([
+	    module_name,
+	    "doc"
+	    ])
 	my_module.add_module_depend([
-	    'etk'
+	    'etk',
+	    'ememory'
 	    ])
 	
 	return my_module

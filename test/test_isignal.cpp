@@ -103,25 +103,25 @@ TEST(test_isignal_counter, localbasicInterfaceGetListSignal) {
 	list.push_back("int");
 	list.push_back("string");
 	list.push_back("float");
-	EXPECT_EQ(localClass.signalGetAll(), list);
+	EXPECT_EQ(localClass.signal.getAll(), list);
 }
 
 TEST(test_isignal_counter, localbasicInterfaceDisconnectNullPtr) {
 	testISignal localClass;
-	localClass.signalDisconnect(nullptr);
+	localClass.signal.disconnect(nullptr);
 }
 
 TEST(test_isignal_counter, localbasicInterfaceDisconnectSharedPtr) {
 	testISignal localClass;
 	std::shared_ptr<testCallbackIShared> tmp = std::make_shared<testCallbackIShared>();
-	localClass.signalDisconnect(tmp);
+	localClass.signal.disconnect(tmp);
 	EXPECT_EQ(localClass.m_signalInt.size(), 0);
 	EXPECT_EQ(localClass.m_signalInt.empty(), true);
 	localClass.m_signalInt.connect(tmp, &testCallbackIShared::callbackConstInt);
 	EXPECT_EQ(localClass.m_signalInt.size(), 1);
 	EXPECT_EQ(localClass.m_signalInt.empty(), false);
 	localClass.m_signalInt.emit(34567);
-	localClass.signalDisconnect(tmp);
+	localClass.signal.disconnect(tmp);
 	EXPECT_EQ(localClass.m_signalInt.size(), 0);
 	EXPECT_EQ(localClass.m_signalInt.empty(), true);
 }

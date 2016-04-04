@@ -31,7 +31,7 @@ namespace esignal {
 			/**
 			 * @brief Create a signal with a specific type.
 			 * @param[in] _signalInterfaceLink reference on the signal lister.
-			 * @param[in] _countObs (optionnal) Local observer to know the count of connection on the signal.
+			 * @param[in] _func Local observer to know the count of connection on the signal.
 			 * @param[in] _name Static name of the signal.
 			 * @param[in] _description Description of the signal.
 			 */
@@ -40,6 +40,12 @@ namespace esignal {
 			        FUNC_TYPE _func,
 			        const std::string& _name,
 			        const std::string& _description);
+			/**
+			 * @brief Create a signal with a specific type.
+			 * @param[in] _signalInterfaceLink reference on the signal lister.
+			 * @param[in] _name Static name of the signal.
+			 * @param[in] _description Description of the signal.
+			 */
 			ISignal(esignal::Interface* _signalInterfaceLink,
 			        const std::string& _name,
 			        const std::string& _description);
@@ -47,8 +53,8 @@ namespace esignal {
 			 * @brief Destructor.
 			 */
 			virtual ~ISignal();
-			virtual const std::string& getName() const;
-			virtual const std::string& getDescription() const;
+			const std::string& getName() const override;
+			const std::string& getDescription() const override;
 	};
 }
 
@@ -64,7 +70,7 @@ esignal::ISignal<T_ARGS...>::ISignal(CLASS_TYPE* _class,
   m_description(_description) {
 	// add a reference on the current signal ...
 	if (m_signalInterfaceLink != nullptr) {
-		m_signalInterfaceLink->signalAdd(this);
+		m_signalInterfaceLink->signal.add(this);
 	}
 }
 

@@ -13,7 +13,7 @@ esignal::Connection::Connection():
 	
 }
 
-esignal::Connection::Connection(const esignal::LockSharedPtrRef<esignal::Base>& _ref, std::size_t _id):
+esignal::Connection::Connection(const esignal::LockSharedPtrRef<esignal::Base>& _ref, size_t _id):
   m_signalRefUnique(_ref),
   m_uid(_id) {
 	

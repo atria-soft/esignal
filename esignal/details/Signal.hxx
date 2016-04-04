@@ -9,17 +9,12 @@
 
 #include <esignal/Signal.h>
 
-#undef __class__
-#define __class__ "Signal<T_ARGS>"
-
 template<typename... T_ARGS>
 esignal::Signal<T_ARGS...>::Signal(ObserverConnection _countObs):
   esignal::Base(_countObs),
   m_callInProgress(0) {
 	// nothing to do
 }
-
-
 
 template<typename... T_ARGS>
 void esignal::Signal<T_ARGS...>::emit(const T_ARGS&... _args) {
@@ -78,7 +73,7 @@ void esignal::Signal<T_ARGS...>::removeIfPossible() {
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::disconnect(std::size_t _uid) {
+void esignal::Signal<T_ARGS...>::disconnect(size_t _uid) {
 	for (size_t iii=0; iii < m_executors.size(); ++iii) {
 		if (m_executors[iii]->m_uid == _uid) {
 			m_executors[iii]->m_removed = true;
@@ -181,8 +176,3 @@ bool esignal::Signal<T_ARGS...>::ExecutorShared::isSharedPtr(const std::shared_p
 	}
 	return false;
 }
-
-#undef __class__
-#define __class__ nullptr
-
-

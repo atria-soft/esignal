@@ -25,7 +25,7 @@ namespace esignal {
 			//! @brief Constructor (no link)
 			Connection();
 			//! @brief Constructor (link)
-			Connection(const esignal::LockSharedPtrRef<esignal::Base>& _ref, std::size_t _id);
+			Connection(const esignal::LockSharedPtrRef<esignal::Base>& _ref, size_t _id);
 			//! @brief Move Constructor
 			Connection(Connection&& _obj);
 			//! @brief Move operator.
@@ -46,7 +46,7 @@ namespace esignal {
 			bool isConnected();
 		private:
 			esignal::LockSharedPtrRef<esignal::Base> m_signalRefUnique; //!< reference on the Signal.
-			std::size_t m_uid; //!< UID of the current connection.
+			size_t m_uid; //!< UID of the current connection.
 	};
 }
 

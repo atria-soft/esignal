@@ -35,10 +35,15 @@ namespace esignal {
 			int32_t m_callInProgress; //!< know if we are in a recursive loop
 		public:
 			/**
-			 * @brief Basic constructor
+			 * @brief Basic constructor with connection observer
 			 * @param[in] _countObs Local observer to know the count of connection on the signal.
 			 */
 			Signal(ObserverConnection _countObs=nullptr);
+			/**
+			 * @brief Basic constructor with connection observer
+			 * @param[in] _class Class which is associated the function to call.
+			 * @param[in] _func Function to call when an observer has connected or disconnected.
+			 */
 			template<class CLASS_TYPE, class FUNC_TYPE>
 			Signal(CLASS_TYPE* _class, FUNC_TYPE _func);
 			//! @brief Copy constructor (REMOVED)
@@ -87,7 +92,6 @@ namespace esignal {
 		private:
 			/**
 			 * @brief Executor specific to the Shared_ptr caller that does not want to worry about the removing of the signal.
-			 * @param[in] T_ARGS... Argument of the signal
 			 */
 			class ExecutorShared : public Executor {
 				protected:
@@ -106,12 +110,13 @@ namespace esignal {
 					 */
 					virtual void emit(const T_ARGS&... _values);
 				public:
-					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj);
+					bool isSharedPtr(const std::shared_ptr<void>& _obj) override;
 			};
 		public:
 			/**
 			 * @brief Connect an observer on the signal.
 			 * @param[in] _observer Observer to call.
+			 * @return Connection handle (connection is removed if the handle is destroy)
 			 */
 			template< class OBSERVER_TYPE >
 			esignal::Connection connect(OBSERVER_TYPE&& _observer);
@@ -120,6 +125,7 @@ namespace esignal {
 			 * @param[in] _class Object on whe we need to call.
 			 * @param[in] _func Function to call.
 			 * @param[in] _arg Argument optinnal the user want to add.
+			 * @return Connection handle (connection is removed if the handle is destroy)
 			 */
 			template<class CLASS_TYPE, class FUNC_TYPE, class... FUNC_ARGS_TYPE>
 			esignal::Connection connect(CLASS_TYPE* _class,
@@ -129,7 +135,7 @@ namespace esignal {
 			 * @brief Connect an function member on the signal with the shared_ptr object.
 			 * @param[in] _class shared_ptr Object on whe we need to call ==> the object is get in keeped in weak_ptr.
 			 * @param[in] _func Function to call.
-			 * @param[in] _arg Argument optinnal the user want to add.
+			 * @param[in] _args Argument optinnal the user want to add.
 			 */
 			template<class PARENT_CLASS_TYPE, class CLASS_TYPE, typename... FUNC_ARGS_TYPE>
 			void connect(const std::shared_ptr<PARENT_CLASS_TYPE>& _class,
@@ -142,14 +148,22 @@ namespace esignal {
 			 */
 			void emit(const T_ARGS&... _args);
 		protected:
+			/**
+			 * @brief Remove observer in the internal list if the user has disconnected
+			 * @note Done only if it is the last caller ...
+			 */
 			void removeIfPossible();
 		public:
 			/**
 			 * @brief Disconnect an observer of the signal.
-			 * @param[in] _uid Unique id of the signal.
+			 * @param[in] _uid Unique id of the signal connection.
 			 */
-			void disconnect(std::size_t _uid);
-			void disconnectShared(const std::shared_ptr<void>& _obj);
+			void disconnect(size_t _uid) override;
+			/**
+			 * @brief Disconnect the shared_ptr form the Signal
+			 * @param[in] _obj Link with the object to check
+			 */
+			void disconnectShared(const std::shared_ptr<void>& _obj) override;
 			/**
 			 * @brief Get the number of observers connected on the signal.
 			 * @return The count of observer.
@@ -174,7 +188,7 @@ template< class OBSERVER_TYPE >
 esignal::Connection esignal::Signal<T_ARGS...>::connect(OBSERVER_TYPE&& _observer ) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (observer)");
 	std::unique_ptr<Executor> executer(new Executor(std::forward<OBSERVER_TYPE>(_observer)));
-	std::size_t uid = executer->m_uid;
+	size_t uid = executer->m_uid;
 	m_executors.push_back(std::move(executer));
 	if (m_connectionObserver!=nullptr) {
 		m_connectionObserver(m_executors.size());
@@ -196,7 +210,7 @@ esignal::Connection esignal::Signal<T_ARGS...>::connect(CLASS_TYPE* _class,
 	std::unique_ptr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
 		(*_class.*_func)(_argBase..., _arg... );
 	}));
-	std::size_t uid = executer->m_uid;
+	size_t uid = executer->m_uid;
 	m_executors.push_back(std::move(executer));
 	if (m_connectionObserver != nullptr) {
 		m_connectionObserver(m_executors.size());
