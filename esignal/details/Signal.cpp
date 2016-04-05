@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -11,8 +11,6 @@
 #include <etk/math/Vector3D.h>
 #include <etk/Color.h>
 
-#undef __class__
-#define __class__ "Signal<void>"
 // void generic signal
 template class esignal::Signal<>;
 // std generic signal

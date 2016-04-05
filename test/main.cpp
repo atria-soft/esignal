@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -11,9 +11,6 @@
 #include <etk/etk.h>
 #include <test-debug/debug.h>
 #include <gtest/gtest.h>
-
-#undef __class__
-#define __class__	"esignal-test"
 
 int main(int _argc, const char *_argv[]) {
 	::testing::InitGoogleTest(&_argc, const_cast<char **>(_argv));

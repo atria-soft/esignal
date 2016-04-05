@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -13,9 +13,6 @@
 #include <esignal/Base.h>
 #include <esignal/Signal.h>
 #include <esignal/Interface.h>
-
-#undef __class__
-#define __class__ "ISignal<T_ARGS>"
 
 namespace esignal {
 	/**
@@ -74,6 +71,3 @@ esignal::ISignal<T_ARGS...>::ISignal(CLASS_TYPE* _class,
 	}
 }
 
-
-#undef __class__
-#define __class__ nullptr

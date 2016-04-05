@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -12,10 +12,6 @@
 #include <esignal/Interface.h>
 #include <memory>
 #include <test-debug/debug.h>
-
-
-#undef __class__
-#define __class__ "test_signal_static_func"
 
 static int32_t tmpRetInt32 = 0;
 static std::string tmpRetString = "";

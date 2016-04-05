@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -18,9 +18,6 @@
 #include <type_traits>
 #include <utility>
 #include <mutex>
-
-#undef __class__
-#define __class__ "Signal<T_ARGS>"
 
 namespace esignal {
 	/**
@@ -254,6 +251,3 @@ esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
   m_callInProgress(0) {
 	// nothing to do
 }
-
-#undef __class__
-#define __class__ nullptr

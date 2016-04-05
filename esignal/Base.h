@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -17,6 +17,9 @@
 #include <mutex>
 #include <esignal/LockSharedPtrRef.h>
 
+/**
+ * @brief esignal global interface for all signal implementation
+ */
 namespace esignal {
 	/**
 	 * @brief Base signal interface for esignal::Signal (permit to create abstract list of signals...)
@@ -30,13 +33,19 @@ namespace esignal {
 			static int64_t s_uidSignalEmit; //!< global id to emit counting
 			ObserverConnection m_connectionObserver; //!< propriétéry of the connection handle basic
 		public:
-			//! @brief Basic constructor:
+			/**
+			 * @brief Basic constructor:
+			 * @param[in] _countObs Observer on the number of connection availlable
+			 */
 			Base(ObserverConnection _countObs = nullptr);
 			//! @brief Copy constructor:
 			Base(const Base&) = delete;
 			//! @brief Move constructor
-			Base(Base&& _obj) = delete;
-			
+			Base(Base&&) = delete;
+			/**
+			 * @brief Virtualize the destructor
+			 * @internal
+			 */
 			virtual ~Base();
 			/**
 			 * @brief Disconnect the shared_ptr form the Signal

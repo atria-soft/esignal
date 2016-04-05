@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -14,7 +14,7 @@
 namespace esignal {
 	/**
 	 * @brief Interface to collect the Signal list (for abstarction connection)
-	 * It create a simple "signal" member that permit to access at the signalproperties.
+	 * It create a simple "signals" member that permit to access at the signalproperties.
 	 */
 	class Interface {
 		public:

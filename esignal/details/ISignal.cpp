@@ -11,8 +11,6 @@
 #include <etk/math/Vector3D.h>
 #include <etk/Color.h>
 
-#undef __class__
-#define __class__ "ISignal<void>"
 // void generic signal
 template class esignal::ISignal<>;
 // std generic signal

@@ -1,4 +1,4 @@
-/**
+/** @file
  * @author Edouard DUPIN
  * 
  * @copyright 2016, Edouard DUPIN, all right reserved
@@ -13,9 +13,6 @@
 #include <memory>
 #include <test-debug/debug.h>
 
-
-#undef __class__
-#define __class__ "test_signal_class_func"
 class testCallbackShared : public std::enable_shared_from_this<testCallbackShared> {
 	public:
 		int32_t m_int32;

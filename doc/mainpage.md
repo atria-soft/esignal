@@ -1,8 +1,10 @@
 ESIGNAL library                                {#mainpage}
 ===============
 
-What is ESIGNAL, and how can I use it?
-----------------------------------
+@tableofcontents
+
+What is ESIGNAL, and how can I use it?         {#esignal_mainpage_what}
+======================================
 
 ESIGNAL, or Ewol signal engine is a simple messaging layer, managing multiple connection and manage disconnection
 
@@ -12,20 +14,20 @@ ESIGNAL is designed for
   - Manage versatil connection/disconnection
 
 
-What languages are supported?
------------------------------
+What languages are supported?                   {#esignal_mainpage_language}
+=============================
 
 ESIGNAL is written in C++.
 
 
-Are there any licensing restrictions?
--------------------------------------
+Are there any licensing restrictions?           {#esignal_mainpage_restriction}
+=====================================
 
 ESIGNAL is **FREE software** and _all sub-library are FREE and staticly linkable !!!_
 
 
-License (APACHE-2.0)
---------------------
+License (APACHE-2.0)                            {#esignal_mainpage_license}
+====================
 
 Copyright esignal Edouard DUPIN
 
