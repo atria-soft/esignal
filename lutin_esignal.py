@@ -33,7 +33,7 @@ def create(target, module_name):
 	my_module.add_src_file([
 		'esignal/debug.cpp',
 		'esignal/Connection.cpp',
-		'esignal/Interface.cpp',
+		'esignal/InterfaceData.cpp',
 		'esignal/Base.cpp',
 		'esignal/details/LockSharedPtrRef.cpp',
 		'esignal/details/RefCount.cpp',
@@ -43,6 +43,7 @@ def create(target, module_name):
 	my_module.add_header_file([
 		'esignal/debug.h',
 		'esignal/Interface.h',
+		'esignal/InterfaceData.h',
 		'esignal/Base.h',
 		'esignal/Signal.h',
 		'esignal/ISignal.h',

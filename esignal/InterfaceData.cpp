@@ -8,7 +8,7 @@
 
 #include <memory>
 #include <esignal/debug.h>
-#include <esignal/Interface.h>
+#include <esignal/InterfaceData.h>
 #include <esignal/Base.h>
 
 esignal::InterfaceData::InterfaceData() {

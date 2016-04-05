@@ -19,14 +19,14 @@ esignal::ISignal<T_ARGS...>::ISignal(esignal::Interface* _signalInterfaceLink,
   m_description(_description) {
 	// add a reference on the current signal ...
 	if (m_signalInterfaceLink != nullptr) {
-		m_signalInterfaceLink->signal.add(this);
+		m_signalInterfaceLink->signals.add(this);
 	}
 }
 
 template<class... T_ARGS>
 esignal::ISignal<T_ARGS...>::~ISignal() {
 	if (m_signalInterfaceLink != nullptr) {
-		m_signalInterfaceLink->signal.remove(this);
+		m_signalInterfaceLink->signals.remove(this);
 	}
 }
 

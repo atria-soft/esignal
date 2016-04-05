@@ -70,7 +70,7 @@ esignal::ISignal<T_ARGS...>::ISignal(CLASS_TYPE* _class,
   m_description(_description) {
 	// add a reference on the current signal ...
 	if (m_signalInterfaceLink != nullptr) {
-		m_signalInterfaceLink->signal.add(this);
+		m_signalInterfaceLink->signals.add(this);
 	}
 }
 
