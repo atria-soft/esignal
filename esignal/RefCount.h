@@ -28,14 +28,23 @@ namespace esignal {
 			RefCount(TYPE* _data);
 			//! @brief Copy constructor (REMOVED)
 			RefCount(const RefCount&) = delete;
-			//! @brief Copy operator (REMOVED)
+			/**
+			 * @brief Copy operator (REMOVED)
+			 * @return Reference on this
+			 */
 			RefCount& operator=(RefCount) = delete;
-			//! @previous
-			RefCount& operator=(const RefCount& _obj) = delete;
+			/**
+			 * @brief Copy operator (REMOVED)
+			 * @return Reference on this
+			 */
+			RefCount& operator=(const RefCount&) = delete;
 			//! @brief Move constructor (REMOVED)
-			RefCount(RefCount&& _obj) = delete;
-			//! @brief Move operator (REMOVED)
-			RefCount& operator=(RefCount&& _obj) = delete;
+			RefCount(RefCount&&) = delete;
+			/**
+			 * @brief Move operator (REMOVED)
+			 * @return Reference on this
+			 */
+			RefCount& operator=(RefCount&&) = delete;
 			//! @brief Destructor
 			~RefCount();
 		public:
@@ -45,13 +54,22 @@ namespace esignal {
 			void unlock();
 			//! @brief Increment the ref-counting
 			void inc();
-			//! @brief Decrement the ref-counting
+			/**
+			 * @brief Decrement the ref-counting
+			 * @return Number of element connected when decrement
+			 */
 			int64_t dec();
-			//! @brief Get number of connected
+			/**
+			 * @brief Get number of connected
+			 * @return The number of element connected on it
+			 */
 			int64_t getCount() const;
 			//! @brief Remove the data
 			void remove();
-			//! @brief Get the recoreded data
+			/**
+			 * @brief Get the recoreded data
+			 * @return The pointer of the data
+			 */
 			TYPE* get();
 	};
 }

@@ -35,7 +35,7 @@ namespace esignal {
 			LockSharedPtrRef(const LockSharedPtrRef<TYPE>& _obj);
 			/**
 			 * @brief Copy operator (It copy the counter and increment the it).
-			 * @param[in] _obj objetc to copy.
+			 * @param[in] _obj object to copy.
 			 * @return Reference of this
 			 */
 			LockSharedPtrRef& operator=(const LockSharedPtrRef<TYPE>& _obj);
@@ -46,8 +46,9 @@ namespace esignal {
 			LockSharedPtrRef(LockSharedPtrRef<TYPE>&& _obj);
 			/**
 			 * @brief Copy operator (force move) ==> removed
+			 * @return Reference of this
 			 */
-			LockSharedPtrRef& operator=(LockSharedPtrRef<TYPE>&& _obj) = delete;
+			LockSharedPtrRef& operator=(LockSharedPtrRef<TYPE>&&) = delete;
 			/**
 			 * @brief Destructor of the class (decrement the counter and remove it if it is the last one...)
 			 */

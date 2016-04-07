@@ -68,7 +68,7 @@ namespace esignal {
 			 */
 			virtual const std::string& getDescription() const;
 	};
-	//! @not_in_doc
+	//! @not-in-doc
 	std::ostream& operator <<(std::ostream& _os, const esignal::Base& _obj);
 	#ifdef DEBUG
 		const char* logIndent(int32_t _iii);

@@ -45,13 +45,23 @@ namespace esignal {
 			Signal(CLASS_TYPE* _class, FUNC_TYPE _func);
 			//! @brief Copy constructor (REMOVED)
 			Signal(const Signal&) = delete;
-			//! @brief Copy operator (REMOVED)
+			/**
+			 * @brief Copy operator (REMOVED)
+			 * @return Reference on this
+			 */
 			Signal& operator=(Signal) = delete;
-			Signal& operator=(const Signal& _obj) = delete;
+			/**
+			 * @brief Copy operator (REMOVED)
+			 * @return Reference on this
+			 */
+			Signal& operator=(const Signal&) = delete;
 			//! @brief Move constructor (REMOVED)
-			Signal(Signal&& _obj) = delete;
-			//! @brief Move operator
-			Signal& operator=(Signal&& _obj) = delete;
+			Signal(Signal&&) = delete;
+			/**
+			 * @brief Move operator (REMOVED)
+			 * @return Reference on this
+			 */
+			Signal& operator=(Signal&&) = delete;
 		private:
 			/**
 			 * @brief Executor: Class to manage the UID and basic value of an observer

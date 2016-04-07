@@ -49,6 +49,7 @@ namespace esignal {
 			Connection(const Connection&) = delete;
 			/**
 			 * @brief Copy operator (REMOVED)
+			 * @return Reference on this
 			 */
 			Connection& operator=(const Connection&) = delete;
 			/**
