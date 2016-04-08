@@ -12,14 +12,23 @@ def create(target, module_name):
 	my_module.set_website_sources("http://github.com/atria-soft/" + module_name)
 	my_module.add_path([
 	    module_name,
-	    "doc"
+	    "doc",
 	    ])
 	my_module.add_sample_path([
-	    "sample"
+	    "sample",
 	    ])
 	my_module.add_module_depend([
 	    'etk',
-	    'ememory'
+	    'ememory',
 	    ])
-	
+	my_module.add_exclude_symbols([
+	    '*operator<<*',
+	    ])
+	my_module.add_exclude_file([
+	    'debug.h',
+	    ])
+	my_module.add_file_patterns([
+	    '*.h',
+	    '*.md',
+	    ])
 	return my_module
