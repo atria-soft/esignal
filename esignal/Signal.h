@@ -115,7 +115,7 @@ namespace esignal {
 					 * @brief Emit the data on the observer.
 					 * @param[in] _values... Multiple value needed to send on observers
 					 */
-					virtual void emit(const T_ARGS&... _values);
+					void emit(const T_ARGS&... _values) override;
 				public:
 					bool isSharedPtr(const std::shared_ptr<void>& _obj) override;
 			};
