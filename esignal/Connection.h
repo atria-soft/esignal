@@ -11,10 +11,6 @@
 #include <memory>
 #include <esignal/debug.h>
 #include <esignal/Base.h>
-#include <functional>
-#include <type_traits>
-#include <utility>
-#include <mutex>
 
 namespace esignal {
 	/**

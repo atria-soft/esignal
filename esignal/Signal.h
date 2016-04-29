@@ -14,10 +14,6 @@
 #include <esignal/LockSharedPtrRef.h>
 #include <esignal/RefCount.h>
 #include <esignal/Connection.h>
-#include <functional>
-#include <type_traits>
-#include <utility>
-#include <mutex>
 
 namespace esignal {
 	/**
