@@ -187,7 +187,7 @@ namespace esignal {
 
 
 template<class... T_ARGS>
-template< class OBSERVER_TYPE >
+template<class OBSERVER_TYPE >
 esignal::Connection esignal::Signal<T_ARGS...>::connect(OBSERVER_TYPE&& _observer ) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (observer)");
 	std::unique_ptr<Executor> executer(new Executor(std::forward<OBSERVER_TYPE>(_observer)));
