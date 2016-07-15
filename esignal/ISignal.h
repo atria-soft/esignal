@@ -8,7 +8,7 @@
 #pragma once
 
 #include <functional>
-#include <memory>
+#include <ememory/memory.h>
 #include <esignal/debug.h>
 #include <esignal/Base.h>
 #include <esignal/Signal.h>

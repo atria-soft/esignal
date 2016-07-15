@@ -10,10 +10,10 @@
 #include <gtest/gtest.h>
 #include <esignal/Signal.h>
 #include <esignal/Interface.h>
-#include <memory>
+#include <ememory/memory.h>
 #include <test-debug/debug.h>
 
-class testCallbackShared : public std::enable_shared_from_this<testCallbackShared> {
+class testCallbackShared : public ememory::EnableSharedFromThis<testCallbackShared> {
 	public:
 		int32_t m_int32;
 		std::string m_string;
@@ -74,7 +74,7 @@ class testCallbackShared : public std::enable_shared_from_this<testCallbackShare
 			m_string = _b + _char;
 		}
 		void callbackDisconnect(esignal::Signal<>* _signal) {
-			_signal->disconnectShared(shared_from_this());
+			_signal->disconnectShared(sharedFromThis());
 		}
 };
 
@@ -84,7 +84,7 @@ void removeObserver(size_t _count) {
 }
 
 TEST(test_signal_shared_ptr_func, localNullClass) {
-	std::shared_ptr<testCallbackShared> localClass;
+	ememory::SharedPtr<testCallbackShared> localClass;
 	esignal::Signal<> signal(&removeObserver);
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -96,7 +96,7 @@ TEST(test_signal_shared_ptr_func, localNullClass) {
 /*
 Impossible case ...
 TEST(test_signal_shared_ptr_func, localNullFunction) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -108,7 +108,7 @@ TEST(test_signal_shared_ptr_func, localNullFunction) {
 }
 */
 TEST(test_signal_shared_ptr_func, localFunctionVoid) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -120,7 +120,7 @@ TEST(test_signal_shared_ptr_func, localFunctionVoid) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionInt32) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -136,7 +136,7 @@ TEST(test_signal_shared_ptr_func, localFunctionInt32) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionConstInt32) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -148,7 +148,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstInt32) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionString) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -164,7 +164,7 @@ TEST(test_signal_shared_ptr_func, localFunctionString) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionConstString) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -176,7 +176,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstString) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionIntString) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t, std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -193,7 +193,7 @@ TEST(test_signal_shared_ptr_func, localFunctionIntString) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionConstIntString) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t, std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -206,7 +206,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstIntString) {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionMixedIntString) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t, std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -224,7 +224,7 @@ TEST(test_signal_shared_ptr_func, localFunctionMixedIntString) {
 
 
 TEST(test_signal_shared_ptr_func, localFunctionConstIntStringPolyArg) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t, std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -246,7 +246,7 @@ class testCallbackSharedHerited : public testCallbackShared {
 
 
 TEST(test_signal_shared_ptr_func, localFunctionHerited) {
-	std::shared_ptr<testCallbackSharedHerited> localClass = std::make_shared<testCallbackSharedHerited>();
+	ememory::SharedPtr<testCallbackSharedHerited> localClass = ememory::makeShared<testCallbackSharedHerited>();
 	esignal::Signal<int32_t, std::string> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -260,7 +260,7 @@ TEST(test_signal_shared_ptr_func, localFunctionHerited) {
 
 
 TEST(test_signal_shared_ptr_func, disconnect) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -276,7 +276,7 @@ TEST(test_signal_shared_ptr_func, disconnect) {
 
 
 TEST(test_signal_shared_ptr_func, connect_disconnect_multiple) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<int32_t> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -302,7 +302,7 @@ TEST(test_signal_shared_ptr_func, connect_disconnect_multiple) {
 
 
 TEST(test_signal_shared_ptr_func, disconnect_inCallback) {
-	std::shared_ptr<testCallbackShared> localClass = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -319,8 +319,8 @@ static void callbackVoid() {
 }
 
 TEST(test_signal_shared_ptr_func, localFunctionWeakTest) {
-	std::shared_ptr<testCallbackShared> localClassA = std::make_shared<testCallbackShared>();
-	std::shared_ptr<testCallbackShared> localClassB = std::make_shared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClassA = ememory::makeShared<testCallbackShared>();
+	ememory::SharedPtr<testCallbackShared> localClassB = ememory::makeShared<testCallbackShared>();
 	esignal::Signal<> signal(&removeObserver);
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
@@ -339,7 +339,7 @@ TEST(test_signal_shared_ptr_func, localFunctionWeakTest) {
 	signal.emit();
 	EXPECT_EQ(signal.size(), 3);
 	EXPECT_EQ(signal.empty(), false);
-	localClassB = std::make_shared<testCallbackShared>();
+	localClassB = ememory::makeShared<testCallbackShared>();
 	signal.connect(localClassB, &testCallbackShared::callbackVoid);
 	EXPECT_EQ(signal.size(), 4);
 	EXPECT_EQ(signal.empty(), false);

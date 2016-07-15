@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include <esignal/Signal.h>
 #include <esignal/Interface.h>
-#include <memory>
+#include <ememory/memory.h>
 #include <test-debug/debug.h>
 
 static esignal::Signal<int32_t>* signalll;

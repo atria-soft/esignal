@@ -100,7 +100,7 @@ void sharedConnection() {
 	// Create the signal
 	esignal::Signal<int32_t> signalValue;
 	// Declare the class
-	std::shared_ptr<TmpClass> myClassShared = std::make_shared<TmpClass>();
+	ememory::SharedPtr<TmpClass> myClassShared = ememory::makeShared<TmpClass>();
 	// Connect signals
 	signalValue.connect(myClassShared, &TmpClass::localCallBack);
 	// Emit sample signals

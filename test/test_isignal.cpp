@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include <esignal/ISignal.h>
 #include <esignal/Interface.h>
-#include <memory>
+#include <ememory/memory.h>
 #include <test-debug/debug.h>
 
 
@@ -85,7 +85,7 @@ TEST(test_isignal_counter, localbasicNameDesc) {
 	EXPECT_EQ(localClass.m_signalString.getDescription(), "desc string");
 }
 
-class testCallbackIShared : public std::enable_shared_from_this<testCallbackIShared> {
+class testCallbackIShared : public ememory::EnableSharedFromThis<testCallbackIShared> {
 	public:
 		testCallbackIShared() {
 		}
@@ -110,7 +110,7 @@ TEST(test_isignal_counter, localbasicInterfaceDisconnectNullPtr) {
 
 TEST(test_isignal_counter, localbasicInterfaceDisconnectSharedPtr) {
 	testISignal localClass;
-	std::shared_ptr<testCallbackIShared> tmp = std::make_shared<testCallbackIShared>();
+	ememory::SharedPtr<testCallbackIShared> tmp = ememory::makeShared<testCallbackIShared>();
 	localClass.signals.disconnect(tmp);
 	EXPECT_EQ(localClass.m_signalInt.size(), 0);
 	EXPECT_EQ(localClass.m_signalInt.empty(), true);

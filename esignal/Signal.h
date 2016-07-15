@@ -8,7 +8,7 @@
 #pragma once
 
 #include <functional>
-#include <memory>
+#include <ememory/memory.h>
 #include <esignal/debug.h>
 #include <esignal/Base.h>
 #include <esignal/LockSharedPtrRef.h>
@@ -88,7 +88,7 @@ namespace esignal {
 					 * @return true The Executor depend on this shared_ptr
 					 * @return false The Executor does not depend on this shared_ptr
 					 */
-					virtual bool isSharedPtr(const std::shared_ptr<void>& _obj);
+					virtual bool isSharedPtr(const ememory::SharedPtr<void>& _obj);
 			};
 		protected:
 			std::vector<std::unique_ptr<Executor>> m_executors; //!< List of all executors.
@@ -98,14 +98,14 @@ namespace esignal {
 			 */
 			class ExecutorShared : public Executor {
 				protected:
-					std::weak_ptr<void> m_object; //!< a weak reference on the object to verify that it is alive
+					ememory::WeakPtr<void> m_object; //!< a weak reference on the object to verify that it is alive
 				public:
 					/**
 					 * @brief shared constructor.
 					 * @param[in] _object A weak reference of the object.
 					 * @param[in] _observer Observer to call.
 					 */
-					ExecutorShared(std::weak_ptr<void> _object, Observer&& _observer);
+					ExecutorShared(ememory::WeakPtr<void> _object, Observer&& _observer);
 				public:
 					/**
 					 * @brief Emit the data on the observer.
@@ -113,7 +113,7 @@ namespace esignal {
 					 */
 					void emit(const T_ARGS&... _values) override;
 				public:
-					bool isSharedPtr(const std::shared_ptr<void>& _obj) override;
+					bool isSharedPtr(const ememory::SharedPtr<void>& _obj) override;
 			};
 		public:
 			/**
@@ -141,7 +141,7 @@ namespace esignal {
 			 * @param[in] _args Argument optinnal the user want to add.
 			 */
 			template<class PARENT_CLASS_TYPE, class CLASS_TYPE, typename... FUNC_ARGS_TYPE>
-			void connect(const std::shared_ptr<PARENT_CLASS_TYPE>& _class,
+			void connect(const ememory::SharedPtr<PARENT_CLASS_TYPE>& _class,
 			             void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
 			             FUNC_ARGS_TYPE... _args);
 		public:
@@ -166,7 +166,7 @@ namespace esignal {
 			 * @brief Disconnect the shared_ptr form the Signal
 			 * @param[in] _obj Link with the object to check
 			 */
-			void disconnectShared(const std::shared_ptr<void>& _obj) override;
+			void disconnectShared(const ememory::SharedPtr<void>& _obj) override;
 			/**
 			 * @brief Get the number of observers connected on the signal.
 			 * @return The count of observer.
@@ -224,7 +224,7 @@ esignal::Connection esignal::Signal<T_ARGS...>::connect(CLASS_TYPE* _class,
 
 template<class... T_ARGS>
 template<class PARENT_CLASS_TYPE, class CLASS_TYPE, typename... FUNC_ARGS_TYPE>
-void esignal::Signal<T_ARGS...>::connect(const std::shared_ptr<PARENT_CLASS_TYPE>& _class,
+void esignal::Signal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT_CLASS_TYPE>& _class,
                                          void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
                                          FUNC_ARGS_TYPE... _args) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (weak pointer)");
@@ -232,7 +232,7 @@ void esignal::Signal<T_ARGS...>::connect(const std::shared_ptr<PARENT_CLASS_TYPE
 		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
 		return;
 	}
-	std::shared_ptr<CLASS_TYPE> obj2 = std::dynamic_pointer_cast<CLASS_TYPE>(_class);
+	ememory::SharedPtr<CLASS_TYPE> obj2 = ememory::dynamicPointerCast<CLASS_TYPE>(_class);
 	if (obj2 == nullptr) {
 		ESIGNAL_ERROR("Can not connect signal ...");
 		return;

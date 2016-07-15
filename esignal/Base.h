@@ -8,7 +8,7 @@
 #pragma once
 
 #include <functional>
-#include <memory>
+#include <ememory/memory.h>
 #include <esignal/debug.h>
 #include <esignal/Base.h>
 #include <functional>
@@ -51,7 +51,7 @@ namespace esignal {
 			 * @brief Disconnect the shared_ptr form the Signal
 			 * @param[in] _obj Link with the object to check
 			 */
-			virtual void disconnectShared(const std::shared_ptr<void>& _obj) = 0;
+			virtual void disconnectShared(const ememory::SharedPtr<void>& _obj) = 0;
 			/**
 			 * @brief Disconnect an observer of the signal.
 			 * @param[in] _uid Unique id of the signal connection.

@@ -6,7 +6,7 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <memory>
+#include <ememory/memory.h>
 #include <esignal/debug.h>
 #include <esignal/InterfaceData.h>
 #include <esignal/Base.h>
@@ -50,7 +50,7 @@ std::vector<std::string> esignal::InterfaceData::getAll() const {
 	return out;
 }
 
-void esignal::InterfaceData::disconnect(const std::shared_ptr<void>& _object) {
+void esignal::InterfaceData::disconnect(const ememory::SharedPtr<void>& _object) {
 	if (_object == nullptr) {
 		ESIGNAL_ERROR("Input ERROR nullptr pointer Object ...");
 		return;
