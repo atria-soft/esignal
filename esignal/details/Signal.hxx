@@ -84,7 +84,7 @@ void esignal::Signal<T_ARGS...>::disconnect(size_t _uid) {
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::disconnectShared(const std::shared_ptr<void>& _obj) {
+void esignal::Signal<T_ARGS...>::disconnectShared(const ememory::SharedPtr<void>& _obj) {
 	for (size_t iii=0; iii < m_executors.size(); ++iii) {
 		if (m_executors[iii]->isSharedPtr(_obj) == true) {
 			m_executors[iii]->m_removed = true;
@@ -133,7 +133,7 @@ void esignal::Signal<T_ARGS...>::Executor::emit(const T_ARGS&... _values) {
 }
 
 template<typename... T_ARGS>
-bool esignal::Signal<T_ARGS...>::Executor::isSharedPtr(const std::shared_ptr<void>& _obj) {
+bool esignal::Signal<T_ARGS...>::Executor::isSharedPtr(const ememory::SharedPtr<void>& _obj) {
 	return false;
 }
 
@@ -141,7 +141,7 @@ bool esignal::Signal<T_ARGS...>::Executor::isSharedPtr(const std::shared_ptr<voi
 
 
 template<typename... T_ARGS>
-esignal::Signal<T_ARGS...>::ExecutorShared::ExecutorShared(std::weak_ptr<void> _object, Observer&& _observer) :
+esignal::Signal<T_ARGS...>::ExecutorShared::ExecutorShared(ememory::WeakPtr<void> _object, Observer&& _observer) :
   Executor(std::move(_observer)),
   m_object(_object) {
 	
@@ -150,7 +150,7 @@ esignal::Signal<T_ARGS...>::ExecutorShared::ExecutorShared(std::weak_ptr<void> _
 template<typename... T_ARGS>
 void esignal::Signal<T_ARGS...>::ExecutorShared::emit(const T_ARGS&... _values) {
 	// TODO: maybe an error if the object is not manage by the same thread.
-	std::shared_ptr<void> destObject = m_object.lock();
+	ememory::SharedPtr<void> destObject = m_object.lock();
 	if (destObject == nullptr) {
 		Executor::m_removed = true;
 		return;
@@ -166,8 +166,8 @@ void esignal::Signal<T_ARGS...>::ExecutorShared::emit(const T_ARGS&... _values) 
 }
 
 template<typename... T_ARGS>
-bool esignal::Signal<T_ARGS...>::ExecutorShared::isSharedPtr(const std::shared_ptr<void>& _obj) {
-	std::shared_ptr<void> destObject = m_object.lock();
+bool esignal::Signal<T_ARGS...>::ExecutorShared::isSharedPtr(const ememory::SharedPtr<void>& _obj) {
+	ememory::SharedPtr<void> destObject = m_object.lock();
 	if (destObject == nullptr) {
 		return true;
 	}
