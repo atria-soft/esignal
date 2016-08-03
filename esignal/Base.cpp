@@ -34,6 +34,9 @@ const std::string& esignal::Base::getDescription() const {
 	return noValue;
 }
 
+void esignal::Base::setPeriodic(bool _state) {
+	m_periodic = _state;
+}
 
 std::ostream& esignal::operator <<(std::ostream& _os, const esignal::Base& _obj) {
 	_os << _obj.getName();

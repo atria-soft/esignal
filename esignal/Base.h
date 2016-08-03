@@ -28,6 +28,7 @@ namespace esignal {
 		public:
 			using ObserverConnection = std::function<void(size_t)>; //!< Define an Observer of the number of observer
 		protected:
+			bool m_periodic; //!< The signal is periodic ==> no log with this signal ... (no really needed)
 			esignal::LockSharedPtrRef<esignal::Base> m_shared; //!< Reference counter on itself.
 			static size_t s_uid; //!< global id of the signal (STATIC)
 			static int64_t s_uidSignalEmit; //!< global id to emit counting
@@ -67,6 +68,11 @@ namespace esignal {
 			 * @return requested decription.
 			 */
 			virtual const std::string& getDescription() const;
+			/**
+			 * @brief Tag the signal as periodic...
+			 * @param[in] _state state of the periodic element
+			 */
+			void setPeriodic(bool _state);
 	};
 	//! @not-in-doc
 	std::ostream& operator <<(std::ostream& _os, const esignal::Base& _obj);

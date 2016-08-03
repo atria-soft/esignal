@@ -23,10 +23,16 @@ void esignal::Signal<T_ARGS...>::emit(const T_ARGS&... _args) {
 	#endif
 	// TODO : Add protection ... but how ...
 	m_callInProgress++;
-	ESIGNAL_DEBUG(esignal::logIndent(m_callInProgress-1) << "     signal{" << tmpID << "} : '" << getName() << "' ***/" << m_executors.size());
-	for (size_t iii=0; iii < m_executors.size(); ++iii) {
-		ESIGNAL_VERBOSE(esignal::logIndent(m_callInProgress-1) << "         {" << tmpID << "} : " << iii);
-		m_executors[iii]->emit(_args...);
+	if (m_periodic == false) {
+		ESIGNAL_DEBUG(esignal::logIndent(m_callInProgress-1) << "     signal{" << tmpID << "} : '" << getName() << "' ***/" << m_executors.size());
+		for (size_t iii=0; iii < m_executors.size(); ++iii) {
+			ESIGNAL_VERBOSE(esignal::logIndent(m_callInProgress-1) << "         {" << tmpID << "} : " << iii);
+			m_executors[iii]->emit(_args...);
+		}
+	} else {
+		for (size_t iii=0; iii < m_executors.size(); ++iii) {
+			m_executors[iii]->emit(_args...);
+		}
 	}
 	if (m_callInProgress == 1) {
 		bool haveRemove = false;
