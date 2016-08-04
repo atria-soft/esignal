@@ -11,31 +11,57 @@
 #include <esignal/Interface.h>
 #include <esignal/Base.h>
 
-size_t esignal::Base::s_uid = 1;
-int64_t esignal::Base::s_uidSignalEmit = 1;
+size_t esignal::BaseInternal::s_uid = 1;
+int64_t esignal::BaseInternal::s_uidSignalEmit = 1;
 
-esignal::Base::Base(ObserverConnection _countObs) :
-  m_shared(this),
-  m_connectionObserver(_countObs) {
+void esignal::BaseInternal::setPeriodic(bool _state) {
+	m_periodic = _state;
+}
+
+const std::string& esignal::BaseInternal::getName() const {
+	return m_name;
+}
+
+void esignal::BaseInternal::setName(const std::string& _name) {
+	m_name = _name;
+}
+
+const std::string& esignal::BaseInternal::getDescription() const {
+	return m_description;
+}
+
+void esignal::BaseInternal::setDescription(const std::string& _desc) {
+	m_description = _desc;
+}
+
+esignal::Base::Base() :
+  m_data(nullptr) {
 	
 }
 esignal::Base::~Base() {
-	m_shared.removeData();
+	m_data.reset();
 }
 
-
 const std::string& esignal::Base::getName() const {
+	if (m_data != nullptr) {
+		return m_data->getName();
+	}
 	static std::string noValue;
 	return noValue;
 }
 
 const std::string& esignal::Base::getDescription() const {
+	if (m_data != nullptr) {
+		return m_data->getDescription();
+	}
 	static std::string noValue;
 	return noValue;
 }
 
 void esignal::Base::setPeriodic(bool _state) {
-	m_periodic = _state;
+	if (m_data != nullptr) {
+		m_data->setPeriodic(_state);
+	}
 }
 
 std::ostream& esignal::operator <<(std::ostream& _os, const esignal::Base& _obj) {

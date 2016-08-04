@@ -132,7 +132,7 @@ void newSignal() {
 // do it in a single C++: Implementation of signal
 //! [esignal_sample_new_register]
 #include <esignal/details/Signal.hxx>
-template class esignal::Signal<int32_t, std::string>;
+ESIGNAL_DECLARE_SIGNAL(int32_t, std::string);
 //! [esignal_sample_new_register]
 
 //! [esignal_sample_new]

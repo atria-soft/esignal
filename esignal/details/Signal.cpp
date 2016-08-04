@@ -12,38 +12,39 @@
 #include <etk/Color.h>
 
 // void generic signal
-template class esignal::Signal<>;
+ESIGNAL_DECLARE_SIGNAL();
 // std generic signal
-template class esignal::Signal<bool>;
-template class esignal::Signal<std::string>;
+ESIGNAL_DECLARE_SIGNAL(bool);
+ESIGNAL_DECLARE_SIGNAL(std::string);
 #if __CPP_VERSION__ >= 2011
-	template class esignal::Signal<std::u32string>;
+	ESIGNAL_DECLARE_SIGNAL(std::u32string);
 #endif
 
-template class esignal::Signal<int64_t>;
-template class esignal::Signal<int32_t>;
-template class esignal::Signal<int16_t>;
-template class esignal::Signal<int8_t>;
+ESIGNAL_DECLARE_SIGNAL(int64_t);
+ESIGNAL_DECLARE_SIGNAL(int32_t);
+ESIGNAL_DECLARE_SIGNAL(int16_t);
+ESIGNAL_DECLARE_SIGNAL(int8_t);
 
-template class esignal::Signal<uint64_t>;
-template class esignal::Signal<uint32_t>;
-template class esignal::Signal<uint16_t>;
-template class esignal::Signal<uint8_t>;
+ESIGNAL_DECLARE_SIGNAL(uint64_t);
+ESIGNAL_DECLARE_SIGNAL(uint32_t);
+ESIGNAL_DECLARE_SIGNAL(uint16_t);
+ESIGNAL_DECLARE_SIGNAL(uint8_t);
 
-template class esignal::Signal<float>;
-template class esignal::Signal<double>;
+ESIGNAL_DECLARE_SIGNAL(float);
+ESIGNAL_DECLARE_SIGNAL(double);
 // etk generic vetor 2D
-template class esignal::Signal<vec2>;
-template class esignal::Signal<bvec2>;
-template class esignal::Signal<ivec2>;
-template class esignal::Signal<uivec2>;
+ESIGNAL_DECLARE_SIGNAL(vec2);
+ESIGNAL_DECLARE_SIGNAL(bvec2);
+ESIGNAL_DECLARE_SIGNAL(ivec2);
+ESIGNAL_DECLARE_SIGNAL(uivec2);
 // etk generic vetor 3D
-template class esignal::Signal<vec3>;
-template class esignal::Signal<bvec3>;
-template class esignal::Signal<ivec3>;
-template class esignal::Signal<uivec3>;
+ESIGNAL_DECLARE_SIGNAL(vec3);
+ESIGNAL_DECLARE_SIGNAL(bvec3);
+ESIGNAL_DECLARE_SIGNAL(ivec3);
+ESIGNAL_DECLARE_SIGNAL(uivec3);
 // etk generic color
-template class esignal::Signal<etk::Color<unsigned char,4>>;
-template class esignal::Signal<etk::Color<unsigned char,3>>;
-template class esignal::Signal<etk::Color<float,4>>;
-template class esignal::Signal<etk::Color<float,3>>;
+ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,4>);
+ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,3>);
+ESIGNAL_DECLARE_SIGNAL(etk::Color<float,4>);
+ESIGNAL_DECLARE_SIGNAL(etk::Color<float,3>);
+

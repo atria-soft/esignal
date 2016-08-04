@@ -9,15 +9,46 @@
 
 #include <esignal/Signal.h>
 
-template<typename... T_ARGS>
-esignal::Signal<T_ARGS...>::Signal(ObserverConnection _countObs):
-  esignal::Base(_countObs),
-  m_callInProgress(0) {
-	// nothing to do
+template<class... T_ARGS>
+esignal::Signal<T_ARGS...>::~Signal() {
+	if (m_signalInterfaceLink != nullptr) {
+		m_signalInterfaceLink->signals.remove(this);
+	}
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::emit(const T_ARGS&... _args) {
+esignal::Signal<T_ARGS...>::Signal(esignal::BaseInternal::ObserverConnection _countObs,
+                                   const std::string& _name,
+                                   const std::string& _description):
+  esignal::Base(),
+  m_signalInterfaceLink(nullptr) {
+	// create internal data assiciated:
+	m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(std::move(_countObs));
+	if (esignal::Base::m_data != nullptr) {
+		esignal::Base::m_data->setName(_name);
+		esignal::Base::m_data->setDescription(_description);
+	}
+}
+
+template<class... T_ARGS>
+esignal::Signal<T_ARGS...>::Signal(esignal::Interface* _signalInterfaceLink,
+                                   const std::string& _name,
+                                   const std::string& _description):
+  m_signalInterfaceLink(_signalInterfaceLink) {
+	// create internal data assiciated:
+	m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(nullptr);
+	if (esignal::Base::m_data != nullptr) {
+		esignal::Base::m_data->setName(_name);
+		esignal::Base::m_data->setDescription(_description);
+	}
+	// add a reference on the current signal ...
+	if (m_signalInterfaceLink != nullptr) {
+		m_signalInterfaceLink->signals.add(this);
+	}
+}
+
+template<typename... T_ARGS>
+void esignal::SignalInternal<T_ARGS...>::emit(const T_ARGS&... _args) {
 	#ifdef DEBUG
 		int32_t tmpID = s_uidSignalEmit++;
 	#endif
@@ -56,7 +87,7 @@ void esignal::Signal<T_ARGS...>::emit(const T_ARGS&... _args) {
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::removeIfPossible() {
+void esignal::SignalInternal<T_ARGS...>::removeIfPossible() {
 	if (m_callInProgress != 0) {
 		return;
 	}
@@ -79,7 +110,7 @@ void esignal::Signal<T_ARGS...>::removeIfPossible() {
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::disconnect(size_t _uid) {
+void esignal::SignalInternal<T_ARGS...>::disconnect(size_t _uid) {
 	for (size_t iii=0; iii < m_executors.size(); ++iii) {
 		if (m_executors[iii]->m_uid == _uid) {
 			m_executors[iii]->m_removed = true;
@@ -90,7 +121,7 @@ void esignal::Signal<T_ARGS...>::disconnect(size_t _uid) {
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::disconnectShared(const ememory::SharedPtr<void>& _obj) {
+void esignal::SignalInternal<T_ARGS...>::disconnectShared(const ememory::SharedPtr<void>& _obj) {
 	for (size_t iii=0; iii < m_executors.size(); ++iii) {
 		if (m_executors[iii]->isSharedPtr(_obj) == true) {
 			m_executors[iii]->m_removed = true;
@@ -100,17 +131,17 @@ void esignal::Signal<T_ARGS...>::disconnectShared(const ememory::SharedPtr<void>
 }
 
 template<typename... T_ARGS>
-size_t esignal::Signal<T_ARGS...>::size() const {
+size_t esignal::SignalInternal<T_ARGS...>::size() const {
 	return m_executors.size();
 }
 
 template<typename... T_ARGS>
-bool esignal::Signal<T_ARGS...>::empty() const {
+bool esignal::SignalInternal<T_ARGS...>::empty() const {
 	return m_executors.empty();
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::clear() {
+void esignal::SignalInternal<T_ARGS...>::clear() {
 	for (size_t iii=0; iii < m_executors.size(); ++iii) {
 		m_executors[iii]->m_removed = true;
 	}
@@ -119,7 +150,7 @@ void esignal::Signal<T_ARGS...>::clear() {
 
 
 template<typename... T_ARGS>
-esignal::Signal<T_ARGS...>::Executor::Executor(Observer&& _observer):
+esignal::SignalInternal<T_ARGS...>::Executor::Executor(Observer&& _observer):
   m_removed(false),
   m_uid(0) {
 	m_uid = s_uid++;
@@ -127,7 +158,7 @@ esignal::Signal<T_ARGS...>::Executor::Executor(Observer&& _observer):
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::Executor::emit(const T_ARGS&... _values) {
+void esignal::SignalInternal<T_ARGS...>::Executor::emit(const T_ARGS&... _values) {
 	if (m_removed == true) {
 		return;
 	}
@@ -139,7 +170,7 @@ void esignal::Signal<T_ARGS...>::Executor::emit(const T_ARGS&... _values) {
 }
 
 template<typename... T_ARGS>
-bool esignal::Signal<T_ARGS...>::Executor::isSharedPtr(const ememory::SharedPtr<void>& _obj) {
+bool esignal::SignalInternal<T_ARGS...>::Executor::isSharedPtr(const ememory::SharedPtr<void>& _obj) {
 	return false;
 }
 
@@ -147,14 +178,14 @@ bool esignal::Signal<T_ARGS...>::Executor::isSharedPtr(const ememory::SharedPtr<
 
 
 template<typename... T_ARGS>
-esignal::Signal<T_ARGS...>::ExecutorShared::ExecutorShared(ememory::WeakPtr<void> _object, Observer&& _observer) :
+esignal::SignalInternal<T_ARGS...>::ExecutorShared::ExecutorShared(ememory::WeakPtr<void> _object, Observer&& _observer) :
   Executor(std::move(_observer)),
   m_object(_object) {
 	
 }
 
 template<typename... T_ARGS>
-void esignal::Signal<T_ARGS...>::ExecutorShared::emit(const T_ARGS&... _values) {
+void esignal::SignalInternal<T_ARGS...>::ExecutorShared::emit(const T_ARGS&... _values) {
 	// TODO: maybe an error if the object is not manage by the same thread.
 	ememory::SharedPtr<void> destObject = m_object.lock();
 	if (destObject == nullptr) {
@@ -172,7 +203,7 @@ void esignal::Signal<T_ARGS...>::ExecutorShared::emit(const T_ARGS&... _values) 
 }
 
 template<typename... T_ARGS>
-bool esignal::Signal<T_ARGS...>::ExecutorShared::isSharedPtr(const ememory::SharedPtr<void>& _obj) {
+bool esignal::SignalInternal<T_ARGS...>::ExecutorShared::isSharedPtr(const ememory::SharedPtr<void>& _obj) {
 	ememory::SharedPtr<void> destObject = m_object.lock();
 	if (destObject == nullptr) {
 		return true;

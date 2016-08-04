@@ -8,6 +8,7 @@
 #include <esignal/details/Signal.hxx>
 #include <etk/types.h>
 
-template class esignal::Signal<int32_t, std::string>;
+
+ESIGNAL_DECLARE_SIGNAL(int32_t, std::string);
 
 

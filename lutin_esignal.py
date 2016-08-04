@@ -35,10 +35,7 @@ def create(target, module_name):
 		'esignal/Connection.cpp',
 		'esignal/InterfaceData.cpp',
 		'esignal/Base.cpp',
-		'esignal/details/LockSharedPtrRef.cpp',
-		'esignal/details/RefCount.cpp',
 		'esignal/details/Signal.cpp',
-		'esignal/details/ISignal.cpp',
 		])
 	my_module.add_header_file([
 		'esignal/debug.h',
@@ -46,14 +43,8 @@ def create(target, module_name):
 		'esignal/InterfaceData.h',
 		'esignal/Base.h',
 		'esignal/Signal.h',
-		'esignal/ISignal.h',
-		'esignal/LockSharedPtrRef.h',
-		'esignal/RefCount.h',
 		'esignal/Connection.h',
 		'esignal/details/Signal.hxx',
-		'esignal/details/ISignal.hxx',
-		'esignal/details/LockSharedPtrRef.hxx',
-		'esignal/details/RefCount.hxx',
 		])
 	my_module.compile_version("c++", 2011)
 	my_module.add_module_depend([

@@ -8,7 +8,7 @@
 
 #define NAME "SingleArg"
 #include <gtest/gtest.h>
-#include <esignal/ISignal.h>
+#include <esignal/Signal.h>
 #include <esignal/Interface.h>
 #include <ememory/memory.h>
 #include <test-debug/debug.h>
@@ -16,9 +16,9 @@
 
 class testISignal : public esignal::Interface {
 	public:
-		esignal::ISignal<int32_t> m_signalInt;
-		esignal::ISignal<std::string> m_signalString;
-		esignal::ISignal<float> m_signalFloat;
+		esignal::Signal<int32_t> m_signalInt;
+		esignal::Signal<std::string> m_signalString;
+		esignal::Signal<float> m_signalFloat;
 	public:
 		size_t m_count;
 		testISignal():

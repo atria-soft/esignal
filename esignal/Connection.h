@@ -17,6 +17,9 @@ namespace esignal {
 	 * @brief connection on the signal (disconnect it whe removed)
 	 */
 	class Connection {
+		private:
+			ememory::WeakPtr<esignal::BaseInternal> m_data;
+			size_t m_uid; //!< UID of the current connection.
 		public:
 			/**
 			 * @brief Constructor (no link)
@@ -27,7 +30,7 @@ namespace esignal {
 			 * @param[in] _ref Reference ID of the Signal extern handle
 			 * @param[in] _id Id of the Connection handle
 			 */
-			Connection(const esignal::LockSharedPtrRef<esignal::Base>& _ref, size_t _id);
+			Connection(ememory::SharedPtr<esignal::BaseInternal> _ref, size_t _id);
 			/**
 			 * @brief Move Constructor
 			 * @param[in] _obj Connection Object to move
@@ -62,9 +65,6 @@ namespace esignal {
 			 * @return false The signal is NOT connected.
 			 */
 			bool isConnected();
-		private:
-			esignal::LockSharedPtrRef<esignal::Base> m_signalRefUnique; //!< reference on the Signal.
-			size_t m_uid; //!< UID of the current connection.
 	};
 }
 
