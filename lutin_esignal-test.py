@@ -37,6 +37,6 @@ def create(target, module_name):
 		'test/test_signal_static_func.cpp',
 		'test/test_isignal.cpp'
 		])
-	my_module.add_module_depend(['esignal', 'gtest', 'test-debug'])
+	my_module.add_depend(['esignal', 'gtest', 'test-debug'])
 	return my_module
 

@@ -29,7 +29,7 @@ def get_version():
 
 def create(target, module_name):
 	my_module = module.Module(__file__, module_name, get_type())
-	my_module.add_extra_compile_flags()
+	my_module.add_extra_flags()
 	my_module.add_src_file([
 		'esignal/debug.cpp',
 		'esignal/Connection.cpp',
@@ -47,12 +47,12 @@ def create(target, module_name):
 		'esignal/details/Signal.hxx',
 		])
 	my_module.compile_version("c++", 2011)
-	my_module.add_module_depend([
+	my_module.add_depend([
 	    'etk',
 	    'ememory'
 	    ])
 	my_module.add_path(tools.get_current_path(__file__))
-	my_module.compile_flags('c++', [
+	my_module.add_flag('c++', [
 		"-DESIGNAL_VERSION=\"\\\"" + tools.version_to_string(get_version()) + "\\\"\""
 		])
 	my_module.add_tools(['esignal-test'])

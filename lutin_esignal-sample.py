@@ -29,6 +29,6 @@ def create(target, module_name):
 	my_module.add_src_file([
 		'sample/sampleAll.cpp'
 		])
-	my_module.add_module_depend(['esignal', 'test-debug'])
+	my_module.add_depend(['esignal', 'test-debug'])
 	return my_module
 
