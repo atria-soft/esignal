@@ -82,10 +82,10 @@ Now you can nonnect the functions:
 This Will generate this simple sample code:
 @snippet sampleAll.cpp esignal_sample_class_connection
 
-Connection on std::shared_ptr<class> member function                     {#esignal_connection_shared}
+Connection on ememory::SharedPtr<class> member function                     {#esignal_connection_shared}
 ----------------------------------------------------
 
-std::hared_ptr have intrinsec knoledge of alive pointer, then, if you do not need to remove connection while the shared_ptr is alive, just connect it like:
+ememory::SharedPtr have intrinsec knowledge of alive pointer, then, if you do not need to remove connection while the ememory::SharedPtr is alive, just connect it like:
 @snippet sampleAll.cpp esignal_sample_shared_connection
 
 Create new Signal                           {#esignal_create}
