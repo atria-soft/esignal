@@ -8,9 +8,9 @@
 #pragma once
 
 #include <functional>
-#include <ememory/memory.h>
-#include <esignal/debug.h>
-#include <esignal/Base.h>
+#include <ememory/memory.hpp>
+#include <esignal/debug.hpp>
+#include <esignal/Base.hpp>
 
 namespace esignal {
 	/**

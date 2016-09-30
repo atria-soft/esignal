@@ -5,8 +5,8 @@
  * 
  * @license APACHE v2.0 (see license file)
  */
-#include <esignal/debug.h>
-#include <esignal/Connection.h>
+#include <esignal/debug.hpp>
+#include <esignal/Connection.hpp>
 
 esignal::Connection::Connection():
   m_data(nullptr),

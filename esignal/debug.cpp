@@ -6,7 +6,7 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <esignal/debug.h>
+#include <esignal/debug.hpp>
 
 int32_t esignal::getLogId() {
 	static int32_t g_val = elog::registerInstance("esignal");

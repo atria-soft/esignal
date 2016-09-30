@@ -6,10 +6,10 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <ememory/memory.h>
-#include <esignal/debug.h>
-#include <esignal/Interface.h>
-#include <esignal/Base.h>
+#include <ememory/memory.hpp>
+#include <esignal/debug.hpp>
+#include <esignal/Interface.hpp>
+#include <esignal/Base.hpp>
 
 size_t esignal::BaseInternal::s_uid = 1;
 int64_t esignal::BaseInternal::s_uidSignalEmit = 1;

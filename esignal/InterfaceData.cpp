@@ -6,10 +6,10 @@
  * @license APACHE v2.0 (see license file)
  */
 
-#include <ememory/memory.h>
-#include <esignal/debug.h>
-#include <esignal/InterfaceData.h>
-#include <esignal/Base.h>
+#include <ememory/memory.hpp>
+#include <esignal/debug.hpp>
+#include <esignal/InterfaceData.hpp>
+#include <esignal/Base.hpp>
 
 esignal::InterfaceData::InterfaceData() {
 	

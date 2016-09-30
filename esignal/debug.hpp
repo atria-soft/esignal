@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <elog/log.h>
+#include <elog/log.hpp>
 
 namespace esignal {
 	int32_t getLogId();

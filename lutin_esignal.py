@@ -38,12 +38,12 @@ def create(target, module_name):
 		'esignal/details/Signal.cpp',
 		])
 	my_module.add_header_file([
-		'esignal/debug.h',
-		'esignal/Interface.h',
-		'esignal/InterfaceData.h',
-		'esignal/Base.h',
-		'esignal/Signal.h',
-		'esignal/Connection.h',
+		'esignal/debug.hpp',
+		'esignal/Interface.hpp',
+		'esignal/InterfaceData.hpp',
+		'esignal/Base.hpp',
+		'esignal/Signal.hpp',
+		'esignal/Connection.hpp',
 		'esignal/details/Signal.hxx',
 		])
 	my_module.compile_version("c++", 2011)

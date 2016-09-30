@@ -9,12 +9,12 @@
 
 #include <functional>
 #include <memory>
-#include <ememory/memory.h>
-#include <esignal/debug.h>
-#include <esignal/Base.h>
-#include <esignal/Connection.h>
+#include <ememory/memory.hpp>
+#include <esignal/debug.hpp>
+#include <esignal/Base.hpp>
+#include <esignal/Connection.hpp>
 #include <utility>
-#include <esignal/Interface.h>
+#include <esignal/Interface.hpp>
 
 namespace esignal {
 	

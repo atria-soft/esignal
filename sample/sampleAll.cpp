@@ -5,11 +5,11 @@
  * 
  * @license APACHE v2.0 (see license file)
  */
-#include <etk/etk.h>
-#include <test-debug/debug.h>
+#include <etk/etk.hpp>
+#include <test-debug/debug.hpp>
 
 //! [esignal_sample_declare]
-#include <esignal/Signal.h>
+#include <esignal/Signal.hpp>
 //! [esignal_sample_declare]
 
 void declareSignals() {

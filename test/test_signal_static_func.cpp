@@ -8,10 +8,10 @@
 
 #define NAME "SingleArg"
 #include <gtest/gtest.h>
-#include <esignal/Signal.h>
-#include <esignal/Interface.h>
-#include <ememory/memory.h>
-#include <test-debug/debug.h>
+#include <esignal/Signal.hpp>
+#include <esignal/Interface.hpp>
+#include <ememory/memory.hpp>
+#include <test-debug/debug.hpp>
 
 static int32_t tmpRetInt32 = 0;
 static std::string tmpRetString = "";

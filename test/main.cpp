@@ -7,9 +7,9 @@
  */
 #define NAME "Empty"
 
-#include <etk/types.h>
-#include <etk/etk.h>
-#include <test-debug/debug.h>
+#include <etk/types.hpp>
+#include <etk/etk.hpp>
+#include <test-debug/debug.hpp>
 #include <gtest/gtest.h>
 
 int main(int _argc, const char *_argv[]) {

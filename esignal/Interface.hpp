@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <map>
-#include <esignal/InterfaceData.h>
+#include <esignal/InterfaceData.hpp>
 
 namespace esignal {
 	/**
