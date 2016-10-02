@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <esignal/Signal.h>
+#include <esignal/Signal.hpp>
 
 template<class... T_ARGS>
 esignal::Signal<T_ARGS...>::~Signal() {
