@@ -1,9 +1,6 @@
 #!/usr/bin/python
-import lutin.module as module
 import lutin.tools as tools
 import lutin.debug as debug
-import os
-import lutin.multiprocess as lutinMultiprocess
 
 
 def get_type():
@@ -27,34 +24,33 @@ def get_maintainer():
 def get_version():
 	return "version.txt"
 
-def create(target, module_name):
-	my_module = module.Module(__file__, module_name, get_type())
+def configure(target, my_module):
 	my_module.add_extra_flags()
 	my_module.add_src_file([
-		'esignal/debug.cpp',
-		'esignal/Connection.cpp',
-		'esignal/InterfaceData.cpp',
-		'esignal/Base.cpp',
-		'esignal/details/Signal.cpp',
-		])
+	    'esignal/debug.cpp',
+	    'esignal/Connection.cpp',
+	    'esignal/InterfaceData.cpp',
+	    'esignal/Base.cpp',
+	    'esignal/details/Signal.cpp',
+	    ])
 	my_module.add_header_file([
-		'esignal/debug.hpp',
-		'esignal/Interface.hpp',
-		'esignal/InterfaceData.hpp',
-		'esignal/Base.hpp',
-		'esignal/Signal.hpp',
-		'esignal/Connection.hpp',
-		'esignal/details/Signal.hxx',
-		])
+	    'esignal/debug.hpp',
+	    'esignal/Interface.hpp',
+	    'esignal/InterfaceData.hpp',
+	    'esignal/Base.hpp',
+	    'esignal/Signal.hpp',
+	    'esignal/Connection.hpp',
+	    'esignal/details/Signal.hxx',
+	    ])
 	my_module.compile_version("c++", 2011)
 	my_module.add_depend([
 	    'etk',
 	    'ememory'
 	    ])
-	my_module.add_path(tools.get_current_path(__file__))
+	my_module.add_path(".")
 	my_module.add_flag('c++', [
 		"-DESIGNAL_VERSION=\"\\\"" + tools.version_to_string(get_version()) + "\\\"\""
 		])
 	my_module.add_tools(['esignal-test'])
-	return my_module
+	return True
 
