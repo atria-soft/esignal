@@ -1,7 +1,7 @@
 e-signal
 ========
 
-`esignal` is c++ svg image parser and renderer.
+`esignal` is c++ simple direct signal manager.
 
 Release (master)
 ----------------
@@ -49,6 +49,8 @@ download the software:
 	mkdir WORKING_DIRECTORY
 	cd WORKING_DIRECTORY
 	git clone https://github.com/atria-soft/etk.git
+	git clone https://github.com/atria-soft/elog.git
+	git clone https://github.com/atria-soft/ememory.git
 	git clone https://github.com/atria-soft/esignal.git
 	git clone https://github.com/generic-library/gtest-lutin.git --recursive
 	git clone https://github.com/generic-library/z-lutin.git --recursive
@@ -57,7 +59,7 @@ Compile software:
 -----------------
 
 	cd WORKING_DIRECTORY
-	lutin -C -P esignal-test
+	lutin -C -P esignal-test esignal-sample
 
 
 License (APACHE v2.0)
