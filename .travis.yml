@@ -52,9 +52,9 @@ install:
 
 before_script:
   - cd ..
-  - git clone https://github.com/atria-soft/elog.git
-  - git clone https://github.com/atria-soft/etk.git
-  - git clone https://github.com/atria-soft/ememory.git
+  - git clone https://github.com/atria-soft/elog.git -b $TRAVIS_BRANCH
+  - git clone https://github.com/atria-soft/etk.git -b $TRAVIS_BRANCH
+  - git clone https://github.com/atria-soft/ememory.git -b $TRAVIS_BRANCH
   - git clone https://github.com/generic-library/gtest-lutin.git --recursive
   - git clone https://github.com/generic-library/z-lutin.git --recursive
   - pwd
@@ -72,7 +72,7 @@ after_script:
   - if [ "$GCOV" != "" ]; then
         ./ci/warning_send.py --find-path ./out/Linux_x86_64/$CONF/build/$BUILDER/esignal/;
     fi
-  - ./out/Linux_x86_64/$CONF/staging/$BUILDER/esignal-test/esignal-test.app/bin/esignal-test --elog-level=3 | tee out_test.txt
+  - lutin -w -j4 -C -P -t$TARGET -c $BUILDER $COMPILATOR_OPTION $BUS -m $CONF $GCOV $DISABLE_PACKAGE esignal-test?run:--elog-level=3 | tee out_test.txt
   - if [ "$GCOV" != "" ]; then
         ./ci/test_send.py --file=out_test.txt;
         lutin -C -P -t $TARGET -c $BUILDER $COMPILATOR_OPTION $BUS -m $CONF -p esignal?gcov;
