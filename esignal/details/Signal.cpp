@@ -48,3 +48,13 @@ ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,3>);
 ESIGNAL_DECLARE_SIGNAL(etk::Color<float,4>);
 ESIGNAL_DECLARE_SIGNAL(etk::Color<float,3>);
 
+#ifdef ESIGNAL_BUILD_WITH_ECHRONO
+	#include <echrono/Clock.hpp>
+	#include <echrono/Duration.hpp>
+	#include <echrono/Steady.hpp>
+	#include <echrono/Time.hpp>
+	ESIGNAL_DECLARE_SIGNAL(echrono::Clock);
+	ESIGNAL_DECLARE_SIGNAL(echrono::Duration);
+	ESIGNAL_DECLARE_SIGNAL(echrono::Steady);
+	ESIGNAL_DECLARE_SIGNAL(echrono::Time);
+#endif
