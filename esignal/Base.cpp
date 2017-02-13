@@ -38,6 +38,7 @@ esignal::Base::Base() :
   m_data(nullptr) {
 	
 }
+
 esignal::Base::~Base() {
 	m_data.reset();
 }

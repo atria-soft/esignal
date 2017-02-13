@@ -36,6 +36,7 @@ namespace esignal {
 			 * @param[in] _countObs Observer on the number of connection availlable
 			 */
 			BaseInternal(ObserverConnection _countObs) :
+			  m_periodic(false),
 			  m_connectionObserver(_countObs) {
 				
 			}
