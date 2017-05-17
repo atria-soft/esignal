@@ -9,6 +9,8 @@
 #include <etk/types.hpp>
 #include <etk/math/Vector2D.hpp>
 #include <etk/math/Vector3D.hpp>
+#include <etk/math/Quaternion.hpp>
+#include <etk/math/Transform3D.hpp>
 #include <etk/Color.hpp>
 
 // void generic signal
@@ -32,16 +34,19 @@ ESIGNAL_DECLARE_SIGNAL(uint8_t);
 
 ESIGNAL_DECLARE_SIGNAL(float);
 ESIGNAL_DECLARE_SIGNAL(double);
-// etk generic vetor 2D
+// etk generic vector 2D
 ESIGNAL_DECLARE_SIGNAL(vec2);
 ESIGNAL_DECLARE_SIGNAL(bvec2);
 ESIGNAL_DECLARE_SIGNAL(ivec2);
 ESIGNAL_DECLARE_SIGNAL(uivec2);
-// etk generic vetor 3D
+// etk generic vector 3D
 ESIGNAL_DECLARE_SIGNAL(vec3);
 ESIGNAL_DECLARE_SIGNAL(bvec3);
 ESIGNAL_DECLARE_SIGNAL(ivec3);
 ESIGNAL_DECLARE_SIGNAL(uivec3);
+// etk generic 3D elements
+ESIGNAL_DECLARE_SIGNAL(etk::Quaternion);
+ESIGNAL_DECLARE_SIGNAL(etk::Transform3D);
 // etk generic color
 ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,4>);
 ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,3>);
