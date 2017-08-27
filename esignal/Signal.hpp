@@ -67,7 +67,7 @@ namespace esignal {
 					virtual bool isSharedPtr(const ememory::SharedPtr<void>& _obj);
 			};
 		protected:
-			std::vector<std::unique_ptr<Executor>> m_executors; //!< List of all executors.
+			etk::Vector<std::unique_ptr<Executor>> m_executors; //!< List of all executors.
 		private:
 			/**
 			 * @brief Executor specific to the Shared_ptr caller that does not want to worry about the removing of the signal.
@@ -154,8 +154,8 @@ namespace esignal {
 			 * @param[in] _description Description of the signal.
 			 */
 			Signal(esignal::BaseInternal::ObserverConnection _countObs=nullptr,
-			       const std::string& _name="",
-			       const std::string& _description="");
+			       const etk::String& _name="",
+			       const etk::String& _description="");
 			/**
 			 * @brief Basic constructor with connection interface
 			 * @param[in] _signalInterfaceLink reference on the signal lister.
@@ -163,8 +163,8 @@ namespace esignal {
 			 * @param[in] _description Description of the signal.
 			 */
 			Signal(esignal::Interface* _signalInterfaceLink,
-			       const std::string& _name,
-			       const std::string& _description);
+			       const etk::String& _name,
+			       const etk::String& _description);
 			/**
 			 * @brief Basic constructor with connection observer
 			 * @param[in] _class Class which is associated the function to call.
@@ -178,16 +178,16 @@ namespace esignal {
 			                                 , int>::type = 0>
 			Signal(CLASS_TYPE* _class,
 			       FUNC_TYPE _func,
-			       const std::string& _name,
-			       const std::string& _description);
+			       const etk::String& _name,
+			       const etk::String& _description);
 			template<class CLASS_TYPE,
 			         class FUNC_TYPE,
 			         typename std::enable_if<!std::is_base_of<esignal::Interface, CLASS_TYPE>::value
 			                                 , int>::type = 0>
 			Signal(CLASS_TYPE* _class,
 			       FUNC_TYPE _func,
-			       const std::string& _name="",
-			       const std::string& _description="");
+			       const etk::String& _name="",
+			       const etk::String& _description="");
 			//! @brief Copy constructor (REMOVED)
 			Signal(const Signal&) = delete;
 			/**
@@ -321,7 +321,7 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(OBSERVER_TYPE&& 
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (observer)");
 	std::unique_ptr<Executor> executer(new Executor(std::forward<OBSERVER_TYPE>(_observer)));
 	size_t uid = executer->m_uid;
-	m_executors.push_back(std::move(executer));
+	m_executors.pushBack(etk::move(executer));
 	if (m_connectionObserver!=nullptr) {
 		m_connectionObserver(m_executors.size());
 	}
@@ -343,7 +343,7 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(CLASS_TYPE* _cla
 		(*_class.*_func)(_argBase..., _arg... );
 	}));
 	size_t uid = executer->m_uid;
-	m_executors.push_back(std::move(executer));
+	m_executors.pushBack(etk::move(executer));
 	if (m_connectionObserver != nullptr) {
 		m_connectionObserver(m_executors.size());
 	}
@@ -371,7 +371,7 @@ void esignal::SignalInternal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT
 		// TODO : Check if compilator does not use the shared ptr ...
 		(*directPointer.*_func)(_argBase..., _args... );
 	}));
-	m_executors.push_back(std::move(executer));
+	m_executors.pushBack(etk::move(executer));
 	if (m_connectionObserver!=nullptr) {
 		m_connectionObserver(m_executors.size());
 	}
@@ -385,8 +385,8 @@ template<class CLASS_TYPE,
                                  , int>::type>
 esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
                                    FUNC_TYPE _func,
-                                   const std::string& _name,
-                                   const std::string& _description):
+                                   const etk::String& _name,
+                                   const etk::String& _description):
   m_signalInterfaceLink(nullptr) {
 	// nothing to do
 	if (_func != nullptr) {
@@ -411,8 +411,8 @@ template<class CLASS_TYPE,
                                  , int>::type>
 esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
                                    FUNC_TYPE _func,
-                                   const std::string& _name,
-                                   const std::string& _description):
+                                   const etk::String& _name,
+                                   const etk::String& _description):
   m_signalInterfaceLink(nullptr) {
 	// nothing to do
 	if (_func != nullptr) {

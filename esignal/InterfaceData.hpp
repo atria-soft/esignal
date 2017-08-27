@@ -7,8 +7,8 @@
  */
 #pragma once
 
-#include <vector>
-#include <map>
+#include <etk/Vector.hpp>
+#include <etk/Map.hpp>
 
 namespace esignal {
 	class Base;
@@ -17,7 +17,7 @@ namespace esignal {
 	 */
 	class InterfaceData {
 		private:
-			std::vector<esignal::Base*> m_list;  //!< list of availlable Parameters
+			etk::Vector<esignal::Base*> m_list;  //!< list of availlable Parameters
 		public:
 			/**
 			 * @brief Constructor.
@@ -43,7 +43,7 @@ namespace esignal {
 			 * @brief Get All the signal list:
 			 * @return vector on all the signals names
 			 */
-			std::vector<std::string> getAll() const;
+			etk::Vector<etk::String> getAll() const;
 			/**
 			 * @brief Remove binding on all event class.
 			 * @param[in] _sharedPtr sharedPtr to unlink (no type needed ...).

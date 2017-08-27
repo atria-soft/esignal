@@ -14,7 +14,7 @@
 #include <test-debug/debug.hpp>
 
 static int32_t tmpRetInt32 = 0;
-static std::string tmpRetString = "";
+static etk::String tmpRetString = "";
 static bool tmpRetVoid = false;
 
 static void clear() {
@@ -38,35 +38,35 @@ static void callbackConstInt(const int32_t& _a){
 	tmpRetInt32 = _a;
 };
 
-static void callbackString(std::string _b){
+static void callbackString(etk::String _b){
 	TEST_VERBOSE("event b=" << _b);
 	tmpRetString = _b;
 };
 
-static void callbackConstString(const std::string& _b){
+static void callbackConstString(const etk::String& _b){
 	TEST_VERBOSE("event b=" << _b);
 	tmpRetString = _b;
 };
 
-static void callbackIntString(int32_t _a, std::string _b){
+static void callbackIntString(int32_t _a, etk::String _b){
 	TEST_VERBOSE("event a=" << _a << " b=" << _b);
 	tmpRetInt32 = _a;
 	tmpRetString = _b;
 };
 
-static void callbackConstIntString(const int32_t& _a, const std::string& _b){
+static void callbackConstIntString(const int32_t& _a, const etk::String& _b){
 	TEST_VERBOSE("event a=" << _a << " b=" << _b);
 	tmpRetInt32 = _a;
 	tmpRetString = _b;
 };
 
-static void callbackMixedIntString(int32_t _a, const std::string& _b){
+static void callbackMixedIntString(int32_t _a, const etk::String& _b){
 	TEST_VERBOSE("event a=" << _a << " b=" << _b);
 	tmpRetInt32 = _a;
 	tmpRetString = _b;
 };
 
-static void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+static void callbackPolyargs(const int32_t& _a, const etk::String& _b, char _char, int _int) {
 	TEST_VERBOSE("event a=" << _a << " b=" << _b << " _char=" << _char << " _int=" << _int);
 	tmpRetInt32 = _a + _int;
 	tmpRetString = _b + _char;
@@ -110,7 +110,7 @@ TEST(test_signal_static_func, localFunctionConstInt32) {
 
 TEST(test_signal_static_func, localFunctionString) {
 	clear();
-	esignal::Signal<std::string> signal;
+	esignal::Signal<etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&callbackString);
@@ -122,7 +122,7 @@ TEST(test_signal_static_func, localFunctionString) {
 
 TEST(test_signal_static_func, localFunctionConstString) {
 	clear();
-	esignal::Signal<std::string> signal;
+	esignal::Signal<etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&callbackConstString);
@@ -134,7 +134,7 @@ TEST(test_signal_static_func, localFunctionConstString) {
 
 TEST(test_signal_static_func, localFunctionIntString) {
 	clear();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&callbackIntString);
@@ -147,7 +147,7 @@ TEST(test_signal_static_func, localFunctionIntString) {
 
 TEST(test_signal_static_func, localFunctionConstIntString) {
 	clear();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&callbackConstIntString);
@@ -160,7 +160,7 @@ TEST(test_signal_static_func, localFunctionConstIntString) {
 
 TEST(test_signal_static_func, localFunctionMixedIntString) {
 	clear();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&callbackMixedIntString);
@@ -180,7 +180,7 @@ TEST(test_signal_static_func, localFunctionMixedIntString) {
 	}
 	TEST(test_signal_static_func, localFunctionConstIntStringPolyArg) {
 		clear();
-		esignal::Signal<int32_t, std::string> signal;
+		esignal::Signal<int32_t, etk::String> signal;
 		EXPECT_EQ(signal.size(), 0);
 		EXPECT_EQ(signal.empty(), true);
 		esignal::Connection connection1 = signal.connect(complete_args(&callbackPolyargs, 'c', 12365));
@@ -204,7 +204,7 @@ TEST(test_signal_static_func, localFunctionMixedIntString) {
 #if 0
 TEST(test_signal_static_func, localFunctionConstIntStringPolyArgWithJAJA) {
 	clear();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&callbackPolyargs, 'c', 12365);
@@ -218,11 +218,11 @@ TEST(test_signal_static_func, localFunctionConstIntStringPolyArgWithJAJA) {
 
 TEST(test_signal_static_func, localFunctionLambda) {
 	clear();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(
-	    [](int32_t _a, const std::string& _b) {
+	    [](int32_t _a, const etk::String& _b) {
 	        tmpRetInt32 = _a;
 	        tmpRetString = _b;
 	        }

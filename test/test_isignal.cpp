@@ -17,7 +17,7 @@
 class testISignal : public esignal::Interface {
 	public:
 		esignal::Signal<int32_t> m_signalInt;
-		esignal::Signal<std::string> m_signalString;
+		esignal::Signal<etk::String> m_signalString;
 		esignal::Signal<float> m_signalFloat;
 	public:
 		size_t m_count;
@@ -37,10 +37,10 @@ TEST(test_isignal_counter, localbasicCounter1) {
 	testISignal localClass;
 	EXPECT_EQ(localClass.m_signalString.size(), 0);
 	EXPECT_EQ(localClass.m_signalString.empty(), true);
-	esignal::Connection connection1 = localClass.m_signalString.connect([=](std::string){});
+	esignal::Connection connection1 = localClass.m_signalString.connect([=](etk::String){});
 	EXPECT_EQ(localClass.m_signalString.size(), 1);
 	EXPECT_EQ(localClass.m_signalString.empty(), false);
-	esignal::Connection connection2 = localClass.m_signalString.connect([=](std::string){});
+	esignal::Connection connection2 = localClass.m_signalString.connect([=](etk::String){});
 	EXPECT_EQ(localClass.m_signalString.size(), 2);
 	EXPECT_EQ(localClass.m_signalString.empty(), false);
 	connection1.disconnect();
@@ -96,10 +96,10 @@ class testCallbackIShared : public ememory::EnableSharedFromThis<testCallbackISh
 
 TEST(test_isignal_counter, localbasicInterfaceGetListSignal) {
 	testISignal localClass;
-	std::vector<std::string> list;
-	list.push_back("int");
-	list.push_back("string");
-	list.push_back("float");
+	etk::Vector<etk::String> list;
+	list.pushBack("int");
+	list.pushBack("string");
+	list.pushBack("float");
 	EXPECT_EQ(localClass.signals.getAll(), list);
 }
 

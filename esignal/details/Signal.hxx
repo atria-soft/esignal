@@ -18,12 +18,12 @@ esignal::Signal<T_ARGS...>::~Signal() {
 
 template<typename... T_ARGS>
 esignal::Signal<T_ARGS...>::Signal(esignal::BaseInternal::ObserverConnection _countObs,
-                                   const std::string& _name,
-                                   const std::string& _description):
+                                   const etk::String& _name,
+                                   const etk::String& _description):
   esignal::Base(),
   m_signalInterfaceLink(nullptr) {
 	// create internal data assiciated:
-	m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(std::move(_countObs));
+	m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(etk::move(_countObs));
 	if (esignal::Base::m_data != nullptr) {
 		esignal::Base::m_data->setName(_name);
 		esignal::Base::m_data->setDescription(_description);
@@ -32,8 +32,8 @@ esignal::Signal<T_ARGS...>::Signal(esignal::BaseInternal::ObserverConnection _co
 
 template<class... T_ARGS>
 esignal::Signal<T_ARGS...>::Signal(esignal::Interface* _signalInterfaceLink,
-                                   const std::string& _name,
-                                   const std::string& _description):
+                                   const etk::String& _name,
+                                   const etk::String& _description):
   m_signalInterfaceLink(_signalInterfaceLink) {
 	// create internal data assiciated:
 	m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(nullptr);
@@ -154,7 +154,7 @@ esignal::SignalInternal<T_ARGS...>::Executor::Executor(Observer&& _observer):
   m_removed(false),
   m_uid(0) {
 	m_uid = s_uid++;
-	m_observer = std::move(_observer);
+	m_observer = etk::move(_observer);
 }
 
 template<typename... T_ARGS>
@@ -179,7 +179,7 @@ bool esignal::SignalInternal<T_ARGS...>::Executor::isSharedPtr(const ememory::Sh
 
 template<typename... T_ARGS>
 esignal::SignalInternal<T_ARGS...>::ExecutorShared::ExecutorShared(ememory::WeakPtr<void> _object, Observer&& _observer) :
-  Executor(std::move(_observer)),
+  Executor(etk::move(_observer)),
   m_object(_object) {
 	
 }

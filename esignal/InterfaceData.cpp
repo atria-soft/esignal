@@ -25,7 +25,7 @@ void esignal::InterfaceData::add(esignal::Base* _pointerOnSignal) {
 		ESIGNAL_ERROR("Try to link a nullptr parameters");
 		return;
 	}
-	m_list.push_back(_pointerOnSignal);
+	m_list.pushBack(_pointerOnSignal);
 }
 
 void esignal::InterfaceData::remove(esignal::Base* _pointerOnSignal) {
@@ -40,11 +40,11 @@ void esignal::InterfaceData::remove(esignal::Base* _pointerOnSignal) {
 	}
 }
 
-std::vector<std::string> esignal::InterfaceData::getAll() const {
-	std::vector<std::string> out;
+etk::Vector<etk::String> esignal::InterfaceData::getAll() const {
+	etk::Vector<etk::String> out;
 	for (auto &it : m_list) {
 		if(it != nullptr) {
-			out.push_back(it->getName());
+			out.pushBack(it->getName());
 		}
 	}
 	return out;

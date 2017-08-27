@@ -28,8 +28,8 @@ namespace esignal {
 			static size_t s_uid; //!< global id of the signal (STATIC)
 			static int64_t s_uidSignalEmit; //!< global id to emit counting
 			ObserverConnection m_connectionObserver; //!< propriétéry of the connection handle basic
-			std::string m_name; //!< name of the signal.
-			std::string m_description; //!< description of the signal.
+			etk::String m_name; //!< name of the signal.
+			etk::String m_description; //!< description of the signal.
 		public:
 			/**
 			 * @brief Basic constructor:
@@ -55,22 +55,22 @@ namespace esignal {
 			 * @brief Get name of the signal.
 			 * @return requested name.
 			 */
-			const std::string& getName() const;
+			const etk::String& getName() const;
 			/**
 			 * @brief Set name of the signal.
 			 * @param[in] _name new name.
 			 */
-			void setName(const std::string& _name);
+			void setName(const etk::String& _name);
 			/**
 			 * @brief Get decription of the signal.
 			 * @return requested decription.
 			 */
-			const std::string& getDescription() const;
+			const etk::String& getDescription() const;
 			/**
 			 * @brief Set decription of the signal.
 			 * @param[in] _desc new decription.
 			 */
-			void setDescription(const std::string& _desc);
+			void setDescription(const etk::String& _desc);
 			/**
 			 * @brief Tag the signal as periodic...
 			 * @param[in] _state state of the periodic element
@@ -121,12 +121,12 @@ namespace esignal {
 			 * @brief Get name of the signal.
 			 * @return requested name.
 			 */
-			virtual const std::string& getName() const;
+			virtual const etk::String& getName() const;
 			/**
 			 * @brief Get decription of the signal.
 			 * @return requested decription.
 			 */
-			virtual const std::string& getDescription() const;
+			virtual const etk::String& getDescription() const;
 			/**
 			 * @brief Tag the signal as periodic...
 			 * @param[in] _state state of the periodic element
@@ -134,7 +134,7 @@ namespace esignal {
 			void setPeriodic(bool _state);
 	};
 	//! @not-in-doc
-	std::ostream& operator <<(std::ostream& _os, const esignal::Base& _obj);
+	etk::Stream& operator <<(etk::Stream& _os, const esignal::Base& _obj);
 	#ifdef DEBUG
 		const char* logIndent(int32_t _iii);
 	#endif

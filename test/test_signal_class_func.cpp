@@ -16,7 +16,7 @@
 class testCallback {
 	public:
 		int32_t m_int32;
-		std::string m_string;
+		etk::String m_string;
 		bool m_void;
 		testCallback() {
 			m_emptyFunctor = nullptr;
@@ -40,30 +40,30 @@ class testCallback {
 			TEST_VERBOSE("event a=" << _a);
 			m_int32 = _a;
 		}
-		void callbackString(std::string _b){
+		void callbackString(etk::String _b){
 			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
-		void callbackConstString(const std::string& _b){
+		void callbackConstString(const etk::String& _b){
 			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
-		void callbackIntString(int32_t _a, std::string _b){
+		void callbackIntString(int32_t _a, etk::String _b){
 			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
-		void callbackConstIntString(const int32_t& _a, const std::string& _b){
+		void callbackConstIntString(const int32_t& _a, const etk::String& _b){
 			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
-		void callbackMixedIntString(int32_t _a, const std::string& _b){
+		void callbackMixedIntString(int32_t _a, const etk::String& _b){
 			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
-		void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+		void callbackPolyargs(const int32_t& _a, const etk::String& _b, char _char, int _int) {
 			TEST_VERBOSE("event a=" << _a << " b=" << _b << " _char=" << _char << " _int=" << _int);
 			m_int32 = _a + _int;
 			m_string = _b + _char;
@@ -168,7 +168,7 @@ TEST(test_signal_class_func, localFunctionConstInt32) {
 
 TEST(test_signal_class_func, localFunctionString) {
 	testCallback localClass;
-	esignal::Signal<std::string> signal;
+	esignal::Signal<etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackString);
@@ -180,7 +180,7 @@ TEST(test_signal_class_func, localFunctionString) {
 
 TEST(test_signal_class_func, localFunctionConstString) {
 	testCallback localClass;
-	esignal::Signal<std::string> signal;
+	esignal::Signal<etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackConstString);
@@ -192,7 +192,7 @@ TEST(test_signal_class_func, localFunctionConstString) {
 
 TEST(test_signal_class_func, localFunctionIntString) {
 	testCallback localClass;
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackIntString);
@@ -205,7 +205,7 @@ TEST(test_signal_class_func, localFunctionIntString) {
 
 TEST(test_signal_class_func, localFunctionConstIntString) {
 	testCallback localClass;
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackConstIntString);
@@ -218,7 +218,7 @@ TEST(test_signal_class_func, localFunctionConstIntString) {
 
 TEST(test_signal_class_func, localFunctionMixedIntString) {
 	testCallback localClass;
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackMixedIntString);
@@ -231,7 +231,7 @@ TEST(test_signal_class_func, localFunctionMixedIntString) {
 
 TEST(test_signal_class_func, localFunctionConstIntStringPolyArg) {
 	testCallback localClass;
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	esignal::Connection connection1 = signal.connect(&localClass, &testCallback::callbackPolyargs, 'c', 12365);

@@ -18,19 +18,19 @@ void esignal::BaseInternal::setPeriodic(bool _state) {
 	m_periodic = _state;
 }
 
-const std::string& esignal::BaseInternal::getName() const {
+const etk::String& esignal::BaseInternal::getName() const {
 	return m_name;
 }
 
-void esignal::BaseInternal::setName(const std::string& _name) {
+void esignal::BaseInternal::setName(const etk::String& _name) {
 	m_name = _name;
 }
 
-const std::string& esignal::BaseInternal::getDescription() const {
+const etk::String& esignal::BaseInternal::getDescription() const {
 	return m_description;
 }
 
-void esignal::BaseInternal::setDescription(const std::string& _desc) {
+void esignal::BaseInternal::setDescription(const etk::String& _desc) {
 	m_description = _desc;
 }
 
@@ -43,19 +43,19 @@ esignal::Base::~Base() {
 	m_data.reset();
 }
 
-const std::string& esignal::Base::getName() const {
+const etk::String& esignal::Base::getName() const {
 	if (m_data != nullptr) {
 		return m_data->getName();
 	}
-	static std::string noValue;
+	static etk::String noValue;
 	return noValue;
 }
 
-const std::string& esignal::Base::getDescription() const {
+const etk::String& esignal::Base::getDescription() const {
 	if (m_data != nullptr) {
 		return m_data->getDescription();
 	}
-	static std::string noValue;
+	static etk::String noValue;
 	return noValue;
 }
 
@@ -65,7 +65,7 @@ void esignal::Base::setPeriodic(bool _state) {
 	}
 }
 
-std::ostream& esignal::operator <<(std::ostream& _os, const esignal::Base& _obj) {
+etk::Stream& esignal::operator <<(etk::Stream& _os, const esignal::Base& _obj) {
 	_os << _obj.getName();
 	return _os;
 }

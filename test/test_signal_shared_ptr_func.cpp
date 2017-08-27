@@ -16,7 +16,7 @@
 class testCallbackShared : public ememory::EnableSharedFromThis<testCallbackShared> {
 	public:
 		int32_t m_int32;
-		std::string m_string;
+		etk::String m_string;
 		bool m_void;
 		testCallbackShared() {
 			m_emptyFunctor = nullptr;
@@ -45,30 +45,30 @@ class testCallbackShared : public ememory::EnableSharedFromThis<testCallbackShar
 			TEST_VERBOSE("event a=" << _a);
 			m_int32 = _a;
 		}
-		void callbackString(std::string _b) {
+		void callbackString(etk::String _b) {
 			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
-		void callbackConstString(const std::string& _b) {
+		void callbackConstString(const etk::String& _b) {
 			TEST_VERBOSE("event b=" << _b);
 			m_string = _b;
 		}
-		void callbackIntString(int32_t _a, std::string _b) {
+		void callbackIntString(int32_t _a, etk::String _b) {
 			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
-		void callbackConstIntString(const int32_t& _a, const std::string& _b) {
+		void callbackConstIntString(const int32_t& _a, const etk::String& _b) {
 			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
-		void callbackMixedIntString(int32_t _a, const std::string& _b) {
+		void callbackMixedIntString(int32_t _a, const etk::String& _b) {
 			TEST_VERBOSE("event a=" << _a << " b=" << _b);
 			m_int32 = _a;
 			m_string = _b;
 		}
-		void callbackPolyargs(const int32_t& _a, const std::string& _b, char _char, int _int) {
+		void callbackPolyargs(const int32_t& _a, const etk::String& _b, char _char, int _int) {
 			TEST_VERBOSE("event a=" << _a << " b=" << _b << " _char=" << _char << " _int=" << _int);
 			m_int32 = _a + _int;
 			m_string = _b + _char;
@@ -149,7 +149,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstInt32) {
 
 TEST(test_signal_shared_ptr_func, localFunctionString) {
 	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
-	esignal::Signal<std::string> signal;
+	esignal::Signal<etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	#if 0
@@ -165,7 +165,7 @@ TEST(test_signal_shared_ptr_func, localFunctionString) {
 
 TEST(test_signal_shared_ptr_func, localFunctionConstString) {
 	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
-	esignal::Signal<std::string> signal;
+	esignal::Signal<etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	signal.connect(localClass, &testCallbackShared::callbackConstString);
@@ -177,7 +177,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstString) {
 
 TEST(test_signal_shared_ptr_func, localFunctionIntString) {
 	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	#if 0
@@ -194,7 +194,7 @@ TEST(test_signal_shared_ptr_func, localFunctionIntString) {
 
 TEST(test_signal_shared_ptr_func, localFunctionConstIntString) {
 	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	signal.connect(localClass, &testCallbackShared::callbackConstIntString);
@@ -207,7 +207,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstIntString) {
 
 TEST(test_signal_shared_ptr_func, localFunctionMixedIntString) {
 	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	#if 0
@@ -225,7 +225,7 @@ TEST(test_signal_shared_ptr_func, localFunctionMixedIntString) {
 
 TEST(test_signal_shared_ptr_func, localFunctionConstIntStringPolyArg) {
 	ememory::SharedPtr<testCallbackShared> localClass = ememory::makeShared<testCallbackShared>();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	signal.connect(localClass, &testCallbackShared::callbackPolyargs, 'c', 12365);
@@ -238,7 +238,7 @@ TEST(test_signal_shared_ptr_func, localFunctionConstIntStringPolyArg) {
 
 class testCallbackSharedHerited : public testCallbackShared {
 	public:
-		void callbackHerited(const int32_t& _a, const std::string& _b) {
+		void callbackHerited(const int32_t& _a, const etk::String& _b) {
 			m_int32 = _a;
 			m_string = _b;
 		}
@@ -247,7 +247,7 @@ class testCallbackSharedHerited : public testCallbackShared {
 
 TEST(test_signal_shared_ptr_func, localFunctionHerited) {
 	ememory::SharedPtr<testCallbackSharedHerited> localClass = ememory::makeShared<testCallbackSharedHerited>();
-	esignal::Signal<int32_t, std::string> signal;
+	esignal::Signal<int32_t, etk::String> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);
 	signal.connect(localClass, &testCallbackSharedHerited::callbackHerited);

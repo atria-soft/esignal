@@ -15,7 +15,7 @@
 
 class testCounter {
 	public:
-		esignal::Signal<std::string> m_signal;
+		esignal::Signal<etk::String> m_signal;
 	public:
 		size_t m_int32;
 		testCounter():
@@ -33,11 +33,11 @@ TEST(test_signal_counter, localbasicCounter) {
 	EXPECT_EQ(localClass.m_signal.size(), 0);
 	EXPECT_EQ(localClass.m_signal.empty(), true);
 	EXPECT_EQ(localClass.m_int32, 0);
-	esignal::Connection connection1 = localClass.m_signal.connect([=](std::string){});
+	esignal::Connection connection1 = localClass.m_signal.connect([=](etk::String){});
 	EXPECT_EQ(localClass.m_signal.size(), 1);
 	EXPECT_EQ(localClass.m_signal.empty(), false);
 	EXPECT_EQ(localClass.m_int32, 1);
-	esignal::Connection connection2 = localClass.m_signal.connect([=](std::string){});
+	esignal::Connection connection2 = localClass.m_signal.connect([=](etk::String){});
 	EXPECT_EQ(localClass.m_signal.size(), 2);
 	EXPECT_EQ(localClass.m_signal.empty(), false);
 	EXPECT_EQ(localClass.m_int32, 2);
@@ -57,11 +57,11 @@ TEST(test_signal_counter, localbasicCopy) {
 	EXPECT_EQ(localClass.m_signal.size(), 0);
 	EXPECT_EQ(localClass.m_signal.empty(), true);
 	EXPECT_EQ(localClass.m_int32, 0);
-	esignal::Connection connection1 = localClass.m_signal.connect([=](std::string){});
+	esignal::Connection connection1 = localClass.m_signal.connect([=](etk::String){});
 	EXPECT_EQ(localClass.m_signal.size(), 1);
 	EXPECT_EQ(localClass.m_signal.empty(), false);
 	EXPECT_EQ(localClass.m_int32, 1);
-	esignal::Connection connection2 = std::move(connection1);
+	esignal::Connection connection2 = etk::move(connection1);
 	EXPECT_EQ(localClass.m_signal.size(), 1);
 	EXPECT_EQ(localClass.m_signal.empty(), false);
 	EXPECT_EQ(localClass.m_int32, 1);
@@ -81,7 +81,7 @@ TEST(test_signal_counter, localbasicCheckConnection) {
 	EXPECT_EQ(localClass.m_signal.size(), 0);
 	EXPECT_EQ(localClass.m_signal.empty(), true);
 	EXPECT_EQ(localClass.m_int32, 0);
-	esignal::Connection connection1 = localClass.m_signal.connect([=](std::string){});
+	esignal::Connection connection1 = localClass.m_signal.connect([=](etk::String){});
 	EXPECT_EQ(connection1.isConnected(), true);
 	connection1.disconnect();
 	EXPECT_EQ(connection1.isConnected(), false);

@@ -22,7 +22,7 @@ void declareSignals() {
 	//! [esignal_sample_declare_void]
 	
 	//! [esignal_sample_declare_string]
-	esignal::Signal<std::string> signalString;
+	esignal::Signal<etk::String> signalString;
 	//! [esignal_sample_declare_string]
 }
 
@@ -71,7 +71,7 @@ class TmpClass {
 		void localCallBack(const int32_t& _val) {
 			TEST_PRINT("Callback Local the value is : " << _val);
 		}
-		void localCallBackSecond(const int32_t& _val, const std::string& _otherValue) {
+		void localCallBackSecond(const int32_t& _val, const etk::String& _otherValue) {
 			TEST_PRINT("Callback 2 Local the value is : " << _val << " with perso: '" << _otherValue << "'");
 		}
 };
@@ -114,12 +114,12 @@ void sharedConnection() {
 void newSignal() {
 	// Declare new signal
 	//! [esignal_sample_new_declare]
-	esignal::Signal<int32_t, std::string> signalCustum;
+	esignal::Signal<int32_t, etk::String> signalCustum;
 	//! [esignal_sample_new_declare]
 	// Connect a lambda
 	//! [esignal_sample_new_lambda]
 	esignal::Connection con2 = signalCustum.connect(
-	    [](int32_t _val, std::string _val2) {
+	    [](int32_t _val, etk::String _val2) {
 	    	TEST_PRINT("lambda callback: " << _val << " vel2=" << _val2);
 	    });
 	//! [esignal_sample_new_lambda]
@@ -132,7 +132,7 @@ void newSignal() {
 // do it in a single C++: Implementation of signal
 //! [esignal_sample_new_register]
 #include <esignal/details/Signal.hxx>
-ESIGNAL_DECLARE_SIGNAL(int32_t, std::string);
+ESIGNAL_DECLARE_SIGNAL(int32_t, etk::String);
 //! [esignal_sample_new_register]
 
 //! [esignal_sample_new]

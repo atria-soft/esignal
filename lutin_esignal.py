@@ -49,7 +49,7 @@ def configure(target, my_module):
 	    ])
 	my_module.add_path(".")
 	my_module.add_flag('c++', [
-		"-DESIGNAL_VERSION=\"\\\"" + tools.version_to_string(get_version()) + "\\\"\""
+		"-DESIGNAL_VERSION=\"\\\"" + tools.version_toString(get_version()) + "\\\"\""
 		])
 	my_module.add_optionnal_depend('echrono', compilation_flags=["c++", "-DESIGNAL_BUILD_WITH_ECHRONO"])
 	my_module.add_tools(['esignal-test'])

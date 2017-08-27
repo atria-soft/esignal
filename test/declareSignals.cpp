@@ -9,6 +9,6 @@
 #include <etk/types.hpp>
 
 
-ESIGNAL_DECLARE_SIGNAL(int32_t, std::string);
+ESIGNAL_DECLARE_SIGNAL(int32_t, etk::String);
 
 

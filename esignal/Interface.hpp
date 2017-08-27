@@ -7,8 +7,8 @@
  */
 #pragma once
 
-#include <vector>
-#include <map>
+#include <etk/Vector.hpp>
+#include <etk/Map.hpp>
 #include <esignal/InterfaceData.hpp>
 
 namespace esignal {
