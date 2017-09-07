@@ -7,7 +7,7 @@
  */
 
 #define NAME "SingleArg"
-#include <gtest/gtest.h>
+#include <etest/etest.hpp>
 #include <esignal/Signal.hpp>
 #include <esignal/Interface.hpp>
 #include <ememory/memory.hpp>
@@ -24,7 +24,7 @@ class testCallback {
 			m_int32 = 0;
 			m_string = "";
 		}
-		using stupidFunctor = std::function<void()>;
+		using stupidFunctor = etk::Function<void()>;
 		
 		stupidFunctor m_emptyFunctor;
 		

@@ -7,7 +7,7 @@
  */
 
 #define NAME "SingleArg"
-#include <gtest/gtest.h>
+#include <etest/etest.hpp>
 #include <esignal/Signal.hpp>
 #include <esignal/Interface.hpp>
 #include <ememory/memory.hpp>
@@ -27,7 +27,7 @@ class testCallbackShared : public ememory::EnableSharedFromThis<testCallbackShar
 		virtual ~testCallbackShared() {
 			
 		}
-		//using stupidFunctor = std::function<void()>;
+		//using stupidFunctor = etk::Function<void()>;
 		
 		using stupidFunctor = void();
 		

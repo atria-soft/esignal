@@ -7,7 +7,7 @@
  */
 
 #define NAME "SingleArg"
-#include <gtest/gtest.h>
+#include <etest/etest.hpp>
 #include <esignal/Signal.hpp>
 #include <esignal/Interface.hpp>
 #include <ememory/memory.hpp>

@@ -7,7 +7,7 @@
  */
 
 #define NAME "SingleArg"
-#include <gtest/gtest.h>
+#include <etest/etest.hpp>
 #include <esignal/Signal.hpp>
 #include <esignal/Interface.hpp>
 #include <ememory/memory.hpp>
@@ -193,7 +193,7 @@ TEST(test_signal_static_func, localFunctionMixedIntString) {
 #else
 	/*
 	template<class Func, class... ARGS_BASE, class... ARGS_CURR>
-	std::function<void(const ARGS_BASE&...)> complete_args(Func _f, ARGS_BASE... _arg) {
+	etk::Function<void(const ARGS_BASE&...)> complete_args(Func _f, ARGS_BASE... _arg) {
 		return [=](const ARGS_BASE&..., ARGS_CURR...){
 		    return _f( cargs..., _arg... );
 		};

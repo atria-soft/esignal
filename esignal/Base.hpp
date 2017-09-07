@@ -14,7 +14,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
-#include <mutex>
+#include <ethread/Mutex.hpp>
 
 /**
  * @brief esignal global interface for all signal implementation
@@ -22,7 +22,7 @@
 namespace esignal {
 	class BaseInternal : public ememory::EnableSharedFromThis<esignal::BaseInternal> {
 		public:
-			using ObserverConnection = std::function<void(size_t)>; //!< Define an Observer of the number of observer
+			using ObserverConnection = etk::Function<void(size_t)>; //!< Define an Observer of the number of observer
 		protected:
 			bool m_periodic; //!< The signal is periodic ==> no log with this signal ... (no really needed)
 			static size_t s_uid; //!< global id of the signal (STATIC)

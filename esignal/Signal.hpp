@@ -21,7 +21,7 @@ namespace esignal {
 	template<class... T_ARGS>
 	class SignalInternal : public esignal::BaseInternal {
 		public:
-			using Observer = std::function<void(const T_ARGS&...)>; //!< Define an Observer: function pointer
+			using Observer = etk::Function<void(const T_ARGS&...)>; //!< Define an Observer: function pointer
 		protected:
 			int32_t m_callInProgress; //!< know if we are in a recursive loop
 		public:
@@ -174,7 +174,7 @@ namespace esignal {
 			 */
 			template<class CLASS_TYPE,
 			         class FUNC_TYPE,
-			         typename std::enable_if<std::is_base_of<esignal::Interface, CLASS_TYPE>::value
+			         typename etk::EnableIf<etk::IsBaseOf<esignal::Interface, CLASS_TYPE>::value
 			                                 , int>::type = 0>
 			Signal(CLASS_TYPE* _class,
 			       FUNC_TYPE _func,
@@ -182,7 +182,7 @@ namespace esignal {
 			       const etk::String& _description);
 			template<class CLASS_TYPE,
 			         class FUNC_TYPE,
-			         typename std::enable_if<!std::is_base_of<esignal::Interface, CLASS_TYPE>::value
+			         typename etk::EnableIf<!etk::IsBaseOf<esignal::Interface, CLASS_TYPE>::value
 			                                 , int>::type = 0>
 			Signal(CLASS_TYPE* _class,
 			       FUNC_TYPE _func,
@@ -381,7 +381,7 @@ void esignal::SignalInternal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT
 template<class... T_ARGS>
 template<class CLASS_TYPE,
          class FUNC_TYPE,
-         typename std::enable_if<std::is_base_of<esignal::Interface, CLASS_TYPE>::value
+         typename etk::EnableIf<etk::IsBaseOf<esignal::Interface, CLASS_TYPE>::value
                                  , int>::type>
 esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
                                    FUNC_TYPE _func,
@@ -407,7 +407,7 @@ esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
 template<class... T_ARGS>
 template<class CLASS_TYPE,
          class FUNC_TYPE,
-         typename std::enable_if<!std::is_base_of<esignal::Interface, CLASS_TYPE>::value
+         typename etk::EnableIf<!etk::IsBaseOf<esignal::Interface, CLASS_TYPE>::value
                                  , int>::type>
 esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
                                    FUNC_TYPE _func,
