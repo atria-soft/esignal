@@ -13,7 +13,7 @@ Declaring a signal is really simple, just include the esignal file:
 You can now declare your signals. We have basicly declare some basic signal type:
   - void
   - bool
-  - std::string / std::u32string
+  - etk::String / etk::UString
   - int8_t / int16_t / int32_t / int64_t
   - uint8_t / uint16_t / uint32_t / uint64_t
   - float / double

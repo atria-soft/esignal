@@ -1,19 +1,16 @@
 /** @file
  * @author Edouard DUPIN
- * 
  * @copyright 2016, Edouard DUPIN, all right reserved
- * 
  * @license MPL v2.0 (see license file)
  */
 #pragma once
 
-#include <functional>
+#include <etk/Function.hpp>
 #include <ememory/memory.hpp>
 #include <esignal/debug.hpp>
 #include <esignal/Base.hpp>
-#include <functional>
-#include <type_traits>
-#include <utility>
+#include <etk/Function.hpp>
+#include <etk/typeTrait.hpp>
 #include <ethread/Mutex.hpp>
 
 /**

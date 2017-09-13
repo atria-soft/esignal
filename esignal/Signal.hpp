@@ -1,19 +1,16 @@
 /** @file
  * @author Edouard DUPIN
- * 
  * @copyright 2016, Edouard DUPIN, all right reserved
- * 
  * @license MPL v2.0 (see license file)
  */
 #pragma once
 
-#include <functional>
-#include <memory>
+#include <etk/Function.hpp>
 #include <ememory/memory.hpp>
+#include <ememory/UniquePtr.hpp>
 #include <esignal/debug.hpp>
 #include <esignal/Base.hpp>
 #include <esignal/Connection.hpp>
-#include <utility>
 #include <esignal/Interface.hpp>
 
 namespace esignal {
@@ -67,7 +64,7 @@ namespace esignal {
 					virtual bool isSharedPtr(const ememory::SharedPtr<void>& _obj);
 			};
 		protected:
-			etk::Vector<std::unique_ptr<Executor>> m_executors; //!< List of all executors.
+			etk::Vector<ememory::UniquePtr<Executor>> m_executors; //!< List of all executors.
 		private:
 			/**
 			 * @brief Executor specific to the Shared_ptr caller that does not want to worry about the removing of the signal.
@@ -223,7 +220,7 @@ namespace esignal {
 					return esignal::Connection();
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
-				return pointer->connect(std::forward<OBSERVER_TYPE>(_observer));
+				return pointer->connect(etk::forward<OBSERVER_TYPE>(_observer));
 			}
 			/**
 			 * @brief Connect an function member on the signal.
@@ -240,7 +237,7 @@ namespace esignal {
 					return esignal::Connection();
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
-				return pointer->connect(_class, _func, std::forward<FUNC_ARGS_TYPE>(_args)...);
+				return pointer->connect(_class, _func, etk::forward<FUNC_ARGS_TYPE>(_args)...);
 			}
 			/**
 			 * @brief Connect an function member on the signal with the shared_ptr object.
@@ -256,7 +253,7 @@ namespace esignal {
 					return;
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
-				return pointer->connect(_class, _func, std::forward<FUNC_ARGS_TYPE>(_args)...);
+				return pointer->connect(_class, _func, etk::forward<FUNC_ARGS_TYPE>(_args)...);
 			}
 		public:
 			/**
@@ -268,7 +265,7 @@ namespace esignal {
 					return;
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
-				return pointer->emit(std::forward<const T_ARGS&>(_args)...);
+				return pointer->emit(etk::forward<const T_ARGS&>(_args)...);
 			}
 		public:
 			/**
@@ -319,7 +316,7 @@ template<class... T_ARGS>
 template<class OBSERVER_TYPE >
 esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(OBSERVER_TYPE&& _observer ) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (observer)");
-	std::unique_ptr<Executor> executer(new Executor(std::forward<OBSERVER_TYPE>(_observer)));
+	ememory::UniquePtr<Executor> executer(new Executor(etk::forward<OBSERVER_TYPE>(_observer)));
 	size_t uid = executer->m_uid;
 	m_executors.pushBack(etk::move(executer));
 	if (m_connectionObserver!=nullptr) {
@@ -339,7 +336,7 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(CLASS_TYPE* _cla
 		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
 		return esignal::Connection();
 	}
-	std::unique_ptr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
+	ememory::UniquePtr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
 		(*_class.*_func)(_argBase..., _arg... );
 	}));
 	size_t uid = executer->m_uid;
@@ -367,7 +364,7 @@ void esignal::SignalInternal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT
 		return;
 	}
 	CLASS_TYPE* directPointer = obj2.get();
-	std::unique_ptr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const T_ARGS& ... _argBase){
+	ememory::UniquePtr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const T_ARGS& ... _argBase){
 		// TODO : Check if compilator does not use the shared ptr ...
 		(*directPointer.*_func)(_argBase..., _args... );
 	}));
