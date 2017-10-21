@@ -316,7 +316,7 @@ template<class... T_ARGS>
 template<class OBSERVER_TYPE >
 esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(OBSERVER_TYPE&& _observer ) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (observer)");
-	ememory::UniquePtr<Executor> executer(new Executor(etk::forward<OBSERVER_TYPE>(_observer)));
+	ememory::UniquePtr<Executor> executer(ETK_NEW(Executor, etk::forward<OBSERVER_TYPE>(_observer)));
 	size_t uid = executer->m_uid;
 	m_executors.pushBack(etk::move(executer));
 	if (m_connectionObserver!=nullptr) {
@@ -336,7 +336,7 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(CLASS_TYPE* _cla
 		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
 		return esignal::Connection();
 	}
-	ememory::UniquePtr<Executor> executer(new Executor([=](const T_ARGS& ... _argBase){
+	ememory::UniquePtr<Executor> executer(ETK_NEW(Executor, [=](const T_ARGS& ... _argBase){
 		(*_class.*_func)(_argBase..., _arg... );
 	}));
 	size_t uid = executer->m_uid;
@@ -364,7 +364,7 @@ void esignal::SignalInternal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT
 		return;
 	}
 	CLASS_TYPE* directPointer = obj2.get();
-	ememory::UniquePtr<ExecutorShared> executer(new ExecutorShared(_class, [=]( const T_ARGS& ... _argBase){
+	ememory::UniquePtr<Executor> executer(ETK_NEW(ExecutorShared, _class, [=]( const T_ARGS& ... _argBase){
 		// TODO : Check if compilator does not use the shared ptr ...
 		(*directPointer.*_func)(_argBase..., _args... );
 	}));

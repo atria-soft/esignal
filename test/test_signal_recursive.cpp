@@ -28,7 +28,7 @@ static auto callbackInt = [](int32_t _a){
 
 TEST(test_signal_recursive, base) {
 	tmpRetInt32 = -1;
-	signalll = new esignal::Signal<int32_t>();
+	signalll = ETK_NEW(esignal::Signal<int32_t>);
 	EXPECT_EQ(signalll->size(), 0);
 	EXPECT_EQ(signalll->empty(), true);
 	esignal::Connection connection1 = signalll->connect(callbackInt);
