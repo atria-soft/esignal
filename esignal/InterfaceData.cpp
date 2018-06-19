@@ -19,8 +19,8 @@ esignal::InterfaceData::~InterfaceData() {
 
 // note this pointer is not allocated and not free at the end of the class
 void esignal::InterfaceData::add(esignal::Base* _pointerOnSignal) {
-	if (_pointerOnSignal == nullptr) {
-		ESIGNAL_ERROR("Try to link a nullptr parameters");
+	if (_pointerOnSignal == null) {
+		ESIGNAL_ERROR("Try to link a null parameters");
 		return;
 	}
 	m_list.pushBack(_pointerOnSignal);
@@ -29,7 +29,7 @@ void esignal::InterfaceData::add(esignal::Base* _pointerOnSignal) {
 void esignal::InterfaceData::remove(esignal::Base* _pointerOnSignal) {
 	auto it = m_list.begin();
 	while (it != m_list.end()) {
-		if (    *it == nullptr
+		if (    *it == null
 		     || *it == _pointerOnSignal) {
 			it = m_list.erase(it);
 		} else {
@@ -41,7 +41,7 @@ void esignal::InterfaceData::remove(esignal::Base* _pointerOnSignal) {
 etk::Vector<etk::String> esignal::InterfaceData::getAll() const {
 	etk::Vector<etk::String> out;
 	for (auto &it : m_list) {
-		if(it != nullptr) {
+		if(it != null) {
 			out.pushBack(it->getName());
 		}
 	}
@@ -49,12 +49,12 @@ etk::Vector<etk::String> esignal::InterfaceData::getAll() const {
 }
 
 void esignal::InterfaceData::disconnect(const ememory::SharedPtr<void>& _object) {
-	if (_object == nullptr) {
-		ESIGNAL_ERROR("Input ERROR nullptr pointer Object ...");
+	if (_object == null) {
+		ESIGNAL_ERROR("Input ERROR null pointer Object ...");
 		return;
 	}
 	for(auto &it : m_list) {
-		if (it == nullptr) {
+		if (it == null) {
 			continue;
 		}
 		it->disconnectShared(_object);

@@ -33,7 +33,7 @@ void esignal::BaseInternal::setDescription(const etk::String& _desc) {
 }
 
 esignal::Base::Base() :
-  m_data(nullptr) {
+  m_data(null) {
 	
 }
 
@@ -42,7 +42,7 @@ esignal::Base::~Base() {
 }
 
 const etk::String& esignal::Base::getName() const {
-	if (m_data != nullptr) {
+	if (m_data != null) {
 		return m_data->getName();
 	}
 	static etk::String noValue;
@@ -50,7 +50,7 @@ const etk::String& esignal::Base::getName() const {
 }
 
 const etk::String& esignal::Base::getDescription() const {
-	if (m_data != nullptr) {
+	if (m_data != null) {
 		return m_data->getDescription();
 	}
 	static etk::String noValue;
@@ -58,7 +58,7 @@ const etk::String& esignal::Base::getDescription() const {
 }
 
 void esignal::Base::setPeriodic(bool _state) {
-	if (m_data != nullptr) {
+	if (m_data != null) {
 		m_data->setPeriodic(_state);
 	}
 }

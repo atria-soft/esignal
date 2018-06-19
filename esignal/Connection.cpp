@@ -7,7 +7,7 @@
 #include <esignal/Connection.hpp>
 
 esignal::Connection::Connection():
-  m_data(nullptr),
+  m_data(null),
   m_uid(0) {
 	
 }
@@ -36,7 +36,7 @@ esignal::Connection& esignal::Connection::operator=(esignal::Connection&& _obj) 
 
 esignal::Connection::~Connection() {
 	ememory::SharedPtr<esignal::BaseInternal> ref = m_data.lock();
-	if (ref == nullptr) {
+	if (ref == null) {
 		return;
 	}
 	ref->disconnect(m_uid);
@@ -46,7 +46,7 @@ esignal::Connection::~Connection() {
 
 void esignal::Connection::disconnect() {
 	ememory::SharedPtr<esignal::BaseInternal> ref = m_data.lock();
-	if (ref == nullptr) {
+	if (ref == null) {
 		return;
 	}
 	ref->disconnect(m_uid);

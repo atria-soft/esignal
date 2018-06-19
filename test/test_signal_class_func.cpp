@@ -19,7 +19,7 @@ class testCallback {
 		etk::String m_string;
 		bool m_void;
 		testCallback() {
-			m_emptyFunctor = nullptr;
+			m_emptyFunctor = null;
 			m_void = false;
 			m_int32 = 0;
 			m_string = "";
@@ -105,7 +105,7 @@ TEST(test_signal_class_func, localbasicNameDesc) {
 }
 
 TEST(test_signal_class_func, localNullClass) {
-	testCallback* localClass = nullptr;
+	testCallback* localClass = null;
 	esignal::Signal<> signal;
 	EXPECT_EQ(signal.size(), 0);
 	EXPECT_EQ(signal.empty(), true);

@@ -19,7 +19,7 @@ class testCallbackShared : public ememory::EnableSharedFromThis<testCallbackShar
 		etk::String m_string;
 		bool m_void;
 		testCallbackShared() {
-			m_emptyFunctor = nullptr;
+			m_emptyFunctor = null;
 			m_void = false;
 			m_int32 = 0;
 			m_string = "";

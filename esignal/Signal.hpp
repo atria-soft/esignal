@@ -150,7 +150,7 @@ namespace esignal {
 			 * @param[in] _name Static name of the signal.
 			 * @param[in] _description Description of the signal.
 			 */
-			Signal(esignal::BaseInternal::ObserverConnection _countObs=nullptr,
+			Signal(esignal::BaseInternal::ObserverConnection _countObs=null,
 			       const etk::String& _name="",
 			       const etk::String& _description="");
 			/**
@@ -216,7 +216,7 @@ namespace esignal {
 			 */
 			template< class OBSERVER_TYPE >
 			esignal::Connection connect(OBSERVER_TYPE&& _observer) {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return esignal::Connection();
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
@@ -233,7 +233,7 @@ namespace esignal {
 			esignal::Connection connect(CLASS_TYPE* _class,
 			                            FUNC_TYPE _func,
 			                            FUNC_ARGS_TYPE... _args) {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return esignal::Connection();
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
@@ -249,7 +249,7 @@ namespace esignal {
 			void connect(const ememory::SharedPtr<PARENT_CLASS_TYPE>& _class,
 			             void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
 			             FUNC_ARGS_TYPE... _args) {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return;
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
@@ -261,7 +261,7 @@ namespace esignal {
 			 * @param[in] _args Argument data to emit.
 			 */
 			void emit(const T_ARGS&... _args) {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return;
 				}
 				ememory::SharedPtr<esignal::SignalInternal<T_ARGS...>> pointer = ememory::staticPointerCast<esignal::SignalInternal<T_ARGS...>>(m_data);
@@ -273,7 +273,7 @@ namespace esignal {
 			 * @param[in] _obj Link with the object to check
 			 */
 			void disconnectShared(const ememory::SharedPtr<void>& _obj) override {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return;;
 				}
 				m_data->disconnectShared(_obj);
@@ -283,7 +283,7 @@ namespace esignal {
 			 * @return The count of observer.
 			 */
 			size_t size() const {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return 0;
 				}
 				return m_data->size();
@@ -294,7 +294,7 @@ namespace esignal {
 			 * @return false No observers.
 			 */
 			bool empty() const {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return true;
 				}
 				return m_data->empty();
@@ -303,7 +303,7 @@ namespace esignal {
 			 * @brief Clear all connectd observers.
 			 */
 			void clear() {
-				if (m_data == nullptr) {
+				if (m_data == null) {
 					return;
 				}
 				m_data->clear();
@@ -319,7 +319,7 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(OBSERVER_TYPE&& 
 	ememory::UniquePtr<Executor> executer(ETK_NEW(Executor, etk::forward<OBSERVER_TYPE>(_observer)));
 	size_t uid = executer->m_uid;
 	m_executors.pushBack(etk::move(executer));
-	if (m_connectionObserver!=nullptr) {
+	if (m_connectionObserver!=null) {
 		m_connectionObserver(m_executors.size());
 	}
 	ESIGNAL_DEBUG("     '" << getName() << "' new count: " << m_executors.size());
@@ -332,8 +332,8 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(CLASS_TYPE* _cla
                                                                 FUNC_TYPE _func,
                                                                 FUNC_ARGS_TYPE... _arg) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (reference)");
-	if (_class == nullptr) {
-		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
+	if (_class == null) {
+		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in null");
 		return esignal::Connection();
 	}
 	ememory::UniquePtr<Executor> executer(ETK_NEW(Executor, [=](const T_ARGS& ... _argBase){
@@ -341,7 +341,7 @@ esignal::Connection esignal::SignalInternal<T_ARGS...>::connect(CLASS_TYPE* _cla
 	}));
 	size_t uid = executer->m_uid;
 	m_executors.pushBack(etk::move(executer));
-	if (m_connectionObserver != nullptr) {
+	if (m_connectionObserver != null) {
 		m_connectionObserver(m_executors.size());
 	}
 	ESIGNAL_DEBUG("     '" << getName() << "' new count: " << m_executors.size());
@@ -354,12 +354,12 @@ void esignal::SignalInternal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT
                                                  void (CLASS_TYPE::*_func)(const T_ARGS&..., FUNC_ARGS_TYPE...),
                                                  FUNC_ARGS_TYPE... _args) {
 	ESIGNAL_DEBUG("esignal: '" << getName() << "' try connect: '" << getName() << "' (weak pointer)");
-	if (_class == nullptr) {
-		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in nullptr");
+	if (_class == null) {
+		ESIGNAL_ERROR("     '" << getName() << "' Class pointer in null");
 		return;
 	}
 	ememory::SharedPtr<CLASS_TYPE> obj2 = ememory::dynamicPointerCast<CLASS_TYPE>(_class);
-	if (obj2 == nullptr) {
+	if (obj2 == null) {
 		ESIGNAL_ERROR("Can not connect signal ...");
 		return;
 	}
@@ -369,7 +369,7 @@ void esignal::SignalInternal<T_ARGS...>::connect(const ememory::SharedPtr<PARENT
 		(*directPointer.*_func)(_argBase..., _args... );
 	}));
 	m_executors.pushBack(etk::move(executer));
-	if (m_connectionObserver!=nullptr) {
+	if (m_connectionObserver!=null) {
 		m_connectionObserver(m_executors.size());
 	}
 	ESIGNAL_DEBUG("     '" << getName() << "' new count: " << m_executors.size());
@@ -384,20 +384,20 @@ esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
                                    FUNC_TYPE _func,
                                    const etk::String& _name,
                                    const etk::String& _description):
-  m_signalInterfaceLink(nullptr) {
+  m_signalInterfaceLink(null) {
 	// nothing to do
-	if (_func != nullptr) {
+	if (_func != null) {
 		esignal::Base::m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>([=](size_t _val){(*_class.*_func)(_val);});
 	} else {
-		esignal::Base::m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(nullptr);
+		esignal::Base::m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(null);
 	}
-	if (esignal::Base::m_data != nullptr) {
+	if (esignal::Base::m_data != null) {
 		esignal::Base::m_data->setName(_name);
 		esignal::Base::m_data->setDescription(_description);
 	}
 	m_signalInterfaceLink = _class;
 	// add a reference on the current signal ...
-	if (m_signalInterfaceLink != nullptr) {
+	if (m_signalInterfaceLink != null) {
 		m_signalInterfaceLink->signals.add(this);
 	}
 }
@@ -410,14 +410,14 @@ esignal::Signal<T_ARGS...>::Signal(CLASS_TYPE* _class,
                                    FUNC_TYPE _func,
                                    const etk::String& _name,
                                    const etk::String& _description):
-  m_signalInterfaceLink(nullptr) {
+  m_signalInterfaceLink(null) {
 	// nothing to do
-	if (_func != nullptr) {
+	if (_func != null) {
 		esignal::Base::m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>([=](size_t _val){(*_class.*_func)(_val);});
 	} else {
-		esignal::Base::m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(nullptr);
+		esignal::Base::m_data = ememory::makeShared<esignal::SignalInternal<T_ARGS...>>(null);
 	}
-	if (esignal::Base::m_data != nullptr) {
+	if (esignal::Base::m_data != null) {
 		esignal::Base::m_data->setName(_name);
 		esignal::Base::m_data->setDescription(_description);
 	}

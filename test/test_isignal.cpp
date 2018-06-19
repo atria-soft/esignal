@@ -105,7 +105,7 @@ TEST(test_isignal_counter, localbasicInterfaceGetListSignal) {
 
 TEST(test_isignal_counter, localbasicInterfaceDisconnectNullPtr) {
 	testISignal localClass;
-	localClass.signals.disconnect(nullptr);
+	localClass.signals.disconnect(null);
 }
 
 TEST(test_isignal_counter, localbasicInterfaceDisconnectSharedPtr) {
