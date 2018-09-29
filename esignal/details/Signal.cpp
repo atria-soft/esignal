@@ -10,6 +10,8 @@
 #include <etk/math/Quaternion.hpp>
 #include <etk/math/Transform3D.hpp>
 #include <etk/Color.hpp>
+#include <etk/path/Path.hpp>
+#include <etk/uri/Uri.hpp>
 
 // void generic signal
 ESIGNAL_DECLARE_SIGNAL();
@@ -50,6 +52,9 @@ ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,4>);
 ESIGNAL_DECLARE_SIGNAL(etk::Color<unsigned char,3>);
 ESIGNAL_DECLARE_SIGNAL(etk::Color<float,4>);
 ESIGNAL_DECLARE_SIGNAL(etk::Color<float,3>);
+
+ESIGNAL_DECLARE_SIGNAL(etk::Path);
+ESIGNAL_DECLARE_SIGNAL(etk::Uri);
 
 #ifdef ESIGNAL_BUILD_WITH_ECHRONO
 	#include <echrono/Clock.hpp>
