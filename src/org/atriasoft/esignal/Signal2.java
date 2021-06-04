@@ -1,6 +1,5 @@
 package org.atriasoft.esignal;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -54,6 +53,11 @@ import org.atriasoft.esignal.internal.ConnectedElement;
  * 
  */
 public class Signal2<T, U> extends GenericSignal<BiConsumer<T, U>> {
+	/**
+	 * Emit a signal on all element connect (and clean the list of unlinked elements).
+	 * @param valueT First parameter value to emit.
+	 * @param valueU Second parameter value to emit.
+	 */
 	public void emit(final T valueT, final U valueU) {
 		List<ConnectedElement<BiConsumer<T, U>>> tmp = getACleanedList();
 		if (tmp == null) {

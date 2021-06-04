@@ -1,6 +1,5 @@
 package org.atriasoft.esignal;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -52,6 +51,10 @@ import org.atriasoft.esignal.internal.ConnectedElement;
  * 
  */
 public class Signal<T> extends GenericSignal<Consumer<T>> {
+	/**
+	 * Emit a signal on all element connect (and clean the list of unlinked elements).
+	 * @param value Value to set in parameter.
+	 */
 	public void emit(final T value) {
 		List<ConnectedElement<Consumer<T>>> tmp = getACleanedList();
 		if (tmp == null) {

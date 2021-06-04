@@ -1,6 +1,5 @@
 package org.atriasoft.esignal;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +48,9 @@ import org.atriasoft.esignal.internal.ConnectedElement;
  * 
  */
 public class SignalEmpty extends GenericSignal<Runnable> {
-	
+	/**
+	 * Emit a signal on all element connect (and clean the list of unlinked elements).
+	 */
 	public void emit() {
 		List<ConnectedElement<Runnable>> tmp = getACleanedList();
 		if (tmp == null) {
