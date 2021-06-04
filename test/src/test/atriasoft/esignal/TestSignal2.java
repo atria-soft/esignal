@@ -9,10 +9,10 @@
 package test.atriasoft.esignal;
 
 import java.lang.ref.WeakReference;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.atriasoft.esignal.Connection;
-import org.atriasoft.esignal.Signal;
+import org.atriasoft.esignal.Signal2;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -22,12 +22,12 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 
 @TestMethodOrder(OrderAnnotation.class)
-public class TestSignalType {
+public class TestSignal2 {
 
 	class EmiterSimple {
-		public Signal<String> signalEvent = new Signal<String>();
-		public void sendEvent(final String value) {
-			this.signalEvent.emit(value);
+		public Signal2<String, Double> signalEvent = new Signal2<>();
+		public void sendEvent(final String value, final double valueD) {
+			this.signalEvent.emit(value, valueD);
 		}
 	}
 	class ReceiverSimple {
@@ -36,30 +36,30 @@ public class TestSignalType {
 		}
 		public void connect1(final EmiterSimple other) {
 			WeakReference<ReceiverSimple> tmpp = new WeakReference<ReceiverSimple>(this);
-			other.signalEvent.connect(data -> {
-					tmpp.get().onData(data);
+			other.signalEvent.connect((data, data2) -> {
+					tmpp.get().onData(data, data2);
 				});
 		}
 		public void connect2(final EmiterSimple other) {
 			// the solo lambda will not depend on the object => the remove must be done manually... 
-			other.signalEvent.connect(data -> {
-					Log.error("lambda receive: " + data);
+			other.signalEvent.connect((data, data2) -> {
+					Log.error("lambda receive: " + data + "  " + data2);
 				});
 		}
 		public void connect3(final EmiterSimple other) {
 			// we reference the local object, then the lambda is alive while the object is alive...
-			other.signalEvent.connect(data -> {
-					Log.error("lambda receive: " + data);
+			other.signalEvent.connect((data, data2) -> {
+					Log.error("lambda receive: " + data + "  " + data2);
 					this.dataReceive = data;
 				});
 		}
 		public void connect4(final EmiterSimple other) {
-			other.signalEvent.connect(data -> {
-					onData(data);
+			other.signalEvent.connect((data, data2) -> {
+					onData(data, data2);
 				});
 		}
 		// record consumer
-		private Consumer<String> tmpConsumer = null;
+		private BiConsumer<String, Double> tmpConsumer = null;
 		public void connect5(final EmiterSimple other) {
 			this.tmpConsumer = this::onData;
 			other.signalEvent.connect(this.tmpConsumer);
@@ -72,8 +72,8 @@ public class TestSignalType {
 
 		public void connect6(final EmiterSimple other) {
 			// the solo lambda will not depend on the object => the remove must be done manually... 
-			other.signalEvent.connectAutoRemoveObject(this, data -> {
-					Log.error("lambda receive: " + data);
+			other.signalEvent.connectAutoRemoveObject(this, (data, data2) -> {
+					Log.error("lambda receive: " + data + "  " + data2);
 				});
 		}
 		private Connection tmpConnect = null;
@@ -93,7 +93,7 @@ public class TestSignalType {
 			return this.tmpConnect.isConnected();
 		}
 		
-		public void onData(final String data) {
+		public void onData(final String data, final double data2) {
 			Log.error("Retrive data : " + data);
 			this.dataReceive = data; 
 		}
@@ -114,13 +114,13 @@ public class TestSignalType {
 		receiver.connect1(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data...";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 15);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		receiver = null;
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		System.gc();
 		String testData2 = "MUST NOT receive this data...";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 16);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 1 [ END ]");
 		
@@ -134,13 +134,13 @@ public class TestSignalType {
 		receiver.connect2(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data...";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 17);
 		// No data stored ... assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		receiver = null;
 		System.gc();
 		String testData2 = "Solo Lambda MUST receive this data...";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 18);
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		Log.warning("Test 2 [ END ]");
 	}
@@ -154,13 +154,13 @@ public class TestSignalType {
 		receiver.connect3(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data...";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 19);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		receiver = null;
 		System.gc();
 		String testData2 = "MUST NOT receive this data...";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 20);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 3 [ END ]");
 		
@@ -175,13 +175,13 @@ public class TestSignalType {
 		receiver.connect4(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data...";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 21);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		receiver = null;
 		System.gc();
 		String testData2 = "MUST NOT receive this data...";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 22);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 4 [ END ]");
 		
@@ -197,7 +197,7 @@ public class TestSignalType {
 		receiver.connect5(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data... 111";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 23);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// remove connection
@@ -205,20 +205,20 @@ public class TestSignalType {
 		Assertions.assertEquals(0, sender.signalEvent.size()); 
 		System.gc();
 		String testData2 = "MUST NOT receive this data... 222";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 24);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect5(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData3 = "MUST receive this data... 333";
-		sender.sendEvent(testData3);
+		sender.sendEvent(testData3, 25);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// check auto remove...
 		receiver = null;
 		System.gc();
 		String testData4 = "MUST NOT receive this data... 444";
-		sender.sendEvent(testData4);
+		sender.sendEvent(testData4, 26);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 5 [ END ]");
 		
@@ -232,13 +232,13 @@ public class TestSignalType {
 		receiver.connect6(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data...";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 27);
 		//assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		receiver = null;
 		System.gc();
 		String testData2 = "MUST NOT receive this data...";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 28);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 6 [ END ]");
 		
@@ -254,7 +254,7 @@ public class TestSignalType {
 		receiver.connect7(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData1 = "MUST receive this data... 111";
-		sender.sendEvent(testData1);
+		sender.sendEvent(testData1, 29);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		Assertions.assertEquals(true, receiver.isConnected());
@@ -263,14 +263,14 @@ public class TestSignalType {
 		Assertions.assertEquals(false, receiver.isConnected());
 		System.gc();
 		String testData2 = "MUST NOT receive this data... 222";
-		sender.sendEvent(testData2);
+		sender.sendEvent(testData2, 30);
 		Assertions.assertEquals(0, sender.signalEvent.size()); 
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect7(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData3 = "MUST receive this data... 333";
-		sender.sendEvent(testData3);
+		sender.sendEvent(testData3, 31);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		Assertions.assertEquals(true, receiver.isConnected());
@@ -280,20 +280,20 @@ public class TestSignalType {
 		Assertions.assertEquals(0, sender.signalEvent.size()); 
 		System.gc();
 		String testData4 = "MUST NOT receive this data... 444";
-		sender.sendEvent(testData4);
+		sender.sendEvent(testData4, 32);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect7(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
 		String testData5 = "MUST receive this data... 555";
-		sender.sendEvent(testData5);
+		sender.sendEvent(testData5, 33);
 		Assertions.assertEquals(testData5, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// check auto remove...
 		receiver = null;
 		System.gc();
 		String testData6 = "MUST NOT receive this data... 666";
-		sender.sendEvent(testData6);
+		sender.sendEvent(testData6, 34);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 7 [ END ]");
 		
