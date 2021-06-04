@@ -23,3 +23,19 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+*.class
+*~
+*.bck
+build.number
+/extern/
+/out/
+/.settings/
+/junit/
+/target/
+
+*.pdfd
+*.dbc
+SchedulerConfig.txt
+scenicView.properties
+ScenariumConfig.txt
+*.blend*
