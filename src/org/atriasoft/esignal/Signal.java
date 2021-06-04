@@ -1,74 +1,12 @@
 package org.atriasoft.esignal;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-class ConnectedElement<T> {
-	protected final WeakReference<Consumer<T>> consumer;
-	
-	public ConnectedElement(final Consumer<T> consumer) {
-		this.consumer = new WeakReference<Consumer<T>>(consumer);
-	}
-	
-	public Consumer<T> getConsumer() {
-		return this.consumer.get();
-	}
-
-	public boolean isCompatibleWith(final Object elem) {
-		Object out = this.consumer.get();
-		if (out == elem) {
-			return true;
-		}
-		return false;
-	}
-
-	public void disconnect() {
-		
-	}
-}
-
-class ConnectedElementDynamic<T> extends ConnectedElement<T> {
-	protected final WeakReference<Object> linkedObject;
-	
-	public ConnectedElementDynamic(final Object linkedObject, final Consumer<T> consumer) {
-		super(consumer);
-		this.linkedObject = new WeakReference<Object>(linkedObject);
-	}
-	
-	@Override
-	public Consumer<T> getConsumer() {
-		if (this.linkedObject.get() == null) {
-			return null;
-		}
-		return this.consumer.get();
-	}
-	
-	@Override
-	public boolean isCompatibleWith(final Object elem) {
-		if (super.isCompatibleWith(elem)) {
-			return true;
-		}
-		Object obj = this.linkedObject.get();
-		if (obj == elem) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void disconnect() {
-		Object obj = this.linkedObject.get();
-		if (obj == null) {
-			return;
-		}
-		if (obj instanceof Connection tmp) {
-			tmp.connectionIsRemovedBySignal();
-		}
-	}
-}
+import org.atriasoft.esignal.internal.ConnectedElement;
+import org.atriasoft.esignal.internal.ConnectedElementDynamic;
 
 /**
  * Simple interface to manage signal connection and disconnection
@@ -115,30 +53,30 @@ class ConnectedElementDynamic<T> extends ConnectedElement<T> {
  * 
  */
 public class Signal<T> implements ConnectionRemoveInterface {
-	List<ConnectedElement<T>> data = new ArrayList<>();
+	List<ConnectedElement<Consumer<T>>> data = new ArrayList<>();
 	
 	public void clear() {
-		List<ConnectedElement<T>> data2 = this.data;
+		List<ConnectedElement<Consumer<T>>> data2 = this.data;
 		synchronized(this.data) {
 			this.data = new ArrayList<>();
 		}
-		final Iterator<ConnectedElement<T>> iterator = data2.iterator();
+		final Iterator<ConnectedElement<Consumer<T>>> iterator = data2.iterator();
 		while (iterator.hasNext()) {
-			final ConnectedElement<T> elem = iterator.next();
+			final ConnectedElement<Consumer<T>> elem = iterator.next();
 			elem.disconnect();
 		}
 	}
 
 	public void connect(final Consumer<T> function) {
 		synchronized(this.data) {
-			this.data.add(new ConnectedElement<T>(function));
+			this.data.add(new ConnectedElement<Consumer<T>>(function));
 		}
 	}
 	public void disconnect(final Consumer<T> obj) {
 		synchronized(this.data) {
-			final Iterator<ConnectedElement<T>> iterator = this.data.iterator();
+			final Iterator<ConnectedElement<Consumer<T>>> iterator = this.data.iterator();
 			while (iterator.hasNext()) {
-				final ConnectedElement<T> elem = iterator.next();
+				final ConnectedElement<Consumer<T>> elem = iterator.next();
 				if (elem.isCompatibleWith(obj)) {
 					iterator.remove();
 				}
@@ -148,22 +86,22 @@ public class Signal<T> implements ConnectionRemoveInterface {
 	public Connection connectDynamic(final Consumer<T> function) {
 		Connection out = new Connection(this);
 		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<T>(out, function));
+			this.data.add(new ConnectedElementDynamic<Consumer<T>>(out, function));
 		}
 		return out;
 	}
 	public void connectAutoRemoveObject(final Object reference, final Consumer<T> function) {
 		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<T>(reference, function));
+			this.data.add(new ConnectedElementDynamic<Consumer<T>>(reference, function));
 		}
 	}
 	
 	@Override
 	public void disconnect(final Connection connection) {
 		synchronized(this.data) {
-			final Iterator<ConnectedElement<T>> iterator = this.data.iterator();
+			final Iterator<ConnectedElement<Consumer<T>>> iterator = this.data.iterator();
 			while (iterator.hasNext()) {
-				final ConnectedElement<T> elem = iterator.next();
+				final ConnectedElement<Consumer<T>> elem = iterator.next();
 				if (elem.isCompatibleWith(connection)) {
 					elem.disconnect();
 					iterator.remove();
@@ -173,12 +111,12 @@ public class Signal<T> implements ConnectionRemoveInterface {
 	}
 
 	public void emit(final T value) {
-		List<ConnectedElement<T>> tmp;
+		List<ConnectedElement<Consumer<T>>> tmp;
 		// clean the list:
 		synchronized(this.data) {
-			final Iterator<ConnectedElement<T>> iterator = this.data.iterator();
+			final Iterator<ConnectedElement<Consumer<T>>> iterator = this.data.iterator();
 			while (iterator.hasNext()) {
-				final ConnectedElement<T> elem = iterator.next();
+				final ConnectedElement<Consumer<T>> elem = iterator.next();
 				Object tmpObject = elem.getConsumer();
 				if (tmpObject == null) {
 					elem.disconnect();
@@ -194,9 +132,9 @@ public class Signal<T> implements ConnectionRemoveInterface {
 		}
 		// real call elements
 		{
-			final Iterator<ConnectedElement<T>> iterator = tmp.iterator();
+			final Iterator<ConnectedElement<Consumer<T>>> iterator = tmp.iterator();
 			while (iterator.hasNext()) {
-				final ConnectedElement<T> elem = iterator.next();
+				final ConnectedElement<Consumer<T>> elem = iterator.next();
 				Consumer<T> tmpObject = elem.getConsumer();
 				if (tmpObject == null) {
 					continue;
