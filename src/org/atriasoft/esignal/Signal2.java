@@ -70,6 +70,51 @@ class BiConnectedElementDynamic<T, U> extends BiConnectedElement<T, U> {
 	}
 }
 
+/**
+ * Simple interface to manage signal connection and disconnection
+ * <pre>{@code
+ * class EmiterSimple {
+ *     public Signal2<String, Double> signalEvent = new Signal2<>();
+ * }
+ *  
+ * class ReceiverSimple {
+ *     public void onEvent(String data, Double data2) {
+ *         Log.error("function receive: " + data + "  " + data2);
+ *     }
+ *     public connectLambda(EmiterSimple other) {
+ *         // Note : this lambda is reference a a global, then it will never removed in the connection list ==> refer the local class or @see connectAutoRemoveObject
+ *         other.signalEvent.connect((data, data2) -> {
+ *             Log.error("lambda receive: " + data + "  " + data2);
+ *         });
+ *     }
+ * }
+ * // use : 
+ * EmiterSimple aaa = new EmiterSimple();
+ * ReceiverSimple bbb = new ReceiverSimple();
+ * // Emit a signal:
+ * aaa.signalEvent.emit("My message ...", 16516.541654);
+ * // simple direct connection: 
+ * aaa.signalEvent.connect(bbb::onEvent);
+ * //removable connection (2 possibilities:)
+ * // First solution (best way ==> does not need to lock a reference on the current object and the remote)
+ * {
+ *     Connection connect = aaa.signalEvent.connectDynamic(bbb::onEvent());
+ *     // disconnect
+ *     connect.disconnect();
+ * }
+ * // Second solution
+ * {
+ *     Consumer<?> connect = bbb::onEvent;
+ *     aaa.signalEvent.connect(connect);
+ *     // disconnect
+ *     aaa.signalEvent.disconnect(connect);
+ * }
+ * }</pre>
+ * 
+ * @param <T> First type of the signal
+ * @param <U> Second type of the signal
+ * 
+ */
 public class Signal2<T, U> implements ConnectionRemoveInterface {
 	List<BiConnectedElement<T, U>> data = new ArrayList<>();
 	
