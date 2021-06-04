@@ -117,9 +117,7 @@ public class TestSignalEmpty {
 		receiver = null;
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		System.gc();
-		
-		sender.sendEvent();
-		Assertions.assertEquals(0, sender.signalEvent.size());
+		Assertions.assertEquals(0, sender.signalEvent.sizeCleaned());
 		Log.warning("Test 1 [ END ]");
 		
 	}

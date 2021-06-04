@@ -13,8 +13,8 @@ import org.atriasoft.esignal.internal.ConnectedElementDynamic;
  * @param <T> generic Runnable, Consumer, or BiConsumer template...
  */
 public class GenericSignal<T> implements ConnectionRemoveInterface {
-	List<ConnectedElement<T>> data = new ArrayList<>();
 	
+	protected List<ConnectedElement<T>> data = new ArrayList<>();
 	public void clear() {
 		List<ConnectedElement<T>> data2 = this.data;
 		synchronized(this.data) {
@@ -50,9 +50,9 @@ public class GenericSignal<T> implements ConnectionRemoveInterface {
 		}
 		return out;
 	}
-	public void connectAutoRemoveObject(final Object reference, final T function) {
+	public void connectAutoRemoveObject(final Object object, final T function) {
 		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<T>(reference, function));
+			this.data.add(new ConnectedElementDynamic<T>(object, function));
 		}
 	}
 	
@@ -70,7 +70,41 @@ public class GenericSignal<T> implements ConnectionRemoveInterface {
 		}
 	}
 	
+	protected List<ConnectedElement<T>> getACleanedList() {
+		// first clean the list
+		cleanedList();
+		// get a copy of elements
+		List<ConnectedElement<T>> out = null;
+		// clean the list:
+		synchronized(this.data) {
+			// simple optimization:
+			if (this.data.isEmpty()) {
+				return null;
+			}
+			// clone the list to permit to have asynchronous remove call
+			out = new ArrayList<>(this.data);
+		}
+		return out;
+	}
+	protected void cleanedList() {
+		// clean the list:
+		synchronized(this.data) {
+			final Iterator<ConnectedElement<T>> iterator = this.data.iterator();
+			while (iterator.hasNext()) {
+				final ConnectedElement<T> elem = iterator.next();
+				Object tmpObject = elem.getConsumer();
+				if (tmpObject == null) {
+					elem.disconnect();
+					iterator.remove();
+				}
+			}
+		}
+	}
 	public int size() {
+		return this.data.size();
+	}
+	public int sizeCleaned() {
+		cleanedList();
 		return this.data.size();
 	}
 

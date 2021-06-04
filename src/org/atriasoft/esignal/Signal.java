@@ -53,42 +53,20 @@ import org.atriasoft.esignal.internal.ConnectedElement;
  */
 public class Signal<T> extends GenericSignal<Consumer<T>> {
 	public void emit(final T value) {
-		List<ConnectedElement<Consumer<T>>> tmp;
-		// clean the list:
-		synchronized(this.data) {
-			final Iterator<ConnectedElement<Consumer<T>>> iterator = this.data.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<Consumer<T>> elem = iterator.next();
-				Object tmpObject = elem.getConsumer();
-				if (tmpObject == null) {
-					elem.disconnect();
-					iterator.remove();
-				}
-			}
-			// simple optimization:
-			if (this.data.isEmpty()) {
-				return;
-			}
-			// clone the list to permit to have asynchronous remove call
-			tmp = new ArrayList<>(this.data);
+		List<ConnectedElement<Consumer<T>>> tmp = getACleanedList();
+		if (tmp == null) {
+			return;
 		}
 		// real call elements
-		{
-			final Iterator<ConnectedElement<Consumer<T>>> iterator = tmp.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<Consumer<T>> elem = iterator.next();
-				Consumer<T> tmpObject = elem.getConsumer();
-				if (tmpObject == null) {
-					continue;
-				}
-				tmpObject.accept(value);
+		final Iterator<ConnectedElement<Consumer<T>>> iterator = tmp.iterator();
+		while (iterator.hasNext()) {
+			final ConnectedElement<Consumer<T>> elem = iterator.next();
+			Consumer<T> tmpObject = elem.getConsumer();
+			if (tmpObject == null) {
+				// Not a dead code, but very hard to simply test it.
+				continue;
 			}
+			tmpObject.accept(value);
 		}
 	}
-	
-	@Override
-	public int size() {
-		return this.data.size();
-	}
-
 }

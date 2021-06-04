@@ -51,36 +51,19 @@ import org.atriasoft.esignal.internal.ConnectedElement;
 public class SignalEmpty extends GenericSignal<Runnable> {
 	
 	public void emit() {
-		List<ConnectedElement<Runnable>> tmp;
-		// clean the list:
-		synchronized(this.data) {
-			final Iterator<ConnectedElement<Runnable>> iterator = this.data.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<Runnable> elem = iterator.next();
-				Object tmpObject = elem.getConsumer();
-				if (tmpObject == null) {
-					elem.disconnect();
-					iterator.remove();
-				}
-			}
-			// simple optimization:
-			if (this.data.isEmpty()) {
-				return;
-			}
-			// clone the list to permit to have asynchronous remove call
-			tmp = new ArrayList<>(this.data);
+		List<ConnectedElement<Runnable>> tmp = getACleanedList();
+		if (tmp == null) {
+			return;
 		}
 		// real call elements
-		{
-			final Iterator<ConnectedElement<Runnable>> iterator = tmp.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<Runnable> elem = iterator.next();
-				Runnable tmpObject = elem.getConsumer();
-				if (tmpObject == null) {
-					continue;
-				}
-				tmpObject.run();
+		final Iterator<ConnectedElement<Runnable>> iterator = tmp.iterator();
+		while (iterator.hasNext()) {
+			final ConnectedElement<Runnable> elem = iterator.next();
+			Runnable tmpObject = elem.getConsumer();
+			if (tmpObject == null) {
+				continue;
 			}
+			tmpObject.run();
 		}
 	}
 	
