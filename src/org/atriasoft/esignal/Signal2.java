@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import org.atriasoft.esignal.internal.ConnectedElement;
-import org.atriasoft.esignal.internal.ConnectedElementDynamic;
 
 
 /**
@@ -54,64 +53,7 @@ import org.atriasoft.esignal.internal.ConnectedElementDynamic;
  * @param <U> Second type of the signal
  * 
  */
-public class Signal2<T, U> implements ConnectionRemoveInterface {
-	List<ConnectedElement<BiConsumer<T, U>>> data = new ArrayList<>();
-	
-	public void clear() {
-		List<ConnectedElement<BiConsumer<T, U>>> data2 = this.data;
-		synchronized(this.data) {
-			this.data = new ArrayList<>();
-		}
-		final Iterator<ConnectedElement<BiConsumer<T, U>>> iterator = data2.iterator();
-		while (iterator.hasNext()) {
-			final ConnectedElement<BiConsumer<T, U>> elem = iterator.next();
-			elem.disconnect();
-		}
-	}
-
-	public void connect(final BiConsumer<T, U> function) {
-		synchronized(this.data) {
-			this.data.add(new ConnectedElement<BiConsumer<T, U>>(function));
-		}
-	}
-	public void disconnect(final BiConsumer<T, U> obj) {
-		synchronized(this.data) {
-			final Iterator<ConnectedElement<BiConsumer<T, U>>> iterator = this.data.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<BiConsumer<T, U>> elem = iterator.next();
-				if (elem.isCompatibleWith(obj)) {
-					iterator.remove();
-				}
-			}
-		}
-	}
-	public Connection connectDynamic(final BiConsumer<T, U> function) {
-		Connection out = new Connection(this);
-		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<BiConsumer<T, U>>(out, function));
-		}
-		return out;
-	}
-	public void connectAutoRemoveObject(final Object reference, final BiConsumer<T, U> function) {
-		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<BiConsumer<T, U>>(reference, function));
-		}
-	}
-	
-	@Override
-	public void disconnect(final Connection connection) {
-		synchronized(this.data) {
-			final Iterator<ConnectedElement<BiConsumer<T, U>>> iterator = this.data.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<BiConsumer<T, U>> elem = iterator.next();
-				if (elem.isCompatibleWith(connection)) {
-					elem.disconnect();
-					iterator.remove();
-				}
-			}
-		}
-	}
-
+public class Signal2<T, U> extends GenericSignal<BiConsumer<T, U>> {
 	public void emit(final T valueT, final U valueU) {
 		List<ConnectedElement<BiConsumer<T, U>>> tmp;
 		// clean the list:
@@ -145,9 +87,5 @@ public class Signal2<T, U> implements ConnectionRemoveInterface {
 			}
 		}
 	}
-	
-	public int size() {
-		return this.data.size();
-	}
-
 }
+

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.atriasoft.esignal.internal.ConnectedElement;
-import org.atriasoft.esignal.internal.ConnectedElementDynamic;
 
 /**
  * Simple interface to manage signal connection and disconnection
@@ -49,63 +48,7 @@ import org.atriasoft.esignal.internal.ConnectedElementDynamic;
  * }</pre>
  * 
  */
-public class SignalEmpty implements ConnectionRemoveInterface {
-	List<ConnectedElement<Runnable>> data = new ArrayList<>();
-	
-	public void clear() {
-		List<ConnectedElement<Runnable>> data2 = this.data;
-		synchronized(this.data) {
-			this.data = new ArrayList<>();
-		}
-		final Iterator<ConnectedElement<Runnable>> iterator = data2.iterator();
-		while (iterator.hasNext()) {
-			final ConnectedElement<Runnable> elem = iterator.next();
-			elem.disconnect();
-		}
-	}
-
-	public void connect(final Runnable function) {
-		synchronized(this.data) {
-			this.data.add(new ConnectedElement<Runnable>(function));
-		}
-	}
-	public void disconnect(final Runnable obj) {
-		synchronized(this.data) {
-			final Iterator<ConnectedElement<Runnable>> iterator = this.data.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<Runnable> elem = iterator.next();
-				if (elem.isCompatibleWith(obj)) {
-					iterator.remove();
-				}
-			}
-		}
-	}
-	public Connection connectDynamic(final Runnable function) {
-		Connection out = new Connection(this);
-		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<Runnable>(out, function));
-		}
-		return out;
-	}
-	public void connectAutoRemoveObject(final Object reference, final Runnable function) {
-		synchronized(this.data) {
-			this.data.add(new ConnectedElementDynamic<Runnable>(reference, function));
-		}
-	}
-	
-	@Override
-	public void disconnect(final Connection connection) {
-		synchronized(this.data) {
-			final Iterator<ConnectedElement<Runnable>> iterator = this.data.iterator();
-			while (iterator.hasNext()) {
-				final ConnectedElement<Runnable> elem = iterator.next();
-				if (elem.isCompatibleWith(connection)) {
-					elem.disconnect();
-					iterator.remove();
-				}
-			}
-		}
-	}
+public class SignalEmpty extends GenericSignal<Runnable> {
 	
 	public void emit() {
 		List<ConnectedElement<Runnable>> tmp;
@@ -141,8 +84,4 @@ public class SignalEmpty implements ConnectionRemoveInterface {
 		}
 	}
 	
-	public int size() {
-		return this.data.size();
-	}
-
 }
