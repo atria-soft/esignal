@@ -6,13 +6,9 @@ public class Connection implements AutoCloseable {
 	protected WeakReference<ConnectionRemoveInterface> connection;
 	
 	public void connectionIsRemovedBySignal() {
-		connection = null;
+		this.connection = null;
 	}
 	
-	public void disconnect() {
-		close();
-	}
-
 	public Connection( final ConnectionRemoveInterface object ) {
 		this.connection = new WeakReference<>(object);
 	}

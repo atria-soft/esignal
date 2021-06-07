@@ -11,7 +11,7 @@ package test.atriasoft.esignal;
 import java.lang.ref.WeakReference;
 
 import org.atriasoft.esignal.Connection;
-import org.atriasoft.esignal.SignalEmpty;
+import org.atriasoft.esignal.ISignalEmpty;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -21,10 +21,20 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 
 @TestMethodOrder(OrderAnnotation.class)
-public class TestSignalEmpty {
+public class TestISignalEmpty {
 
 	class EmiterSimple {
-		public SignalEmpty signalEvent = new SignalEmpty();
+		public ISignalEmpty signalEvent = new ISignalEmpty();
+		public int currentNumberConnection = 0;
+		public int deltaConnection = 0;
+		public EmiterSimple() {
+			this.signalEvent.setCallBackNotification(this::onConnectionChange);
+		}
+		public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
+			Log.info(">>>>> Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
+			this.currentNumberConnection = currentNumberConnection;
+			this.deltaConnection = deltaConnection;
+		}
 		public void sendEvent() {
 			this.signalEvent.emit();
 		}
@@ -224,7 +234,9 @@ public class TestSignalEmpty {
 		EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect3(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		Assertions.assertEquals(1, sender.currentNumberConnection);
+		Assertions.assertEquals(1, sender.deltaConnection);
 		
 		sender.sendEvent();
 		Assertions.assertEquals(true, receiver.getDataAndClean());
@@ -233,7 +245,9 @@ public class TestSignalEmpty {
 		receiver.close();
 		receiver = null;
 		System.gc();
-		
+
+		Assertions.assertEquals(0, sender.currentNumberConnection);
+		Assertions.assertEquals(-1, sender.deltaConnection);
 		sender.sendEvent();
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 3 [ END ]");
@@ -248,6 +262,8 @@ public class TestSignalEmpty {
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect4(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.currentNumberConnection);
+		Assertions.assertEquals(1, sender.deltaConnection);
 		
 		sender.sendEvent();
 		Assertions.assertEquals(true, receiver.getDataAndClean());
@@ -256,7 +272,9 @@ public class TestSignalEmpty {
 		receiver.close();
 		receiver = null;
 		System.gc();
-		
+
+		Assertions.assertEquals(0, sender.currentNumberConnection);
+		Assertions.assertEquals(-1, sender.deltaConnection);
 		sender.sendEvent();
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 4 [ END ]");
@@ -272,6 +290,8 @@ public class TestSignalEmpty {
 		//connect step 1
 		receiver.connect5(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.currentNumberConnection);
+		Assertions.assertEquals(1, sender.deltaConnection);
 		
 		sender.sendEvent();
 		Assertions.assertEquals(true, receiver.getDataAndClean());
@@ -294,8 +314,12 @@ public class TestSignalEmpty {
 		// check auto remove...
 		receiver = null;
 		System.gc();
-		
+
+		Assertions.assertEquals(1, sender.currentNumberConnection);
+		Assertions.assertEquals(1, sender.deltaConnection);
 		sender.sendEvent();
+		Assertions.assertEquals(0, sender.currentNumberConnection);
+		Assertions.assertEquals(-1, sender.deltaConnection);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 5 [ END ]");
 		
@@ -609,16 +633,51 @@ public class TestSignalEmpty {
 		sender.sendEvent();
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Log.warning("Test 13 [ END ]");
-		
+	}
+	
+	@Test
+	public void testEmptyConnection() {
+		Log.warning("Test 8 [BEGIN]");
+		Connection con = new Connection();
+		Assertions.assertEquals(false, con.isConnected());
+		con.close();
+		Log.warning("Test 8 [ END ]");
 	}
 
 	@Test
 	public void testClearConnection() {
+		Log.warning("Test 9 [BEGIN]");
+		EmiterSimple sender = new EmiterSimple();
+		ReceiverSimple receiver = new ReceiverSimple();
+		//connect step 1
+		receiver.connect7(sender);
+		Assertions.assertEquals(1, sender.currentNumberConnection);
+		Assertions.assertEquals(1, sender.deltaConnection);
+		receiver.connect5(sender);
+
+		Assertions.assertEquals(2, sender.currentNumberConnection);
+		Assertions.assertEquals(1, sender.deltaConnection);
+		
+		Assertions.assertEquals(2, sender.signalEvent.size()); 
+		sender.signalEvent.clear();
+
+		Assertions.assertEquals(0, sender.currentNumberConnection);
+		Assertions.assertEquals(-2, sender.deltaConnection);
+		Log.warning("Test 9 [ END ]");
+	}
+	
+	@Test
+	public void testDisconnectionRemovedSignal() {
+		Log.warning("Test 10 [BEGIN]");
 		EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect7(sender);
 		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		sender.signalEvent.clear();
+		sender = null;
+		System.gc();
+		Assertions.assertEquals(false, receiver.isConnected());
+		receiver.close();
+		Log.warning("Test 10 [ END ]");
 	}
 }

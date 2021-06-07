@@ -2,27 +2,31 @@ package org.atriasoft.esignal.internal;
 
 import java.lang.ref.WeakReference;
 
-import org.atriasoft.esignal.Connection;
-
 /**
  * Connected element with a dependency of an other object to auto remove the signals
  *
  * @param <T> Type Of the Signal
  */
-public class ConnectedElementDynamic<T> extends ConnectedElement<T> {
+public class ConnectedElementTRefConsumerWeakObject<T, U> extends ConnectedElementTRefConsumer<T, U> {
 	protected final WeakReference<Object> linkedObject;
 	
-	public ConnectedElementDynamic(final Object linkedObject, final T consumer) {
+	public ConnectedElementTRefConsumerWeakObject(final Object linkedObject, final T consumer) {
 		super(consumer);
 		this.linkedObject = new WeakReference<Object>(linkedObject);
 	}
+
+	@Override
+	public boolean isObjectDependent() {
+		return true;
+	}
 	
 	@Override
-	public T getConsumer() {
-		if (this.linkedObject.get() == null) {
-			return null;
-		}
-		return this.consumer.get();
+	public Object lockObjects() {
+		return this.linkedObject.get();
+	}
+	@Override
+	public Object getObject() {
+		return this.linkedObject.get();
 	}
 	
 	@Override
@@ -37,14 +41,4 @@ public class ConnectedElementDynamic<T> extends ConnectedElement<T> {
 		return false;
 	}
 
-	@Override
-	public void disconnect() {
-		Object obj = this.linkedObject.get();
-		if (obj == null) {
-			return;
-		}
-		if (obj instanceof Connection tmp) {
-			tmp.connectionIsRemovedBySignal();
-		}
-	}
 }

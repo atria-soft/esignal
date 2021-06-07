@@ -10,50 +10,24 @@ import org.atriasoft.esignal.internal.ConnectedElementInterface;
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 
 /**
- * Simple interface to manage signal connection and disconnection
+ * Simple interface to manage signal connection and disconnection with notification on connection change.
+ * @see Signal documentation
  * <pre>{@code
  * class EmiterSimple {
- *     public Signal<String> signalEvent = new Signal<>();
- * }
- *  
- * class ReceiverSimple {
- *     public void onEvent(String data) {
- *         Log.error("function receive: " + data);
+ *     public final ISignal<String> signalEvent = new ISignal<>();
+ *     public EmiterSimple() {
+ *         signalEvent.setCallBackNotification(this::onConnectionChange);
  *     }
- *     public connectLambda(EmiterSimple other) {
- *         // Note : this lambda is reference a a global, then it will never removed in the connection list ==> refer the local class or @see connectAutoRemoveObject
- *         other.signalEvent.connect((data) -> {
- *             Log.error("lambda receive: " + data);
- *         });
+ *     public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
+ *         Log.info("Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
  *     }
- * }
- * // use : 
- * EmiterSimple aaa = new EmiterSimple();
- * ReceiverSimple bbb = new ReceiverSimple();
- * // Emit a signal:
- * aaa.signalEvent.emit("My message ...");
- * // simple direct connection: 
- * aaa.signalEvent.connect(bbb::onEvent);
- * //removable connection (2 possibilities:)
- * // First solution (best way ==> does not need to lock a reference on the current object and the remote)
- * {
- *     Connection connect = aaa.signalEvent.connectDynamic(bbb::onEvent());
- *     // disconnect
- *     connect.disconnect();
- * }
- * // Second solution
- * {
- *     Consumer<?> connect = bbb::onEvent;
- *     aaa.signalEvent.connect(connect);
- *     // disconnect
- *     aaa.signalEvent.disconnect(connect);
  * }
  * }</pre>
  * 
  * @param <T> Type of the signal
  * 
  */
-public class Signal<T> extends GenericSignal<Consumer<T>, BiConsumer<Object, T>> {
+public class ISignal<T> extends GenericSignalInstrumented<Consumer<T>, BiConsumer<Object, T>> {
 	/**
 	 * Emit a signal on all element connect (and clean the list of unlinked elements).
 	 * @param value Value to set in parameter.
@@ -106,3 +80,6 @@ public class Signal<T> extends GenericSignal<Consumer<T>, BiConsumer<Object, T>>
 				});
 	}
 }
+
+
+
