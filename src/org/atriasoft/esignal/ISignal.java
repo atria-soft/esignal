@@ -28,6 +28,26 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  * 
  */
 public class ISignal<T> extends GenericSignalInstrumented<Consumer<T>, BiConsumer<Object, T>> {
+	@CheckReturnValue
+	@SuppressWarnings("unchecked")
+	public <V> Connection connect(final V object, final BiConsumer<V, T> function) {
+		return connect(object, (final Object obj, final T value) -> {
+			function.accept((V) obj, value);
+		});
+	}
+	
+	/**
+	 * Connect to the signal and automatically disconnect when the object is removed
+	 * @param object Object to check if remove to continue keeping the signal active (Keep a WeakReference on it only)
+	 * @param function Function to connect (Keep a WeakReference on it only)
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> void connectAuto(final V object, final BiConsumer<V, T> function) {
+		connectAuto(object, (final Object obj, final T value) -> {
+			function.accept((V) obj, value);
+		});
+	}
+	
 	/**
 	 * Emit a signal on all element connect (and clean the list of unlinked elements).
 	 * @param value Value to set in parameter.
@@ -58,28 +78,4 @@ public class ISignal<T> extends GenericSignalInstrumented<Consumer<T>, BiConsume
 			}
 		}
 	}
-
-	/**
-	 * Connect to the signal and automatically disconnect when the object is removed
-	 * @param object Object to check if remove to continue keeping the signal active (Keep a WeakReference on it only)
-	 * @param function Function to connect (Keep a WeakReference on it only)
-	 */
-	@SuppressWarnings("unchecked")
-	public <V> void connectAuto(final V object, final BiConsumer<V, T> function) {
-		connectAuto(object,
-				(final Object obj, final T value) -> {
-					function.accept((V)obj, value);
-				});
-	}
-	@CheckReturnValue
-	@SuppressWarnings("unchecked")
-	public <V> Connection connect(final V object, final BiConsumer<V, T> function) {
-		return connect(object,
-				(final Object obj, final T value) -> {
-					function.accept((V)obj, value);
-				});
-	}
 }
-
-
-
