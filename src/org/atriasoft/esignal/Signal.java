@@ -15,24 +15,24 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  * class EmiterSimple {
  *     public Signal<String> signalEvent = new Signal<>();
  * }
- *  
+ * 
  * class ReceiverSimple {
  *     public void onEvent(String data) {
- *         Log.error("function receive: " + data);
+ *         Log.error("function receive: {}", data);
  *     }
  *     public connectLambda(EmiterSimple other) {
  *         // Note : this lambda is reference a a global, then it will never removed in the connection list ==> refer the local class or @see connectAutoRemoveObject
  *         other.signalEvent.connect((data) -> {
- *             Log.error("lambda receive: " + data);
+ *             Log.error("lambda receive: {}", data);
  *         });
  *     }
  * }
- * // use : 
+ * // use :
  * EmiterSimple aaa = new EmiterSimple();
  * ReceiverSimple bbb = new ReceiverSimple();
  * // Emit a signal:
  * aaa.signalEvent.emit("My message ...");
- * // simple direct connection: 
+ * // simple direct connection:
  * aaa.signalEvent.connect(bbb::onEvent);
  * //removable connection (2 possibilities:)
  * // First solution (best way ==> does not need to lock a reference on the current object and the remote)
@@ -54,12 +54,32 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  * 
  */
 public class Signal<T> extends GenericSignal<Consumer<T>, BiConsumer<Object, T>> {
+	@CheckReturnValue
+	@SuppressWarnings("unchecked")
+	public <V> Connection connect(final V object, final BiConsumer<V, T> function) {
+		return connect(object, (final Object obj, final T value) -> {
+			function.accept((V) obj, value);
+		});
+	}
+	
+	/**
+	 * Connect to the signal and automatically disconnect when the object is removed
+	 * @param object Object to check if remove to continue keeping the signal active (Keep a WeakReference on it only)
+	 * @param function Function to connect (Keep a WeakReference on it only)
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> void connectAuto(final V object, final BiConsumer<V, T> function) {
+		connectAuto(object, (final Object obj, final T value) -> {
+			function.accept((V) obj, value);
+		});
+	}
+	
 	/**
 	 * Emit a signal on all element connect (and clean the list of unlinked elements).
 	 * @param value Value to set in parameter.
 	 */
 	public void emit(final T value) {
-		List<ConnectedElementInterface<Consumer<T>, BiConsumer<Object, T>>> tmp = getACleanedList();
+		final List<ConnectedElementInterface<Consumer<T>, BiConsumer<Object, T>>> tmp = getACleanedList();
 		if (tmp == null) {
 			return;
 		}
@@ -68,41 +88,20 @@ public class Signal<T> extends GenericSignal<Consumer<T>, BiConsumer<Object, T>>
 		while (iterator.hasNext()) {
 			final ConnectedElementInterface<Consumer<T>, BiConsumer<Object, T>> elem = iterator.next();
 			
-			Object remoteLockObject = elem.lockObjects();
+			final Object remoteLockObject = elem.lockObjects();
 			if (elem.isObjectDependent() && remoteLockObject == null) {
 				continue;
 			}
-			Consumer<T> tmpConsumer = elem.getConsumer();
+			final Consumer<T> tmpConsumer = elem.getConsumer();
 			if (tmpConsumer != null) {
 				tmpConsumer.accept(value);
 				continue;
 			}
 			// Not a dead code, but very hard to simply test it.
-			BiConsumer<Object, T> tmpConsumer2 = elem.getConsumer2();
+			final BiConsumer<Object, T> tmpConsumer2 = elem.getConsumer2();
 			if (tmpConsumer2 != null) {
 				tmpConsumer2.accept(elem.getObject(), value);
 			}
 		}
-	}
-
-	/**
-	 * Connect to the signal and automatically disconnect when the object is removed
-	 * @param object Object to check if remove to continue keeping the signal active (Keep a WeakReference on it only)
-	 * @param function Function to connect (Keep a WeakReference on it only)
-	 */
-	@SuppressWarnings("unchecked")
-	public <V> void connectAuto(final V object, final BiConsumer<V, T> function) {
-		connectAuto(object,
-				(final Object obj, final T value) -> {
-					function.accept((V)obj, value);
-				});
-	}
-	@CheckReturnValue
-	@SuppressWarnings("unchecked")
-	public <V> Connection connect(final V object, final BiConsumer<V, T> function) {
-		return connect(object,
-				(final Object obj, final T value) -> {
-					function.accept((V)obj, value);
-				});
 	}
 }

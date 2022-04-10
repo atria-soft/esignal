@@ -18,18 +18,38 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  *         signalEvent.setCallBackNotification(this::onConnectionChange);
  *     }
  *     public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
- *         Log.info("Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
+ *         Log.info("Number of connection Change : {} delta={}", currentNumberConnection, deltaConnection);
  *     }
  * }
  * }</pre>
  * 
  */
 public class ISignalEmpty extends GenericSignalInstrumented<Runnable, Consumer<Object>> {
+	@CheckReturnValue
+	@SuppressWarnings("unchecked")
+	public <V> Connection connect(final V object, final Consumer<V> function) {
+		return connect(object, (final Object obj) -> {
+			function.accept((V) obj);
+		});
+	}
+	
+	/**
+	 * Connect to the signal and automatically disconnect when the object is removed
+	 * @param object Object to check if remove to continue keeping the signal active (Keep a WeakReference on it only)
+	 * @param function Function to connect (Keep a WeakReference on it only)
+	 */
+	@SuppressWarnings("unchecked")
+	public <V> void connectAuto(final V object, final Consumer<V> function) {
+		connectAuto(object, (final Object obj) -> {
+			function.accept((V) obj);
+		});
+	}
+	
 	/**
 	 * Emit a signal on all element connect (and clean the list of unlinked elements).
 	 */
 	public void emit() {
-		List<ConnectedElementInterface<Runnable, Consumer<Object>>> tmp = getACleanedList();
+		final List<ConnectedElementInterface<Runnable, Consumer<Object>>> tmp = getACleanedList();
 		if (tmp == null) {
 			return;
 		}
@@ -38,43 +58,21 @@ public class ISignalEmpty extends GenericSignalInstrumented<Runnable, Consumer<O
 		while (iterator.hasNext()) {
 			final ConnectedElementInterface<Runnable, Consumer<Object>> elem = iterator.next();
 			
-			Object remoteLockObject = elem.lockObjects();
+			final Object remoteLockObject = elem.lockObjects();
 			if (elem.isObjectDependent() && remoteLockObject == null) {
 				continue;
 			}
-			Runnable tmpConsumer = elem.getConsumer();
+			final Runnable tmpConsumer = elem.getConsumer();
 			if (tmpConsumer != null) {
 				tmpConsumer.run();
 				continue;
 			}
 			// Not a dead code, but very hard to simply test it.
-			Consumer<Object> tmpConsumer2 = elem.getConsumer2();
+			final Consumer<Object> tmpConsumer2 = elem.getConsumer2();
 			if (tmpConsumer2 != null) {
 				tmpConsumer2.accept(elem.getObject());
 			}
 		}
-	}
-
-	/**
-	 * Connect to the signal and automatically disconnect when the object is removed
-	 * @param object Object to check if remove to continue keeping the signal active (Keep a WeakReference on it only)
-	 * @param function Function to connect (Keep a WeakReference on it only)
-	 */
-	@SuppressWarnings("unchecked")
-	public <V> void connectAuto(final V object, final Consumer<V> function) {
-		connectAuto(object,
-				(final Object obj) -> {
-					function.accept((V)obj);
-				});
-	}
-	
-	@CheckReturnValue
-	@SuppressWarnings("unchecked")
-	public <V> Connection connect(final V object, final Consumer<V> function) {
-		return connect(object,
-				(final Object obj) -> {
-					function.accept((V)obj);
-				});
 	}
 	
 }

@@ -19,7 +19,7 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  *         signalEvent.setCallBackNotification(this::onConnectionChange);
  *     }
  *     public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
- *         Log.info("Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
+ *         Log.info("Number of connection Change : {} dalta={}", currentNumberConnection, deltaConnection);
  *     }
  * }
  * }</pre>
@@ -53,7 +53,7 @@ public class ISignal<T> extends GenericSignalInstrumented<Consumer<T>, BiConsume
 	 * @param value Value to set in parameter.
 	 */
 	public void emit(final T value) {
-		List<ConnectedElementInterface<Consumer<T>, BiConsumer<Object, T>>> tmp = getACleanedList();
+		final List<ConnectedElementInterface<Consumer<T>, BiConsumer<Object, T>>> tmp = getACleanedList();
 		if (tmp == null) {
 			return;
 		}
@@ -62,17 +62,17 @@ public class ISignal<T> extends GenericSignalInstrumented<Consumer<T>, BiConsume
 		while (iterator.hasNext()) {
 			final ConnectedElementInterface<Consumer<T>, BiConsumer<Object, T>> elem = iterator.next();
 			
-			Object remoteLockObject = elem.lockObjects();
+			final Object remoteLockObject = elem.lockObjects();
 			if (elem.isObjectDependent() && remoteLockObject == null) {
 				continue;
 			}
-			Consumer<T> tmpConsumer = elem.getConsumer();
+			final Consumer<T> tmpConsumer = elem.getConsumer();
 			if (tmpConsumer != null) {
 				tmpConsumer.accept(value);
 				continue;
 			}
 			// Not a dead code, but very hard to simply test it.
-			BiConsumer<Object, T> tmpConsumer2 = elem.getConsumer2();
+			final BiConsumer<Object, T> tmpConsumer2 = elem.getConsumer2();
 			if (tmpConsumer2 != null) {
 				tmpConsumer2.accept(elem.getObject(), value);
 			}
