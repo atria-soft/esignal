@@ -18,12 +18,12 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  * 
  * class ReceiverSimple {
  *     public void onEvent(String data) {
- *         Log.error("function receive: {}", data);
+ *         LOGGER.error("function receive: {}", data);
  *     }
  *     public connectLambda(EmiterSimple other) {
  *         // Note : this lambda is reference a a global, then it will never removed in the connection list ==> refer the local class or @see connectAutoRemoveObject
  *         other.signalEvent.connect((data) -> {
- *             Log.error("lambda receive: {}", data);
+ *             LOGGER.error("lambda receive: {}", data);
  *         });
  *     }
  * }

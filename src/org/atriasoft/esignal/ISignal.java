@@ -19,7 +19,7 @@ import edu.umd.cs.findbugs.annotations.CheckReturnValue;
  *         signalEvent.setCallBackNotification(this::onConnectionChange);
  *     }
  *     public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
- *         Log.info("Number of connection Change : {} dalta={}", currentNumberConnection, deltaConnection);
+ *         LOGGER.info("Number of connection Change : {} dalta={}", currentNumberConnection, deltaConnection);
  *     }
  * }
  * }</pre>

@@ -13,41 +13,48 @@ import java.util.function.Consumer;
 
 import org.atriasoft.esignal.Connection;
 import org.atriasoft.esignal.ISignal;
-
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @TestMethodOrder(OrderAnnotation.class)
 public class TestISignal {
+	static final Logger LOGGER = LoggerFactory.getLogger(TestISignal.class);
 
 	class EmiterSimple {
-		public ISignal<String> signalEvent = new ISignal<String>();
+		public ISignal<String> signalEvent = new ISignal<>();
 		public int currentNumberConnection = 0;
 		public int deltaConnection = 0;
+
 		public EmiterSimple() {
 			this.signalEvent.setCallBackNotification(this::onConnectionChange);
 		}
+
 		public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
-			Log.info(">>>>> Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
+			LOGGER.info(">>>>> Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
 			this.currentNumberConnection = currentNumberConnection;
 			this.deltaConnection = deltaConnection;
 		}
+
 		public void sendEvent(final String value) {
 			this.signalEvent.emit(value);
 		}
 	}
+
 	static class ReceiverSimple implements AutoCloseable {
 		private String dataReceive = null;
-		ReceiverSimple() {
-		}
+
+		ReceiverSimple() {}
 
 		// record consumer
 		private Consumer<String> tmpConsumer1 = null;
 		private Connection tmpConnect = null;
+
 		@Override
 		public void close() {
 			this.tmpConsumer1 = null;
@@ -57,42 +64,47 @@ public class TestISignal {
 			}
 			this.dataReceive = null;
 		}
+
 		public void disconnectConnection() {
 			this.tmpConnect.close();
 		}
+
 		public boolean isConnected() {
 			return this.tmpConnect.isConnected();
 		}
-		
-		
+
 		public void connect1(final EmiterSimple other) {
-			WeakReference<ReceiverSimple> self = new WeakReference<ReceiverSimple>(this);
+			final WeakReference<ReceiverSimple> self = new WeakReference<>(this);
 			this.tmpConnect = other.signalEvent.connect(data -> {
-					self.get().onData(data);
-				});
+				self.get().onData(data);
+			});
 			System.gc();
 		}
+
 		public void connect2(final EmiterSimple other) {
-			// the solo lambda will not depend on the object => the remove must be done manually... 
+			// the solo lambda will not depend on the object => the remove must be done manually...
 			this.tmpConnect = other.signalEvent.connect(data -> {
-					Log.error("lambda receive: " + data);
-				});
+				LOGGER.error("lambda receive: " + data);
+			});
 			System.gc();
 		}
+
 		public void connect3(final EmiterSimple other) {
 			// we reference the local object, then the lambda is alive while the object is alive...
-			this.tmpConnect =other.signalEvent.connect(data -> {
-					Log.error("lambda receive: " + data);
-					this.dataReceive = data;
-				});
+			this.tmpConnect = other.signalEvent.connect(data -> {
+				LOGGER.error("lambda receive: " + data);
+				this.dataReceive = data;
+			});
 			System.gc();
 		}
+
 		public void connect4(final EmiterSimple other) {
 			this.tmpConnect = other.signalEvent.connect(data -> {
-					onData(data);
-				});
+				onData(data);
+			});
 			System.gc();
 		}
+
 		public void connect5(final EmiterSimple other) {
 			this.tmpConsumer1 = this::onData;
 			other.signalEvent.connectWeak(this.tmpConsumer1);
@@ -105,10 +117,10 @@ public class TestISignal {
 		}
 
 		public void connect6(final EmiterSimple other) {
-			// the solo lambda will not depend on the object => the remove must be done manually... 
+			// the solo lambda will not depend on the object => the remove must be done manually...
 			other.signalEvent.connectAutoRemoveObject(this, data -> {
-					Log.error("lambda receive: " + data);
-				});
+				LOGGER.error("lambda receive: " + data);
+			});
 			System.gc();
 		}
 		
@@ -122,10 +134,9 @@ public class TestISignal {
 		}
 
 		public void onData(final String data) {
-			Log.error("Retrive data : " + data);
-			this.dataReceive = data; 
+			LOGGER.error("Retrive data : " + data);
+			this.dataReceive = data;
 		}
-		
 
 		public void connect8(final EmiterSimple other) {
 			this.tmpConnect = other.signalEvent.connect(this, ReceiverSimple::onDataStatic);
@@ -137,13 +148,11 @@ public class TestISignal {
 			System.gc();
 		}
 
-
 		public static void onDataStatic(final Object local, final String data) {
-			ReceiverSimple self = (ReceiverSimple)local;
-			Log.error("Retrive data : " + data);
-			self.dataReceive = data; 
+			final ReceiverSimple self = (ReceiverSimple) local;
+			LOGGER.error("Retrive data : " + data);
+			self.dataReceive = data;
 		}
-
 
 		public void connect10(final EmiterSimple other) {
 			this.tmpConnect = other.signalEvent.connect(this, ReceiverSimple::onDataStatic2);
@@ -156,31 +165,28 @@ public class TestISignal {
 		}
 		
 		public static void onDataStatic2(final ReceiverSimple self, final String data) {
-			Log.error("Retrive data : " + data);
-			self.dataReceive = data; 
+			LOGGER.error("Retrive data : " + data);
+			self.dataReceive = data;
 		}
 		
 		public void connect12(final EmiterSimple other) {
 			this.tmpConnect = other.signalEvent.connect(this, (final ReceiverSimple self, final String data) -> {
-				Log.error("Retrive data : " + data);
-				self.dataReceive = data; 
+				LOGGER.error("Retrive data : " + data);
+				self.dataReceive = data;
 			});
 			System.gc();
 		}
 
 		public void connect13(final EmiterSimple other) {
 			other.signalEvent.connectAuto(this, (final ReceiverSimple self, final String data) -> {
-				Log.error("Retrive data : " + data);
-				self.dataReceive = data; 
+				LOGGER.error("Retrive data : " + data);
+				self.dataReceive = data;
 			});
 			System.gc();
 		}
-		
-		
-		
-		
+
 		public String getDataAndClean() {
-			String tmp = this.dataReceive;
+			final String tmp = this.dataReceive;
 			this.dataReceive = null;
 			return tmp;
 		}
@@ -190,63 +196,64 @@ public class TestISignal {
 	@Test
 	@Order(1)
 	public void testConnectAndTransmit1() {
-		Log.warning("Test 1 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 1 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect1(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
 		Assertions.assertEquals(1, sender.currentNumberConnection);
 		Assertions.assertEquals(1, sender.deltaConnection);
-		String testData1 = "MUST receive this data...";
+		final String testData1 = "MUST receive this data...";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		receiver = null;
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		System.gc();
-		String testData2 = "MUST NOT receive this data...";
+		final String testData2 = "MUST NOT receive this data...";
 		sender.sendEvent(testData2);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(0, sender.currentNumberConnection);
 		Assertions.assertEquals(-1, sender.deltaConnection);
-		Log.warning("Test 1 [ END ]");
+		LOGGER.warn("Test 1 [ END ]");
 		
 	}
+
 	@Test
 	@Order(2)
 	public void testConnectAndTransmit2() {
-		Log.warning("Test 2 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 2 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect2(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
 		Assertions.assertEquals(1, sender.currentNumberConnection);
 		Assertions.assertEquals(1, sender.deltaConnection);
-		String testData1 = "MUST receive this data...";
+		final String testData1 = "MUST receive this data...";
 		sender.sendEvent(testData1);
 		// No data stored ... assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// !!!! NO need to close lambda does not capture the THIS
 		receiver = null;
 		System.gc();
-		String testData2 = "Solo Lambda MUST receive this data...";
+		final String testData2 = "Solo Lambda MUST receive this data...";
 		sender.sendEvent(testData2);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(0, sender.currentNumberConnection);
 		Assertions.assertEquals(-1, sender.deltaConnection);
-		Log.warning("Test 2 [ END ]");
+		LOGGER.warn("Test 2 [ END ]");
 	}
 
 	@Test
 	@Order(3)
 	public void testConnectAndTransmit3() {
-		Log.warning("Test 3 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 3 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect3(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
 		Assertions.assertEquals(1, sender.currentNumberConnection);
 		Assertions.assertEquals(1, sender.deltaConnection);
-		String testData1 = "MUST receive this data...";
+		final String testData1 = "MUST receive this data...";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -256,62 +263,62 @@ public class TestISignal {
 		receiver.close();
 		receiver = null;
 		System.gc();
-		String testData2 = "MUST NOT receive this data...";
+		final String testData2 = "MUST NOT receive this data...";
 		sender.sendEvent(testData2);
 		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(0, sender.currentNumberConnection);
 		Assertions.assertEquals(-1, sender.deltaConnection);
-		Log.warning("Test 3 [ END ]");
+		LOGGER.warn("Test 3 [ END ]");
 		
 	}
 
 	@Test
 	@Order(4)
 	public void testConnectAndTransmit4() {
-		Log.warning("Test 4 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 4 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect4(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data...";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data...";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
 		// Need to close ==> capture Of this
 		receiver.close();
 		receiver = null;
 		System.gc();
-		String testData2 = "MUST NOT receive this data...";
+		final String testData2 = "MUST NOT receive this data...";
 		sender.sendEvent(testData2);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 4 [ END ]");
+		LOGGER.warn("Test 4 [ END ]");
 		
 	}
 
 	@Test
 	@Order(5)
 	public void testConnectAndTransmit5() {
-		Log.warning("Test 5 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 5 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect5(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// remove connection
 		receiver.disconnectConsumer1(sender);
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		System.gc();
-		String testData2 = "MUST NOT receive this data... 222";
+		final String testData2 = "MUST NOT receive this data... 222";
 		sender.sendEvent(testData2);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect5(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData3 = "MUST receive this data... 333";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData3 = "MUST receive this data... 333";
 		sender.sendEvent(testData3);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -319,43 +326,44 @@ public class TestISignal {
 		// check auto remove...
 		receiver = null;
 		System.gc();
-		String testData4 = "MUST NOT receive this data... 444";
+		final String testData4 = "MUST NOT receive this data... 444";
 		sender.sendEvent(testData4);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 5 [ END ]");
+		LOGGER.warn("Test 5 [ END ]");
 		
 	}
+
 	@Test
 	@Order(6)
 	public void testConnectAndTransmit6() {
-		Log.warning("Test 6 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 6 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		receiver.connect6(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data...";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data...";
 		sender.sendEvent(testData1);
 		//assertEquals(testData1, receiver.getDataAndClean());
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
 		receiver = null;
 		System.gc();
-		String testData2 = "MUST NOT receive this data...";
+		final String testData2 = "MUST NOT receive this data...";
 		sender.sendEvent(testData2);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 6 [ END ]");
+		LOGGER.warn("Test 6 [ END ]");
 		
 	}
 
 	@Test
 	@Order(7)
 	public void testConnectAndTransmit7() {
-		Log.warning("Test 7 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 7 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect7(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -364,14 +372,14 @@ public class TestISignal {
 		receiver.disconnect7(sender);
 		Assertions.assertEquals(false, receiver.isConnected());
 		System.gc();
-		String testData2 = "MUST NOT receive this data... 222";
+		final String testData2 = "MUST NOT receive this data... 222";
 		sender.sendEvent(testData2);
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect7(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData3 = "MUST receive this data... 333";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData3 = "MUST receive this data... 333";
 		sender.sendEvent(testData3);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -379,15 +387,15 @@ public class TestISignal {
 		// remove connection
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		System.gc();
-		String testData4 = "MUST NOT receive this data... 444";
+		final String testData4 = "MUST NOT receive this data... 444";
 		sender.sendEvent(testData4);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect7(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData5 = "MUST receive this data... 555";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData5 = "MUST receive this data... 555";
 		sender.sendEvent(testData5);
 		Assertions.assertEquals(testData5, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -396,23 +404,23 @@ public class TestISignal {
 		// check auto remove...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 7 [ END ]");
+		LOGGER.warn("Test 7 [ END ]");
 		
 	}
 
 	@Test
 	@Order(8)
 	public void testConnectAndTransmit8() {
-		Log.warning("Test 8 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 8 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect8(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -421,14 +429,14 @@ public class TestISignal {
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
 		System.gc();
-		String testData2 = "MUST NOT receive this data... 222";
+		final String testData2 = "MUST NOT receive this data... 222";
 		sender.sendEvent(testData2);
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect8(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData3 = "MUST receive this data... 333";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData3 = "MUST receive this data... 333";
 		sender.sendEvent(testData3);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -436,61 +444,61 @@ public class TestISignal {
 		// remove connection
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		System.gc();
-		String testData4 = "MUST NOT receive this data... 444";
+		final String testData4 = "MUST NOT receive this data... 444";
 		sender.sendEvent(testData4);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect8(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData5 = "MUST receive this data... 555";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData5 = "MUST receive this data... 555";
 		sender.sendEvent(testData5);
 		Assertions.assertEquals(testData5, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// check auto remove...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 8 [ END ]");
+		LOGGER.warn("Test 8 [ END ]");
 		
 	}
 	
 	@Test
 	@Order(9)
 	public void testConnectAndTransmit9() {
-		Log.warning("Test 9 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 9 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect9(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// remove connection (check auto remove)...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 9 [ END ]");
+		LOGGER.warn("Test 9 [ END ]");
 		
 	}
 
 	@Test
 	@Order(10)
 	public void testConnectAndTransmit10() {
-		Log.warning("Test 10 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 10 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect10(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -499,14 +507,14 @@ public class TestISignal {
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
 		System.gc();
-		String testData2 = "MUST NOT receive this data... 222";
+		final String testData2 = "MUST NOT receive this data... 222";
 		sender.sendEvent(testData2);
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect10(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData3 = "MUST receive this data... 333";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData3 = "MUST receive this data... 333";
 		sender.sendEvent(testData3);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -514,61 +522,61 @@ public class TestISignal {
 		// remove connection
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		System.gc();
-		String testData4 = "MUST NOT receive this data... 444";
+		final String testData4 = "MUST NOT receive this data... 444";
 		sender.sendEvent(testData4);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect10(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData5 = "MUST receive this data... 555";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData5 = "MUST receive this data... 555";
 		sender.sendEvent(testData5);
 		Assertions.assertEquals(testData5, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// check auto remove...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 10 [ END ]");
+		LOGGER.warn("Test 10 [ END ]");
 		
 	}
 	
 	@Test
 	@Order(11)
 	public void testConnectAndTransmit11() {
-		Log.warning("Test 11 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 11 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect11(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// remove connection (check auto remove)...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 11 [ END ]");
+		LOGGER.warn("Test 11 [ END ]");
 		
 	}
 
 	@Test
 	@Order(12)
 	public void testConnectAndTransmit12() {
-		Log.warning("Test 12 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 12 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect12(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 111";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 111";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -577,14 +585,14 @@ public class TestISignal {
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
 		System.gc();
-		String testData2 = "MUST NOT receive this data... 222";
+		final String testData2 = "MUST NOT receive this data... 222";
 		sender.sendEvent(testData2);
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect12(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData3 = "MUST receive this data... 333";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData3 = "MUST receive this data... 333";
 		sender.sendEvent(testData3);
 		Assertions.assertEquals(testData3, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
@@ -592,58 +600,58 @@ public class TestISignal {
 		// remove connection
 		receiver.disconnectConnection();
 		Assertions.assertEquals(false, receiver.isConnected());
-		Assertions.assertEquals(0, sender.signalEvent.size()); 
+		Assertions.assertEquals(0, sender.signalEvent.size());
 		System.gc();
-		String testData4 = "MUST NOT receive this data... 444";
+		final String testData4 = "MUST NOT receive this data... 444";
 		sender.sendEvent(testData4);
 		Assertions.assertEquals(null, receiver.getDataAndClean());
 		// reconnect (step 2
 		receiver.connect12(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData5 = "MUST receive this data... 555";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData5 = "MUST receive this data... 555";
 		sender.sendEvent(testData5);
 		Assertions.assertEquals(testData5, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// check auto remove...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 12 [ END ]");
+		LOGGER.warn("Test 12 [ END ]");
 		
 	}
 	
 	@Test
 	@Order(13)
 	public void testConnectAndTransmit13() {
-		Log.warning("Test 13 [BEGIN]");
-		EmiterSimple sender = new EmiterSimple();
+		LOGGER.warn("Test 13 [BEGIN]");
+		final EmiterSimple sender = new EmiterSimple();
 		ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect13(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
-		String testData1 = "MUST receive this data... 131";
+		Assertions.assertEquals(1, sender.signalEvent.size());
+		final String testData1 = "MUST receive this data... 131";
 		sender.sendEvent(testData1);
 		Assertions.assertEquals(testData1, receiver.getDataAndClean());
 		Assertions.assertEquals(1, sender.signalEvent.size());
 		// remove connection (check auto remove)...
 		receiver = null;
 		System.gc();
-		String testData6 = "MUST NOT receive this data... 666";
+		final String testData6 = "MUST NOT receive this data... 666";
 		sender.sendEvent(testData6);
 		Assertions.assertEquals(0, sender.signalEvent.size());
-		Log.warning("Test 13 [ END ]");
+		LOGGER.warn("Test 13 [ END ]");
 		
 	}
 
 	@Test
 	public void testClearConnection() {
-		EmiterSimple sender = new EmiterSimple();
-		ReceiverSimple receiver = new ReceiverSimple();
+		final EmiterSimple sender = new EmiterSimple();
+		final ReceiverSimple receiver = new ReceiverSimple();
 		//connect step 1
 		receiver.connect7(sender);
-		Assertions.assertEquals(1, sender.signalEvent.size()); 
+		Assertions.assertEquals(1, sender.signalEvent.size());
 		sender.signalEvent.clear();
 	}
 }
