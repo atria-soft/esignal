@@ -71,7 +71,7 @@ public class TestSignalEmpty {
 		public void connect2(final EmiterSimple other) {
 			// the solo lambda will not depend on the object => the remove must be done manually...
 			this.tmpConnect = other.signalEvent.connect(() -> {
-				LOGGER.error("lambda receive: ");
+				LOGGER.debug("lambda receive: ");
 			});
 			System.gc();
 		}
@@ -79,7 +79,7 @@ public class TestSignalEmpty {
 		public void connect3(final EmiterSimple other) {
 			// we reference the local object, then the lambda is alive while the object is alive...
 			this.tmpConnect = other.signalEvent.connect(() -> {
-				LOGGER.error("lambda receive: ");
+				LOGGER.debug("lambda receive: ");
 				this.dataReceive = true;
 			});
 			System.gc();
@@ -106,7 +106,7 @@ public class TestSignalEmpty {
 		public void connect6(final EmiterSimple other) {
 			// the solo lambda will not depend on the object => the remove must be done manually...
 			other.signalEvent.connectAutoRemoveObject(this, () -> {
-				LOGGER.error("lambda receive: ");
+				LOGGER.debug("lambda receive: ");
 			});
 			System.gc();
 		}
@@ -121,7 +121,7 @@ public class TestSignalEmpty {
 		}
 
 		public void onData() {
-			LOGGER.error("Retrive data : ");
+			LOGGER.debug("Retrive data : ");
 			this.dataReceive = true;
 		}
 
@@ -137,7 +137,7 @@ public class TestSignalEmpty {
 
 		public static void onDataStatic(final Object local) {
 			final ReceiverSimple self = (ReceiverSimple) local;
-			LOGGER.error("Retrive data : ");
+			LOGGER.debug("Retrive data : ");
 			self.dataReceive = true;
 		}
 
@@ -152,13 +152,13 @@ public class TestSignalEmpty {
 		}
 		
 		public static void onDataStatic2(final ReceiverSimple self) {
-			LOGGER.error("Retrive data : ");
+			LOGGER.debug("Retrive data : ");
 			self.dataReceive = true;
 		}
 		
 		public void connect12(final EmiterSimple other) {
 			this.tmpConnect = other.signalEvent.connect(this, (final ReceiverSimple self) -> {
-				LOGGER.error("Retrive data : ");
+				LOGGER.debug("Retrive data : ");
 				self.dataReceive = true;
 			});
 			System.gc();
@@ -166,7 +166,7 @@ public class TestSignalEmpty {
 
 		public void connect13(final EmiterSimple other) {
 			other.signalEvent.connectAuto(this, (final ReceiverSimple self) -> {
-				LOGGER.error("Retrive data : ");
+				LOGGER.debug("Retrive data : ");
 				self.dataReceive = true;
 			});
 			System.gc();

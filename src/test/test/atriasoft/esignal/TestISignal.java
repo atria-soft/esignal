@@ -36,7 +36,7 @@ public class TestISignal {
 		}
 
 		public void onConnectionChange(final int currentNumberConnection, final int deltaConnection) {
-			LOGGER.info(">>>>> Number of connection Change : " + currentNumberConnection + " delta=" + deltaConnection);
+			LOGGER.info(">>>>> Number of connection Change : {} delta={}", currentNumberConnection, deltaConnection);
 			this.currentNumberConnection = currentNumberConnection;
 			this.deltaConnection = deltaConnection;
 		}
@@ -84,7 +84,7 @@ public class TestISignal {
 		public void connect2(final EmiterSimple other) {
 			// the solo lambda will not depend on the object => the remove must be done manually...
 			this.tmpConnect = other.signalEvent.connect(data -> {
-				LOGGER.error("lambda receive: " + data);
+				LOGGER.debug("lambda receive: {}", data);
 			});
 			System.gc();
 		}
@@ -92,7 +92,7 @@ public class TestISignal {
 		public void connect3(final EmiterSimple other) {
 			// we reference the local object, then the lambda is alive while the object is alive...
 			this.tmpConnect = other.signalEvent.connect(data -> {
-				LOGGER.error("lambda receive: " + data);
+				LOGGER.debug("lambda receive: {}", data);
 				this.dataReceive = data;
 			});
 			System.gc();
@@ -119,7 +119,7 @@ public class TestISignal {
 		public void connect6(final EmiterSimple other) {
 			// the solo lambda will not depend on the object => the remove must be done manually...
 			other.signalEvent.connectAutoRemoveObject(this, data -> {
-				LOGGER.error("lambda receive: " + data);
+				LOGGER.debug("lambda receive: {}", data);
 			});
 			System.gc();
 		}
@@ -134,7 +134,7 @@ public class TestISignal {
 		}
 
 		public void onData(final String data) {
-			LOGGER.error("Retrive data : " + data);
+			LOGGER.debug("Retrive data : {}", data);
 			this.dataReceive = data;
 		}
 
@@ -150,7 +150,7 @@ public class TestISignal {
 
 		public static void onDataStatic(final Object local, final String data) {
 			final ReceiverSimple self = (ReceiverSimple) local;
-			LOGGER.error("Retrive data : " + data);
+			LOGGER.debug("Retrive data : {}", data);
 			self.dataReceive = data;
 		}
 
@@ -165,13 +165,13 @@ public class TestISignal {
 		}
 		
 		public static void onDataStatic2(final ReceiverSimple self, final String data) {
-			LOGGER.error("Retrive data : " + data);
+			LOGGER.debug("Retrive data : {}", data);
 			self.dataReceive = data;
 		}
 		
 		public void connect12(final EmiterSimple other) {
 			this.tmpConnect = other.signalEvent.connect(this, (final ReceiverSimple self, final String data) -> {
-				LOGGER.error("Retrive data : " + data);
+				LOGGER.debug("Retrive data : {}", data);
 				self.dataReceive = data;
 			});
 			System.gc();
@@ -179,7 +179,7 @@ public class TestISignal {
 
 		public void connect13(final EmiterSimple other) {
 			other.signalEvent.connectAuto(this, (final ReceiverSimple self, final String data) -> {
-				LOGGER.error("Retrive data : " + data);
+				LOGGER.debug("Retrive data : {}", data);
 				self.dataReceive = data;
 			});
 			System.gc();
